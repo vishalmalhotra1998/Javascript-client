@@ -1,79 +1,69 @@
-.container{
-    margin: 4%;
-    border-top: lightgray;
-    border-bottom: lightgray;
-    box-shadow:10px 10px 8px -8px rgba(94,91,94,1);
-    
-}
-.firstclass{
+.container {
   display: flex;
-  border-top-style: outset;
-  border-top-color: lightgray;
-  border-top-width: thin;
-  border-left-style: outset;
-  border-left-color: lightgray;
-  border-left-width: thin;
-  border-right-style: outset;
-  border-right-color: lightgray;
-  border-right-width: thin;
+  flex-direction: column;
+  margin: 3%;
+  border: outset;
+  border-color: lightgray;
+  border-width: thin;
+  box-shadow: 10px 10px 8px -8px rgba(94, 91, 94, 1);
+}
+
+.container__firstclass {
+  display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  align-content: center;
-  align-items: baseline;
+  align-items:baseline;
+  justify-content:space-around;
   
-   
-}
-.secondclass
-{  
-    display: flex;
-    border-top-style: outset;
-    border-top-color: lightgray;
-    border-top-width: thin;
-    border-left-style: outset;
-    border-left-color: lightgray;
-    border-left-width: thin;
-    border-right-style: outset;
-    border-right-color: lightgray;
-    border-right-width: thin;
-      flex-direction: row;
-      
-    
-    
-}
-.payment{
-    width: 60%;
-    padding:2%;
-    border-style:outset;
-    border-width: thin;
-
-}
-.cart
-{
-    width: 60%;
-    padding:2%;
-    border-style:outset;
-    border-width: thin;
-    background-color: lightgray;
-
 }
 
-.thickness{
-    font-weight: 900;
-    font-size: 120%;
+.container__secondclass {
+  border-top: outset;
+  border-color: lightgray;
+  border-width: thin;
+  display: flex;
+  flex-direction: row;
 }
 
-.breadscrum{
-     list-style: none;
-     display: flex;
-     align-items: baseline;
+.container__secondclass__payment {
+  flex-basis: 60%;
+  padding: 1%;
 }
 
-.breadcrumb li {
-    display: inline;
-    font-size: 18px;
-  }
-  .breadcrumb li+li:before {
-    padding: 8px;
-    color: black;
-    content: "/\00a0";
-  }
+.container__secondclass__cart {
+  flex-basis: 40%;
+  padding: 1%;
+  background-color: lightgray;
+}
+
+.container__firstclass__thickness {
+  flex-basis: 12%;
+  font-weight: bold;
+}
+
+.container__firstclass__payment {
+  font-weight: bold;
+}
+.container__firstclass__scrumdivdefinition{
+  
+  flex-basis: 80%;
+
+}
+
+.container__firstclass__scrumdivdefinition__breadcrumb li {
+  flex-basis: 70%;
+  display: inline;
+
+}
+
+.container__firstclass__scrumdivdefinition__breadcrumb li+li:before {
+  padding: 8px;
+  color: black;
+  content: "/\00a0";
+}
+
+.container__firstclass__btn {
+  border: none;
+  padding: 0;
+  font-size: 90%;
+  flex-basis: 10%;
+}
