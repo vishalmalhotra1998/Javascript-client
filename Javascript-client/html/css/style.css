@@ -4,7 +4,7 @@ Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
 */
-.co__container {
+  .co__container {
   display: flex;
   flex-direction: column;
   margin: 3%;
@@ -21,7 +21,7 @@ http://yuilibrary.com/license/
   align-items: baseline;
   justify-content: space-around;
   background-color:white;
-  flex-grow: inherit;
+  flex-grow: auto;
 }
 
 .container__secondclass {
@@ -86,7 +86,7 @@ body {
 
 
 .secondclass__cart {
-  flex-basis: 35%;
+  flex-basis: 40%;
   background-color: lightgray;
   padding:1%;
   justify-content: space-around;
@@ -307,12 +307,10 @@ font-size:95%;
   flex-direction: column;
   align-content: flex-end;
   align-content: space-around;
-  flex-basis: 18%;
-
+  flex-basis: 75px;
 }
 
 .dollar__text {
-  /* padding: 2%; */
   padding-bottom: 15%;
   font-size: 110%;
   padding-left: 12%;
@@ -337,4 +335,89 @@ font-size:95%;
   flex-basis: inherit;
   font-weight: bold;
   font-size: 110%;
+}
+
+
+@media only screen and (min-width: 992px){
+  .co_container {
+    margin-left: 100px;
+    margin-right: 100px;
+  }
+}
+@media only screen and (max-width: 991px) and (min-width: 767px){
+  .co__container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .secondclass__payment {
+    flex-basis: 50%;
+  }
+  .secondclass__cart {
+    flex-basis: 50%;
+  }
+
+}
+
+@media only screen and (max-width: 767px) and (min-width: 600px){
+  .co__container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .secondclass__payment {
+    flex-basis: 50%;
+  }
+  .secondclass__cart {
+    flex-basis: 50%;
+  }
+ .firstclass__scrumdivdefinition{
+   visibility: hidden;
+ }
+
+}
+@media only screen and (max-width: 599px) and (min-width: 400px){
+  .co__container {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .secondclass__payment {
+    flex-basis: 50%;
+  }
+  .secondclass__cart {
+    flex-basis: 50%;
+  }
+
+  .container__secondclass {
+    border-top: outset;
+    border-width: thin;
+    display: flex;
+    flex-direction: column-reverse;
+    flex-grow: inherit;
+  }
+  .firstclass__scrumdivdefinition{
+    visibility: hidden;
+    flex-basis: 70%;
+  }
+  
+
+}
+@media only screen and (max-width: 399px){
+  .cards__imagesmakeincolumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .container__secondclass {
+    border-top: outset;
+    border-width: thin;
+    display: flex;
+    flex-direction: column-reverse;
+    flex-grow: inherit;
+  }
+  .firstclass__scrumdivdefinition{
+  visibility: hidden;
+  flex-basis: auto;
+  }
+  .total__text {
+    flex-basis: 23%;
+}
 }
