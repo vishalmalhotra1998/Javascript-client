@@ -7,26 +7,136 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="co_container">
         <div class="container__firstclass">
-            <div class="container__firstclass__thickness">Checkout</div>
-            <div class="container__firstclass__scrumdivdefinition">
-                <ul class="container__firstclass__scrumdivdefinition__breadcrumb">
+            <div class="firstclass__thickness">Checkout</div>
+            <div class="firstclass__scrumdivdefinition">
+                <ul class="scrumdivdefinition__breadcrumb">
                     <li>Shipping</li>
                     <li class="container__firstclass__payment">Payment method</li>
                     <li>Confirmation</li>
                 </ul>
             </div>
             <div>
-            <button class="container__firstclass__btn"> 
-                <i class="fa fa-window-close"></i>
-            </button>
+                <button class="firstclass__btn">
+                    <i class="fa fa-window-close"></i>
+                </button>
             </div>
         </div>
         <div class="container__secondclass">
-            <div class="container__secondclass__payment">Payment block</div>
-            <div class="container__secondclass__cart">Cart Block</div>
+            <div class="secondclass__payment">
+                <div class="secondclass__wallet">Wallet
+                </div>
+                <div class="secondclass__cards">
+                    <div class="cards__imagesmakeincolumn">
+
+                        <div class="img__discover">
+                            <img src="./images/cards/discover.png"></img>
+                            <figcaption> Ending with 8899 </figcaption>
+                        </div>
+                        <div class=" img__mastercard">
+                            <img src="./images/cards/mastercard.png"></img>
+                            <figcaption> Ending with 8899 </figcaption>
+                        </div>
+                        <div class="img__visa">
+                        <img src="./images/cards/visa.png"></img>
+                            <figcaption> Ending with 8899</figcaption>
+                        </div>
+                    </div>
+                    <div class="cards__newcard">New Card</div>
+                </div>
+                <div class="secondclass__inputtypes">
+
+                    <div class="input__boxes"> <input class="inputtypes__input" type="text" value="Name on Card"></input>
+                    </div>
+                    <div class="input__boxes"> <input class="inputtypes__input" type="text" value="xxxx-xxxx-xxxx-xxxx"></input>
+                    </div>
+                    <div class="input__forLastpart">
+                        <div class="input__LastBoxes">
+                            <input class="inputtypes__input inputtypes__input--lastinput" type="text" value="MM/YY"></input>
+                        </div>
+                        <div class="input__LastBoxes">
+                            <input class="inputtypes__input inputtypes__input--lastinput" type="text" value="CVV"></input>
+                        </div>
+
+                    </div>
+                    <div class="input__boxes"> <input class="inputtypes__input inputtypes__input--button" type="button" value="CONTINUE"> </input>
+                    </div>
+                </div>
+
+            </div>
+            <div class="secondclass__cart">
+                <div class="cart__firstdiv">
+                    <div class="firstdiv__deviceitems firstdiv__deviceitems--mobileholder">
+                        <div class="deviceitems__image"><img class="firstdiv--image" src="./images/products/mobile-holder.jpg"></div>
+                        <div class="deviceitems__text">
+                            <div class="text__bold">Mobile-Holder</div>
+                            <div class="text__black">black</div>
+                            <div class="text__quantity">Quantity: 1</div>
+                        </div>
+                        <div class="deviceitems__dollar">
+                            $ 10.00
+                        </div>
+
+                    </div>
+                    <div class="firstdiv__deviceitems">
+                        <div class="deviceitems__image"><img class="firstdiv--image" src="./images/products/rado.jpg"></div>
+                        <div class="deviceitems__text">
+                            <div class="text__bold">Rado</div>
+                            <div class="text__black">Block</div>
+                            <div class="text__quantity">Quantity: 1</div>
+                        </div>
+                        <div class="deviceitems__dollar">
+                            $ 10.00
+                        </div>
+                    </div>
+                    <div class="firstdiv__deviceitems">
+                        <div class="deviceitems__image"><img class="firstdiv--image" src="./images/products/usb-c-2-micro.jpeg"></div>
+                        <div class="deviceitems__text">
+                            <div class="text__bold">C type to Micro Convertor</div>
+                            <div class="text__black">Block</div>
+                            <div class="text__quantity">Quantity: 1</div>
+                        </div>
+                        <div class="deviceitems__dollar">
+                            $ 10.00
+                        </div>
+                    </div>
+                    <div class="firstdiv__deviceitems firstdiv__deviceitems--hardcase">
+                        <div class="deviceitems__image"><img class="firstdiv--image" src="./images/products/hard-case.jpg"></div>
+                        <div class="deviceitems__text">
+                            <div class="text__bold">Mobile Case</div>
+                            <div class="text__black">Black</div>
+                            <div class="text__quantity">Quantity: 1</div>
+                        </div>
+                        <div class="deviceitems__dollar">
+                            $ 10.00
+                        </div>
+                    </div>
+                </div>
+                <div class="cart__billing">
+                    <div class="billing__shop">
+                        <div class="shop__text">Subtotal</div>
+                        <div class="shop__text">Shipping</div>
+                        <div class="shop__text">Taxes</div>
+                    </div>
+                    <div class="billing__dollar">
+                        <div class="dollar__text"> $ 100.00</div>
+                        <div class="dollar__text dollar__text--small">$ 10.00</div>
+                        <div class="dollar__text dollar__text--smaller">$ 5.00</div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="cart__total">
+                    <div class="total__text"> Total </div>
+                    <div class="total__text"> $ 115.00</div>
+
+                </div>
+            </div>
         </div>
     </div>
 </body>
+
 </html>

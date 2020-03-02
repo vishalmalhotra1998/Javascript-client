@@ -1,7 +1,14 @@
-.container {
+/*
+YUI 3.18.1 (build f7e7bcb)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+.co__container {
   display: flex;
   flex-direction: column;
   margin: 3%;
+  flex-grow: inherit;
   border: outset;
   border-color: lightgray;
   border-width: thin;
@@ -11,59 +18,323 @@
 .container__firstclass {
   display: flex;
   flex-direction: row;
-  align-items:baseline;
-  justify-content:space-around;
-  
+  align-items: baseline;
+  justify-content: space-around;
+  background-color:white;
+  flex-grow: inherit;
 }
 
 .container__secondclass {
   border-top: outset;
-  border-color: lightgray;
   border-width: thin;
   display: flex;
   flex-direction: row;
+  flex-grow: inherit;
 }
 
-.container__secondclass__payment {
-  flex-basis: 60%;
+.secondclass__payment {
+  flex-basis: 65%;
   padding: 1%;
+  display: flex;
+  font-weight: bold;
+  flex-grow: inherit;
+  background-color:white;
+  border-color: lightgray;
+  border-width: thin;
+  flex-direction: column;
 }
 
-.container__secondclass__cart {
-  flex-basis: 40%;
-  padding: 1%;
-  background-color: lightgray;
-}
 
-.container__firstclass__thickness {
+.firstclass__thickness {
   flex-basis: 12%;
   font-weight: bold;
+  font-size: 130%;
 }
 
-.container__firstclass__payment {
+
+.firstclass__payment {
   font-weight: bold;
 }
-.container__firstclass__scrumdivdefinition{
-  
-  flex-basis: 80%;
 
+.firstclass__scrumdivdefinition {
+  flex-basis: 80%;
 }
 
-.container__firstclass__scrumdivdefinition__breadcrumb li {
+.scrumdivdefinition__breadcrumb li {
+  font-size:110%;
   flex-basis: 70%;
   display: inline;
-
 }
 
-.container__firstclass__scrumdivdefinition__breadcrumb li+li:before {
+.scrumdivdefinition__breadcrumb li+li:before {
   padding: 8px;
   color: black;
   content: "/\00a0";
 }
 
-.container__firstclass__btn {
+.firstclass__btn {
   border: none;
   padding: 0;
   font-size: 90%;
   flex-basis: 10%;
+}
+
+body {
+  background-image: url("./../../../../background.jpg");
+
+}
+
+
+.secondclass__cart {
+  flex-basis: 35%;
+  background-color: lightgray;
+  padding:1%;
+  justify-content: space-around;
+}
+.secondclass__wallet
+{
+  display: flex;
+  font-weight: bold;
+  font-size: 110%;
+  flex-basis: 6%;
+  color: darkgrey;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding-bottom: 1%;
+}
+.secondclass__cards {
+  border-top-style: solid;
+  border-bottom-style:solid;
+  border-width: thin;
+  border-color: lightgrey;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cards__imagesmakeincolumn {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  padding-top: 3%;
+  padding-bottom: 8%;
+  padding-left: 3%;
+  padding-right: 3%;
+  flex-basis: 10%;
+}
+
+.cards__newcard {
+  display: flex;
+  flex-flow: wrap;
+  padding-top: 3%;
+  padding-bottom: 1%;
+  max-width: 350px;
+  color: darkgray;
+  flex-basis:50%;
+}
+
+.secondclass__inputtypes {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  padding-top: 2%;
+}
+
+.img__mastercard{
+  background-color: #efe7e7;
+  flex-basis: 27%;
+  padding: 2%;
+}
+
+img{
+   width: 100%; 
+}
+
+
+.img__discover{
+  flex-basis: 27%;
+
+}
+.img__visa{
+  flex-basis: 27%;
+
+}
+
+img.firstdiv--image{
+  height: 100%;
+  width: 100%;
+
+}
+
+figcaption {
+  padding-top: 2%;
+  padding-bottom: 2%;
+ font-weight: lighter;
+ font-size: 80%;
+}
+
+.input__forLastpart {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 3%;
+}
+
+
+.input__boxes {
+  display: flex;
+  padding: 3%;
+}
+
+.input__LastBoxes {
+  width: 45%;
+  
+}
+
+.inputtypes__input {
+  width: 100%;
+  flex-basis: 100%;
+  padding: 5%;
+  font-size: 100%;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: thin;
+  border-color: rgb(194, 189, 189);
+}
+
+.inputtypes__input--lastInput {
+  
+  padding: 10%;
+}
+
+.inputtypes__input--button {
+  border:none;
+  background-color:rgb(0, 169, 0);
+  font-size: 100%;
+  border-radius: unset;
+}
+
+.cart__firstdiv {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  padding-bottom: 20%;
+}
+
+.firstdiv__deviceitems {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-top: thin;
+  border-top-style: outset;
+  padding-top: 3%;
+  padding-right:1%;
+  padding-bottom: 3%;
+  flex-grow: inherit;
+  flex-basis:auto;
+}
+
+.firstdiv__deviceitems--mobileholder {
+  
+  padding-right:1%;
+  padding-bottom: 3%;
+}
+
+.firstdiv__deviceitems--hardcase {
+  padding-top: 3%;
+  padding-right: 1%;
+  padding-bottom: 10%;
+}
+
+.deviceitems__text {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  flex-basis: 60%;
+}
+
+.text__bold {
+  font-size: 110%;
+  font-weight: bold;
+  padding-bottom: 2%;
+}
+.text__black{
+font-style: italic;
+font-size: 85%;
+}
+.text__quantity{
+font-weight: 700;
+font-size:95%;
+}
+
+.deviceitems__image {
+  flex-basis: 10%;
+ 
+  border-width: thick;
+  border-style: solid;
+  border-color: rgb(194, 189, 189);
+}
+.deviceitems__dollar{
+  font-weight: bold;
+  flex-grow: unset;
+}
+.cart__billing{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 3%;
+  border-top: thin;
+  border-top-style: outset;
+}
+
+.billing__shop {
+  display: flex;
+  flex-direction: column;
+  align-content: space-around;
+  flex-basis: 15%;
+
+}
+
+.shop__text {
+  padding: 3%;
+  padding-bottom: 25%;
+  font-size: 110%;
+}
+.billing__dollar{
+  display: flex;
+  flex-direction: column;
+  align-content: flex-end;
+  align-content: space-around;
+  flex-basis: 18%;
+
+}
+
+.dollar__text {
+  /* padding: 2%; */
+  padding-bottom: 15%;
+  font-size: 110%;
+  padding-left: 12%;
+  align-content: flex-end;
+}
+.dollar__text--small {
+  padding-left: 25%;
+}
+.dollar__text--smaller {
+  padding-left: 35%;
+}
+.cart__total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 3%;
+  padding-bottom: 3%;
+  border-top: thin;
+  border-top-style: outset;
+}
+.total__text{
+  flex-basis: inherit;
+  font-weight: bold;
+  font-size: 110%;
 }
