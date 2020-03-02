@@ -1,0 +1,8 @@
+"lint": "./node_modules/.bin/eslint src",
+"lint:fix": "npm run lint --fix"
+{
+ "hooks": {
+   "pre-commit": "npm run lint && npm run test:c",
+   "pre-push": "npm run lint && npm run test:c"
+ }
+}

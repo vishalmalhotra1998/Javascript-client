@@ -14,7 +14,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "./node_modules/.bin/eslint src",
+    "lint:fix": "npm run lint --fix"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +32,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "commitizen": "^4.0.3",
+    "eslint-config-airbnb": "^18.0.1",
+    "husky": "^4.2.3"
   }
 }
