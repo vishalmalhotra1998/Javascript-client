@@ -6,9 +6,11 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.1",
     "@testing-library/user-event": "^7.2.1",
+    "commitizen": "^4.0.3",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "styled-components": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -16,7 +18,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "./node_modules/.bin/eslint src",
-    "lint:fix": "npm run lint --fix"
+    "lint:fix": "npm run lint --fix",
+    "commit": "git-cz"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -34,8 +37,13 @@
     ]
   },
   "devDependencies": {
-    "commitizen": "^4.0.3",
+    "cz-conventional-changelog": "^3.1.0",
     "eslint-config-airbnb": "^18.0.1",
     "husky": "^4.2.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
