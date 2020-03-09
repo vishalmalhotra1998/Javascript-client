@@ -23,7 +23,7 @@ const RadioField = (props) => {
 
 
 RadioField.propTypes = {
-  Options: propTypes.arrayOf(propTypes.string.isRequired, propTypes.string.isRequired).isRequired,
+  Options: propTypes.arrayOf(propTypes.object).isRequired,
   onChange: propTypes.func.isRequired,
   value: propTypes.string.isRequired,
   error: propTypes.string.isRequired,

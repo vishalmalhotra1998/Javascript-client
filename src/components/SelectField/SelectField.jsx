@@ -18,7 +18,7 @@ const SelectField = (props) => {
 
 SelectField.propTypes = {
   error: propTypes.string.isRequired,
-  Options: propTypes.arrayOf(propTypes.string.isRequired, propTypes.string.isRequired).isRequired,
+  Options: propTypes.arrayOf(propTypes.object).isRequired,
   onChange: propTypes.func.isRequired,
   value: propTypes.string.isRequired,
   defaultText: propTypes.string.isRequired,
