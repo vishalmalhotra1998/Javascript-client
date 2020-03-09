@@ -1,7 +1,5 @@
 import React from 'react';
-import SelectField from '../../components/SelectField/SelectField';
-import RadioField from '../../components/RadioField/RadioField';
-import TextField from '../../components/TextField/index';
+import { TextField, SelectField, RadioField } from '../../components/index';
 import {
   Options, radioCricketOptions, radioFootballOptions, CRICKET, Default,
 } from '../../components/Slider/configs/constants';
