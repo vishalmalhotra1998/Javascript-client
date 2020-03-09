@@ -1,9 +1,10 @@
 import React from 'react';
-import TextEditor from './pages/index';
+// import TextEditor from './pages/index';
+import InputDemo from './pages/InputDemo/InputDemo';
 
 function App() {
   return (
-    <TextEditor />
+    <InputDemo />
   );
 }
 

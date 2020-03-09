@@ -19,8 +19,8 @@ const Error = styled.p`
   color: red;
 `;
 
-const Paragraph = styled.p`
+const PTextField = styled.p`
 font-weight:bold;
 `;
 
-export { Input, Error, Paragraph };
+export { Input, Error, PTextField };
