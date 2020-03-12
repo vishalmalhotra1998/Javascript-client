@@ -1,3 +1,4 @@
 import TextEditor from './TextFieldDemo/index';
+import ChildrenDemo from './ChildrenDemo/index';
 
-export default TextEditor;
+export { TextEditor, ChildrenDemo };
