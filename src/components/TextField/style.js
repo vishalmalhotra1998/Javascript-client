@@ -2,14 +2,14 @@ import styled from 'styled-components';
 
 const Input = styled.input`
   width: 96%;
-  border-color: ${(props) => (props.value === '101' ? 'red' : 'lightgrey')};
+  border-color: ${(props) => (props.error ? 'red' : 'lightgrey')};
   padding-top:1%;
   padding-bottom:1%;
   padding-left:0.2%;
   padding-right:3%;
   border-width: thin;
   border-style: solid;
-  border-radius: 6px;
+  border-radius: 3px;
   
 `;
 

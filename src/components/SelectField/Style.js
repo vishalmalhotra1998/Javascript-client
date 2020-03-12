@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const Select = styled.select`
   width: 99%;
-  border-color: lightgray;
+  border-color: ${(props) => (props.error ? 'red' : 'lightgrey')};
   padding-top:1%;
   padding-bottom:1%;
   padding-left:0.2%;
@@ -15,4 +15,9 @@ const Select = styled.select`
 const PSelectField = styled.p`
   font-weight: bold;
 `;
-export { Select, PSelectField };
+const Error = styled.p`
+  width: 100%;
+  margin-top:0.2%;
+  color: red;
+`;
+export { Select, PSelectField, Error };
