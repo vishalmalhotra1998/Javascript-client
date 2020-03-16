@@ -128,7 +128,6 @@ class InputDemo extends React.Component {
           });
         }
       }).catch((error) => {
-        console.log('inside catch ', error.message);
         if (hasError[values] !== error.message) {
           this.setState({
             hasError: {
