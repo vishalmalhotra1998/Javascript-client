@@ -1,42 +1,15 @@
 import React from 'react';
-import * as yup from 'yup';
 import {
   TextField, SelectField, RadioField, Button,
 } from '../../components/index';
 import {
-  Options, radioCricketOptions, radioFootballOptions, CRICKET, Default,
+  Options, radioCricketOptions, radioFootballOptions, CRICKET, Default, ValidateSchema,
 } from '../../components/Slider/configs/constants';
 
 import { PSelectField } from '../../components/SelectField/Style';
 import { PRadioField } from '../../components/RadioField/Style';
 import { PTextField } from '../../components/TextField/style';
 import { ButtonDiv } from '../../components/Button/style';
-
-const ValidateSchema = yup.object().shape({
-  text: yup
-    .string()
-    .required('Name is a required Field')
-    .min(3)
-    .matches('^[A-Za-z\\s]+$')
-    .label('Name'),
-  SelectField: yup
-    .string()
-    .required()
-    .label('SelectField'),
-  cricket: yup
-    .string()
-    .when('SelectField', {
-      is: 'cricket',
-      then: yup.string().required('What do you do  ?'),
-    }),
-  football: yup
-    .string()
-    .when('SelectField', {
-      is: 'football',
-      then: yup.string().required('What do you do ?'),
-    }),
-
-});
 
 
 class InputDemo extends React.Component {
@@ -53,6 +26,8 @@ class InputDemo extends React.Component {
         cricket: false,
         football: false,
       },
+      isValid: false,
+      hasError: {},
     };
   }
 
@@ -105,21 +80,21 @@ class InputDemo extends React.Component {
     return sport === CRICKET ? radioCricketOptions : radioFootballOptions;
   }
 
-  hasError= () => {
+  hasError = () => {
     const {
-      name, sport, cricket, football,
+      name, sport, cricket, football, isValid,
     } = this.state;
-    try {
-      const check = ValidateSchema.validateSync({
-        text: name,
-        SelectField: sport,
-        cricket,
-        football,
-      }, { abortEarly: false });
-      return check;
-    } catch (error) {
-      return false;
-    }
+    ValidateSchema.isValid({
+      text: name,
+      SelectField: sport,
+      cricket,
+      football,
+    }, { abortEarly: false }).then((value) => {
+      if (isValid !== value) {
+        this.setState({ isValid: value });
+      }
+    });
+    return isValid;
   }
 
   isTouched=(value) => {
@@ -132,28 +107,44 @@ class InputDemo extends React.Component {
     });
   }
 
-
   getError = (values) => {
-    const { touched } = this.state;
-    if (this.hasError && touched[values]) {
-      try {
-        const {
-          name, sport, cricket, football,
-        } = this.state;
-        ValidateSchema.validateSyncAt(values, {
-          text: name,
-          SelectField: sport,
-          cricket,
-          football,
-        });
-      } catch (error) {
-        return error.message;
-      }
+    const { touched, hasError } = this.state;
+    if (!this.hasError() && touched[values]) {
+      const {
+        name, sport, cricket, football,
+      } = this.state;
+      ValidateSchema.validateAt(values, {
+        text: name,
+        SelectField: sport,
+        cricket,
+        football,
+      }).then(() => {
+        if (hasError[values] !== undefined) {
+          this.setState({
+            hasError: {
+              ...hasError,
+              [values]: undefined,
+            },
+          });
+        }
+      }).catch((error) => {
+        console.log('inside catch ', error.message);
+        if (hasError[values] !== error.message) {
+          this.setState({
+            hasError: {
+              ...hasError,
+              [values]: error.message,
+            },
+          });
+        }
+      });
     }
+    return hasError[values];
   }
 
+
   render() {
-    const { sport } = this.state;
+    const { sport, isValid } = this.state;
     return (
       <>
         <PTextField>Name</PTextField>
@@ -189,7 +180,7 @@ class InputDemo extends React.Component {
           <Button value="cancel" color="default" />
           <Button
             value="submit"
-            disabled={!this.hasError()}
+            disabled={!isValid}
             color="default"
           />
         </ButtonDiv>
