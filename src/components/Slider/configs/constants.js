@@ -51,9 +51,8 @@ export const Default = 'Select';
 export const ValidateSchema = yup.object().shape({
   text: yup
     .string()
-    .required('Name is a required Field')
     .min(3)
-    .matches('^[A-Za-z\\s]+$')
+    .required('Name is a required Field')
     .label('Name'),
   SelectField: yup
     .string()
