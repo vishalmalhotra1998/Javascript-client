@@ -1,16 +1,14 @@
 import React from 'react';
-// import TextEditor from './pages/index';
-// import InputDemo from './pages/InputDemo/InputDemo';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import theme from './theme';
-import { ChildrenDemo } from './pages/index';
+import Trainee from './pages/Trainee/Trainee';
 
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Typography><ChildrenDemo /></Typography>
+      <Typography><Trainee /></Typography>
     </ThemeProvider>
   );
 }
