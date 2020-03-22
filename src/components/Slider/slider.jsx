@@ -18,7 +18,6 @@ export default class Slider extends React.Component {
     const {
       banners, duration, random, defaultbanner,
     } = this.props;
-
     this.id = setInterval(() => {
       const { index } = this.state;
       let imageIndex = 0;
@@ -41,14 +40,21 @@ export default class Slider extends React.Component {
   }
 
   render() {
-    const { path } = this.state;
+    const { path, index } = this.state;
     const {
-      height, altText,
+      height, altText, banners,
     } = this.props;
+
+    let imgPath;
+    if (!path) {
+      imgPath = banners.length ? `${PUBLIC_IMAGE_FOLDER}${banners[index]}` : DEFAULT_BANNER_IMAGE;
+    } else {
+      imgPath = path;
+    }
     return (
       <>
         <Img
-          src={path}
+          src={imgPath}
           alt={altText}
           height={height}
         />

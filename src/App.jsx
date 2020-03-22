@@ -1,15 +1,28 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { TraineeComponent } from './pages/index';
-import theme from './theme';
+import {
+  BrowserRouter as Router, Route, Redirect, Switch,
+} from 'react-router-dom';
+import {
+  TextEditor, ChildrenDemo, TraineeComponent, SignIn, InputDemo, NoMatch,
+} from './pages/index';
+import { AuthLayoutRoute, PrivateLayoutRoute } from './routes/index';
 
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Typography><TraineeComponent /></Typography>
-    </ThemeProvider>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <Redirect to="/login" />
+        </Route>
+        <AuthLayoutRoute exact path="/login" component={SignIn} />
+        <PrivateLayoutRoute exact path="/trainee" component={TraineeComponent} />
+        <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
+        <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+        <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
+        <PrivateLayoutRoute component={NoMatch} />
+      </Switch>
+    </Router>
   );
 }
 
