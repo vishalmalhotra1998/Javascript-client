@@ -8,7 +8,6 @@ import Container from '@material-ui/core/Container';
 const theme = createMuiTheme({
   typography: {
     fontSize: 12,
-    fontWeight: 488,
   },
 });
 
@@ -28,7 +27,7 @@ const NoMatch = () => {
       <CssBaseline />
       <ThemeProvider theme={theme}>
         <Container component="main" className={classes.main} maxWidth="sm">
-          <Typography align="center" color="textSecondary" variant="h2" component="h2" gutterBottom>
+          <Typography align="center" color="textSecondary" variant="h2" gutterBottom>
           Not Found
           </Typography>
           <Typography align="center" variant="h5" component="h2" gutterBottom>

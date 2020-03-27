@@ -1,3 +1,3 @@
-import TraineeComponent from './TraineeComponent';
+import TraineeRoutes from './Trainee';
 
-export default TraineeComponent;
+export default TraineeRoutes;
