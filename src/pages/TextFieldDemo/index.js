@@ -1,3 +1,1 @@
-import TextEditor from './TextFileDemo';
-
-export default TextEditor;
+export { default as TextEditor } from './TextFileDemo';

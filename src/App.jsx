@@ -1,5 +1,5 @@
 import React from 'react';
-import TextEditor from './pages/index';
+import { TextEditor } from './pages';
 
 function App() {
   return (

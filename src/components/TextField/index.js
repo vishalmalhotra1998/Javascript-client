@@ -1,3 +1,1 @@
-import TextFieldDemo from './TextField';
-
-export default TextFieldDemo;
+export { default as TextField } from './TextField';
