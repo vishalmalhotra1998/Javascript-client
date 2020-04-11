@@ -1,10 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { Link } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
+
 
 const useStyles = makeStyles({
   root: {
@@ -14,9 +15,9 @@ const useStyles = makeStyles({
     flexGrow: 1,
   },
   textSize:
-  {
-    fontSize: '1rem',
-  },
+    {
+      fontSize: '1rem',
+    },
   padding: {
     marginRight: 30,
   },
@@ -30,7 +31,7 @@ export default function ButtonAppBar() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            Trainee Portal
+                        Trainee Portal
           </Typography>
           <Typography>
             <Button className={classes.textSize} component={Link} to="/Trainee" size="small" color="inherit">Trainee</Button>

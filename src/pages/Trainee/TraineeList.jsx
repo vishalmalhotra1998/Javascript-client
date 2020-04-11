@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import propTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { Link } from 'react-router-dom';
@@ -52,3 +53,7 @@ class TraineeList extends React.Component {
    }
 }
 export default TraineeList;
+
+TraineeList.propTypes = {
+  match: propTypes.string.isRequired,
+};
