@@ -1,11 +1,18 @@
 import React, { Fragment } from 'react';
-import propTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import { Link } from 'react-router-dom';
-import FormDialog from './components/index';
+import { FormDialog, TableComponent } from './components/index';
 import trainee from './data/trainee';
 
+const useStyles = {
+
+  button: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+};
 class TraineeList extends React.Component {
   constructor(props) {
     super(props);
@@ -29,14 +36,35 @@ class TraineeList extends React.Component {
 
    render() {
      const { open } = this.state;
-     const { match: { url } } = this.props;
+     const { match: { url }, classes } = this.props;
      return (
        <>
          <Box p={1} />
-         <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+         <div className={classes.button}>
+           <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
        Add Trainee
-         </Button>
+           </Button>
+         </div>
          <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
+         <Box p={1} />
+         <TableComponent
+
+           id="id"
+
+           data={trainee}
+
+           column={[{
+             field: 'name',
+             label: 'Name',
+             align: 'center',
+           },
+           {
+             field: 'email',
+             label: 'Email-Address',
+
+           }]}
+
+         />
          <Box p={1} />
          <ul>
            {trainee.length && trainee.map((data) => (
@@ -52,8 +80,4 @@ class TraineeList extends React.Component {
      );
    }
 }
-export default TraineeList;
-
-TraineeList.propTypes = {
-  match: propTypes.string.isRequired,
-};
+export default withStyles(useStyles, { withTheme: true })(TraineeList);
