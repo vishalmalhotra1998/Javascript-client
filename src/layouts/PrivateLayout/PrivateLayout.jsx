@@ -1,6 +1,6 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import ButtonAppBar from '../Components/NavBar/index';
+import { ButtonAppBar } from '../Components';
 
 const PrivateLayout = ({ children, ...rest }) => (
   <>

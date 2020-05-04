@@ -1,6 +1,6 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import Copyright from '../Components/Footer/Footer';
+import { Copyright } from '../Components';
 
 const AuthLayout = ({ children, ...rest }) => (
   <>
