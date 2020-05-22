@@ -6,7 +6,7 @@ const TextField = (values = '') => {
   return (
     <>
       <Input type="text" value={value} disabled={disabled} />
-      {error ? <Error>{error}</Error> : <br />}
+      {error ? <Error>{error}</Error> : ''}
     </>
   );
 };

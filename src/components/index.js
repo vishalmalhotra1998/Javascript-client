@@ -1,4 +1,2 @@
-import TextField from './TextField/index';
-import Slider from './Slider/index';
-
-export { TextField, Slider };
+export { TextField } from './TextField';
+export { Slider } from './Slider';
