@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     borderColor: 'lightGrey',
   },
   color: {
-    color: 'red',
+    color: 'grey',
   },
   visuallyHidden: {
     border: 0,
@@ -35,9 +35,6 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
-//   tableCell: {
-//     color: 'red',
-//   },
 
 }));
 
@@ -59,9 +56,9 @@ const TableComponent = (props) => {
             {column.length && column.map((col) => (
               <TableCell align={col.align} className={classes.color}>
                 <TableSortLabel
-                  
-                 
-                  className={classes.tableCell}
+                  hover
+                  onMouseEnter={handleSortIcon}
+                  className={classes.tablecell}
                   active={orderBy === col.field}
                   direction={orderBy === col.field ? order : 'asc'}
                   onClick={() => onSort(col.field)}
