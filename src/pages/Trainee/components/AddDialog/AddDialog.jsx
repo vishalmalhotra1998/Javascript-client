@@ -209,5 +209,6 @@ FormDialog.propTypes = {
   open: propTypes.bool.isRequired,
   onClose: propTypes.func.isRequired,
   onSubmit: propTypes.func.isRequired,
+  classes: propTypes.element.isRequired,
 };
 export default withStyles(useStyles, { withTheme: true })(FormDialog);

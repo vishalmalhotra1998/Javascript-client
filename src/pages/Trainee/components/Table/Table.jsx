@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import propTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,6 +9,24 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -87,15 +105,15 @@ const TableComponent = (props) => {
         </TableHead>
         <TableBody>
           {data.length && data.map((element) => (
-            <TableRow hover onMouseEnter={() => onSelect(element)} key={element[id]}>
+            <StyledTableRow hover onMouseEnter={() => onSelect(element)} key={element[id]}>
               {column.map(({ field, align, format }) => (
 
-                <TableCell align={align}>
+                <StyledTableCell align={align}>
                   {format ? format(element[field]) : element[field]}
-                </TableCell>
+                </StyledTableCell>
 
               ))}
-            </TableRow>
+            </StyledTableRow>
 
           ))}
 
