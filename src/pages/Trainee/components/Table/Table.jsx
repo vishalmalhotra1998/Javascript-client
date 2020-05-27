@@ -44,8 +44,12 @@ const TableComponent = (props) => {
   const {
     id, data, column, order, orderBy, onSort, onSelect,
   } = props;
-  const handleSortIcon = () => {
+  const handleSortIcon = (e) => {
+    e.target.style.color = 'black';
     setOpen(true);
+  };
+  const handleColorChange = (e) => {
+    e.target.style.color = 'grey';
   };
 
   return (
@@ -54,22 +58,27 @@ const TableComponent = (props) => {
         <TableHead>
           <TableRow key={id}>
             {column.length && column.map((col) => (
-              <TableCell align={col.align} className={classes.color}>
+              <TableCell
+                align={col.align}
+                className={classes.color}
+              >
                 <TableSortLabel
-                  hover
                   onMouseEnter={handleSortIcon}
-                  className={classes.tablecell}
+                  onMouseLeave={handleColorChange}
+                  onBlur={handleColorChange}
                   active={orderBy === col.field}
                   direction={orderBy === col.field ? order : 'asc'}
                   onClick={() => onSort(col.field)}
                   hideSortIcon={open}
                 >
-                  {col.label}
-                  {orderBy === col.field ? (
-                    <span className={classes.visuallyHidden}>
-                      {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                    </span>
-                  ) : null}
+                  <>
+                    {col.label}
+                    {orderBy === col.field ? (
+                      <span className={classes.visuallyHidden}>
+                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </span>
+                    ) : null}
+                  </>
                 </TableSortLabel>
               </TableCell>
             ))}
@@ -78,10 +87,12 @@ const TableComponent = (props) => {
         </TableHead>
         <TableBody>
           {data.length && data.map((element) => (
-            <TableRow hover key={element[id]}>
-              {column.map(({ field, align }) => (
+            <TableRow hover onMouseEnter={() => onSelect(element)} key={element[id]}>
+              {column.map(({ field, align, format }) => (
 
-                <TableCell align={align}>{element[field]}</TableCell>
+                <TableCell align={align}>
+                  {format ? format(element[field]) : element[field]}
+                </TableCell>
 
               ))}
             </TableRow>
@@ -100,4 +111,12 @@ TableComponent.propTypes = {
   id: propTypes.string.isRequired,
   data: propTypes.arrayOf(propTypes.object).isRequired,
   column: propTypes.arrayOf(propTypes.object).isRequired,
+  order: propTypes.oneOf(['asc', 'desc']),
+  orderBy: propTypes.string,
+  onSort: propTypes.func.isRequired,
+  onSelect: propTypes.func.isRequired,
+};
+TableComponent.defaultProps = {
+  order: 'asc',
+  orderBy: '',
 };

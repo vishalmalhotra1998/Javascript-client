@@ -80,6 +80,7 @@ class TraineeList extends React.Component {
           {
             field: 'email',
             label: 'Email-Address',
+            format: (value) => value && value.toUpperCase(),
 
           },
           {
@@ -114,5 +115,5 @@ export default withStyles(useStyles, { withTheme: true })(TraineeList);
 
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
-  classes: propTypes.element.isRequired,
+  classes: propTypes.objectOf(propTypes.any).isRequired,
 };
