@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, Slider } from '../../components';
 import { Paragraph } from '../../components/TextField/style';
-import { imageArray } from '../../components/Slider/configs/constants';
+import { imageArray } from '../../configs/constants';
 
 const TextEditor = () => (
   <>
