@@ -17,7 +17,7 @@ export default class Slider extends React.Component {
     const {
       banners, duration, random,
     } = this.props;
-    this.setSliderInterval = setInterval(() => {
+    this.sliderInterval = setInterval(() => {
       const { index } = this.state;
       let imageIndex = 0;
       if (banners && banners.length) {
@@ -32,7 +32,7 @@ export default class Slider extends React.Component {
 
 
   componentWillUnmount() {
-    clearInterval(this.setSliderInterval);
+    clearInterval(this.sliderInterval);
   }
 
   render() {
