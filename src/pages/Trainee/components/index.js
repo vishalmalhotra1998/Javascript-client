@@ -1,4 +1,8 @@
-import FormDialog from './AddDialog/index';
-import TableComponent from './Table/index';
+import FormDialog from './AddDialog';
+import TableComponent from './Table';
+import EditDialog from './EditDialog';
+import RemoveDialog from './RemoveDialog';
 
-export { FormDialog, TableComponent };
+export {
+  FormDialog, TableComponent, EditDialog, RemoveDialog,
+};
