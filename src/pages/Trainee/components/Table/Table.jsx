@@ -105,7 +105,7 @@ const TableComponent = (props) => {
         </TableHead>
         <TableBody>
           {data.length && data.map((element) => (
-            <StyledTableRow hover onMouseEnter={() => onSelect(element)} key={element[id]}>
+            <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
               {column.map(({ field, align, format }) => (
 
                 <StyledTableCell align={align}>
