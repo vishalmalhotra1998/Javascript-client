@@ -31,22 +31,39 @@ class EditDialog extends React.Component {
   }
 
    handleNameChange = (event) => {
+     const { touched } = this.setState;
      this.setState({
        name: event.target.value,
        isValid: true,
+     }, () => {
+       this.setState({
+         touched: {
+           ...touched,
+           name: true,
+         },
+       });
      });
    };
 
    handleEmailChange = (event) => {
+     const { touched } = this.state;
      this.setState({
        email: event.target.value,
        isValid: true,
+     }, () => {
+       this.setState({
+         touched: {
+           ...touched,
+           email: true,
+         },
+       });
      });
    };
 
      isTouched=(value) => {
        const { touched } = this.state;
        const { data } = this.props;
+       console.log(data);
        this.setState({
          touched: {
            ...touched,
@@ -62,6 +79,15 @@ class EditDialog extends React.Component {
              });
            }
          });
+       });
+     }
+
+     formReset=() => {
+       this.setState({
+         name: '',
+         email: '',
+         isValid: false,
+         touched: {},
        });
      }
 
@@ -120,7 +146,7 @@ class EditDialog extends React.Component {
             <Button onClick={onClose} color="primary">
             Cancel
             </Button>
-            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); }} color="primary">
+            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); } } color="primary">
 
             Submit
             </Button>
