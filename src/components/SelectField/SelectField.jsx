@@ -27,11 +27,10 @@ SelectField.propTypes = {
   Options: propTypes.arrayOf(propTypes.object),
   onChange: propTypes.func.isRequired,
   error: propTypes.string,
-  value: propTypes.string,
+  value: propTypes.string.isRequired,
 };
 SelectField.defaultProps = {
   error: '',
-  value: 'Select',
   Options: [],
 };
 
