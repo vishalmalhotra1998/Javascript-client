@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import { MyContext } from '../../../../contexts';
 
 const useStyles = {
   root: {
@@ -30,66 +31,65 @@ class EditDialog extends React.Component {
     };
   }
 
-   handleNameChange = (event) => {
-     const { touched } = this.setState;
-     this.setState({
-       name: event.target.value,
-       isValid: true,
-     }, () => {
-       this.setState({
-         touched: {
-           ...touched,
-           name: true,
-         },
-       });
-     });
-   };
+  handleNameChange = (event) => {
+    const { touched } = this.setState;
+    this.setState({
+      name: event.target.value,
+      isValid: true,
+    }, () => {
+      this.setState({
+        touched: {
+          ...touched,
+          name: true,
+        },
+      });
+    });
+  };
 
-   handleEmailChange = (event) => {
-     const { touched } = this.state;
-     this.setState({
-       email: event.target.value,
-       isValid: true,
-     }, () => {
-       this.setState({
-         touched: {
-           ...touched,
-           email: true,
-         },
-       });
-     });
-   };
+  handleEmailChange = (event) => {
+    const { touched } = this.state;
+    this.setState({
+      email: event.target.value,
+      isValid: true,
+    }, () => {
+      this.setState({
+        touched: {
+          ...touched,
+          email: true,
+        },
+      });
+    });
+  };
 
-     isTouched=(value) => {
-       const { touched } = this.state;
-       const { data } = this.props;
-       console.log(data);
-       this.setState({
-         touched: {
-           ...touched,
-           [value]: true,
+  isTouched = (value) => {
+    const { touched } = this.state;
+    const { data } = this.props;
+    this.setState({
+      touched: {
+        ...touched,
+        [value]: true,
 
-         },
-         isValid: true,
-       }, () => {
-         Object.keys(data).forEach((keys) => {
-           if (!touched[keys]) {
-             this.setState({
-               [keys]: data[keys],
-             });
-           }
-         });
-       });
-     }
+      },
+      isValid: true,
+    }, () => {
+      Object.keys(data).forEach((keys) => {
+        if (!touched[keys]) {
+          this.setState({
+            [keys]: data[keys],
+          });
+        }
+      });
+    });
+  }
 
-     formReset=() => {
-       this.setState({
-         name: '',
-         email: '',
-         isValid: false,
-         touched: {},
-       });
-     }
+  formReset = () => {
+    this.setState({
+      name: '',
+      email: '',
+      isValid: false,
+      touched: {},
+    });
+  }
 
   render = () => {
     const {
@@ -144,12 +144,19 @@ class EditDialog extends React.Component {
           </div>
           <DialogActions>
             <Button onClick={onClose} color="primary">
-            Cancel
+              Cancel
             </Button>
-            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); } } color="primary">
 
-            Submit
-            </Button>
+            <MyContext.Consumer>
+              {(value) => (
+                <>
+                  <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); value.openSnackBar('This is a success message ! ', 'success'); }} color="primary">
+
+              Submit
+                  </Button>
+                </>
+              )}
+            </MyContext.Consumer>
           </DialogActions>
         </DialogContent>
       </Dialog>

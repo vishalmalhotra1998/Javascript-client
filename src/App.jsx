@@ -5,24 +5,27 @@ import {
 import {
   TextEditor, ChildrenDemo, TraineeRoutes, SignIn, InputDemo, NoMatch,
 } from './pages/index';
-import { AuthLayoutRoute, PrivateLayoutRoute } from './routes/index';
+import { AuthLayoutRoute, PrivateLayoutRoute } from './routes';
+import { SnackBarProvider } from './contexts';
 
 
 function App() {
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <Redirect to="/login" />
-        </Route>
-        <AuthLayoutRoute exact path="/login" component={SignIn} />
-        <PrivateLayoutRoute path="/Trainee" component={TraineeRoutes} />
-        <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
-        <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
-        <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
-        <PrivateLayoutRoute component={NoMatch} />
-      </Switch>
-    </Router>
+    <SnackBarProvider>
+      <Router>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/login" />
+          </Route>
+          <AuthLayoutRoute exact path="/login" component={SignIn} />
+          <PrivateLayoutRoute path="/Trainee" component={TraineeRoutes} />
+          <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
+          <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+          <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
+          <PrivateLayoutRoute component={NoMatch} />
+        </Switch>
+      </Router>
+    </SnackBarProvider>
   );
 }
 
