@@ -15,4 +15,10 @@ const Select = styled.select`
 const PSelectField = styled.p`
   font-weight: bold;
 `;
-export { Select, PSelectField };
+
+const Error = styled.p`
+  width: 100%;
+  margin-top:0.2%;
+  color: red;
+`;
+export { Select, PSelectField, Error };

@@ -1,8 +1,8 @@
 import React from 'react';
-import { TextField, SelectField, RadioField } from '../../components/index';
+import { TextField, SelectField, RadioField } from '../../components';
 import {
   Options, radioCricketOptions, radioFootballOptions, CRICKET, Default,
-} from '../../components/Slider/configs/constants';
+} from '../../configs/constants';
 
 import { PSelectField } from '../../components/SelectField/Style';
 import { PRadioField } from '../../components/RadioField/Style';
@@ -27,14 +27,11 @@ class InputDemo extends React.Component {
 
   handleSportChange = (values) => {
     if (values.target.value === Default) {
-      this.setState({ sport: '' }, () => {
+      this.setState({ sport: '', cricket: '', football: '' }, () => {
         console.log(this.state);
       });
     } else {
-      this.setState({ sport: values.target.value }, () => {
-        console.log(this.state);
-      });
-      this.setState({ cricket: '', football: '' }, () => {
+      this.setState({ sport: values.target.value, cricket: '', football: '' }, () => {
         console.log(this.state);
       });
     }
@@ -42,22 +39,12 @@ class InputDemo extends React.Component {
 
   handleRadioChange = (values) => {
     const { sport } = this.state;
-    this.setState({ cricket: '', football: '' }, () => {
-      console.log(this.state);
-    });
     if (sport === CRICKET) {
-      this.setState({ cricket: values.target.value }, () => {
-        console.log(this.state);
-      });
-      this.setState({ football: '' }, () => {
+      this.setState({ cricket: values.target.value, football: '' }, () => {
         console.log(this.state);
       });
     } else {
-      this.setState({ football: values.target.value }, () => {
-        console.log(this.state);
-      });
-
-      this.setState({ cricket: '' }, () => {
+      this.setState({ football: values.target.value, cricket: '' }, () => {
         console.log(this.state);
       });
     }
@@ -69,19 +56,19 @@ class InputDemo extends React.Component {
   }
 
   render() {
-    const { sport } = this.state;
+    const { sport, name, cricket, football } = this.state;
     return (
       <>
         <PTextField>Name</PTextField>
         <br />
-        <TextField error onChange={this.handleNameChange} />
+        <TextField value={name} onChange={this.handleNameChange} />
         <br />
         <PSelectField>Select the game you play ?</PSelectField>
         {Options.length && (
           <SelectField
-            defaultText={Default}
             Options={Options}
             onChange={this.handleSportChange}
+            value={sport}
           />
         )}
         <br />
@@ -94,6 +81,7 @@ class InputDemo extends React.Component {
                 this.checkForRadioOptions()
               }
               onChange={this.handleRadioChange}
+              value={cricket || football || ''}
             />
           </>
         )}
