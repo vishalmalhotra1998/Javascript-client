@@ -5,7 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-
+import ls from 'local-storage';
 
 const useStyles = makeStyles({
   root: {
@@ -25,7 +25,9 @@ const useStyles = makeStyles({
 
 export default function ButtonAppBar() {
   const classes = useStyles();
-
+  const handleLogout = () => {
+    ls.clear();
+  };
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -38,7 +40,7 @@ export default function ButtonAppBar() {
             <Button className={classes.textSize} component={Link} to="/TextFieldDemo" size="small" color="inherit">TextField Demo</Button>
             <Button className={classes.textSize} component={Link} to="/InputDemo" size="small" color="inherit">Input Demo</Button>
             <Button className={`${classes.textSize} ${classes.padding}`} component={Link} to="/ChildrenDemo" size="small" color="inherit">Children Demo</Button>
-            <Button className={classes.textSize} size="small" color="inherit">Logout</Button>
+            <Button className={classes.textSize} component={Link} to="/login" onClick={handleLogout} size="small" color="inherit">Logout</Button>
           </Typography>
         </Toolbar>
       </AppBar>

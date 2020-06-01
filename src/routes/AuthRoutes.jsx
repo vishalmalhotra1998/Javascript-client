@@ -1,17 +1,20 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { Route } from 'react-router-dom';
-import { AuthLayout } from '../layouts/index';
+import { Route, Redirect } from 'react-router-dom';
+import ls from 'local-storage';
+import { AuthLayout } from '../layouts';
 
 const AuthLayoutRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={(matchProps) => (
-      <AuthLayout>
-        <Component {...matchProps} />
-      </AuthLayout>
-    )}
-  />
+  !ls.get('token') ? (
+    <Route
+      {...rest}
+      render={(matchProps) => (
+        <AuthLayout>
+          <Component {...matchProps} />
+        </AuthLayout>
+      )}
+    />
+  ) : <Redirect to="/trainee" />
 );
 export default AuthLayoutRoute;
 

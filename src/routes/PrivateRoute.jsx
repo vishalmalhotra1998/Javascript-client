@@ -1,17 +1,20 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { Route } from 'react-router-dom';
-import { PrivateLayout } from '../layouts/index';
+import { Route, Redirect } from 'react-router-dom';
+import ls from 'local-storage';
+import { PrivateLayout } from '../layouts';
 
 const PrivateLayoutRoute = ({ component: Component, ...rest }) => (
-  <Route
-    {...rest}
-    render={(matchProps) => (
-      <PrivateLayout>
-        <Component {...matchProps} />
-      </PrivateLayout>
-    )}
-  />
+  ls.get('token') ? (
+    <Route
+      {...rest}
+      render={(matchProps) => (
+        <PrivateLayout>
+          <Component {...matchProps} />
+        </PrivateLayout>
+      )}
+    />
+  ) : <Redirect to="/login" />
 );
 export default PrivateLayoutRoute;
 

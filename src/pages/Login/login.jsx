@@ -10,8 +10,13 @@ import Container from '@material-ui/core/Container';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import EmailIcon from '@material-ui/icons/Email';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
+import propTypes from 'prop-types';
+import ls from 'local-storage';
+import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
+import { MyContext } from '../../contexts';
 
 const useStyles = (theme) => ({
   paper: {
@@ -39,10 +44,10 @@ class SignIn extends React.Component {
     this.state = {
       email: '',
       password: '',
+      loader: false,
       isValid: false,
       touched: {},
       errorMessage: {},
-
     };
   }
 
@@ -95,10 +100,20 @@ hasError=() => {
    }, () => { this.hasError(); });
  }
 
+ handleLoader=(data, openSnackBar) => {
+   const { message, status, data: token } = data;
+   const { history } = this.props;
+   this.setState({ loader: false, isValid: true }, () => (status === 'ok' ? (
+     ls.set('token', token),
+     history.push('/trainee'))
+     : (openSnackBar(message, status))));
+ }
+
   render=() => {
     const { classes } = this.props;
-    const { isValid, errorMessage } = this.state;
-
+    const {
+      isValid, errorMessage, email, password, loader,
+    } = this.state;
     return (
 
       <Container component="main" maxWidth="xs">
@@ -157,16 +172,24 @@ hasError=() => {
                 helperText={errorMessage.password}
                 error={errorMessage.password}
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                disabled={!isValid}
-              >
-            Sign In
-              </Button>
+              <MyContext.Consumer>
+                {(value) => (
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    disabled={!isValid}
+                    onClick={async () => {
+                      this.setState({ loader: true, isValid: false });
+                      this.handleLoader(await callApi({ email, password }, '/user/login', 'post'), value.openSnackBar);
+                    }}
+                  >
+                    <span>{loader ? <CircularProgress size={30} /> : ''}</span>
+                 Sign In
+                  </Button>
+                )}
+              </MyContext.Consumer>
             </form>
           </div>
         </Box>
@@ -175,3 +198,8 @@ hasError=() => {
   }
 }
 export default withStyles(useStyles, { withTheme: true })(SignIn);
+
+SignIn.propTypes = {
+  classes: propTypes.objectOf(propTypes.string).isRequired,
+  history: propTypes.objectOf(propTypes.string).isRequired,
+};
