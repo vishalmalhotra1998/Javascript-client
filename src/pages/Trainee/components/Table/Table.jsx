@@ -60,11 +60,6 @@ const useStyles = makeStyles((theme) => ({
     border: 'none',
     background: 'none',
   },
-  buttonSetup: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
-
 }));
 
 const TableComponent = (props) => {
@@ -131,20 +126,22 @@ const TableComponent = (props) => {
                 ))}
                 {
                   <StyledTableCell>
-                    <div className={classes.buttonSetup}>
-                      {
-                        actions.map((
-                          { icons, handler },
-                        ) => (
+
+                    {
+                      actions.map((
+                        { icons, handler },
+                      ) => (
+                        <div>
                           <Button
                             className={classes.background}
                             onClick={() => { handler(element); }}
                           >
                             {icons}
                           </Button>
-                        ))
-                      }
-                    </div>
+                        </div>
+                      ))
+                    }
+
                   </StyledTableCell>
                 }
               </StyledTableRow>
