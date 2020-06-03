@@ -95,8 +95,8 @@ class TraineeList extends React.Component {
       : (value.openSnackBar(message, status));
   }
 
-  handleTableData = (data) => {
-    callApi(...data).then((response) => {
+  handleTableData = (data, url, method) => {
+    callApi(data, url, method).then((response) => {
       const { records, count } = response.data;
       this.setState({
         tableData: records,
