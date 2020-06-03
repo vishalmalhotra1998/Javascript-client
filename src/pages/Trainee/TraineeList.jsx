@@ -61,10 +61,16 @@ class TraineeList extends React.Component {
     const { page, rowsPerPage, count } = this.state;
     console.log(values);
     if (count - page * rowsPerPage !== 1) {
-      this.handleTableData(page * rowsPerPage, rowsPerPage);
+      this.handleTableData({
+        params: { skip: page * rowsPerPage, limit: rowsPerPage },
+        headers: { Authorization: ls.get('token') },
+      }, '/trainee', 'Get');
     } else {
       this.setState({ page: page - 1 });
-      this.handleTableData((page - 1) * rowsPerPage, rowsPerPage);
+      this.handleTableData({
+        params: { skip: (page - 1) * rowsPerPage, limit: rowsPerPage },
+        headers: { Authorization: ls.get('token') },
+      }, '/trainee', 'Get');
     }
   }
 
@@ -95,12 +101,17 @@ class TraineeList extends React.Component {
     const value = this.context;
     return status === 'ok'
       ? (this.setState({ page: newPage, loader: true }),
-      this.handleTableData(newPage * rowsPerPage, rowsPerPage))
+      this.handleTableData({
+        params: { skip: newPage * rowsPerPage, limit: rowsPerPage },
+        headers: { Authorization: ls.get('token') },
+      }, '/trainee', 'Get'))
       : (value.openSnackBar(message, status));
   }
 
-  handleTableData = (skip, limit) => {
-    callApi({ params: { skip, limit }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
+  handleTableData = (data, url, method) => {
+
+    callApi(data, url, method).then((response) => {
+      console.log(response);
       const { records, count } = response.data;
       this.setState({
         tableData: records,
