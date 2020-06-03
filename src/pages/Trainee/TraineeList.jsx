@@ -53,6 +53,11 @@ class TraineeList extends React.Component {
 
   onSubmitHandle = (values) => {
     this.setState({ open: false, editOpen: false });
+    const { page, rowsPerPage } = this.state;
+    this.handleTableData({
+      params: { skip: page * rowsPerPage, limit: rowsPerPage },
+      headers: { Authorization: ls.get('token') },
+    }, '/trainee', 'Get');
     console.log(values);
   }
 
@@ -109,9 +114,7 @@ class TraineeList extends React.Component {
   }
 
   handleTableData = (data, url, method) => {
-
     callApi(data, url, method).then((response) => {
-      console.log(response);
       const { records, count } = response.data;
       this.setState({
         tableData: records,
