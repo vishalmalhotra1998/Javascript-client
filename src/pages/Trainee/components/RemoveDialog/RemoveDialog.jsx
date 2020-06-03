@@ -7,8 +7,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
-
+import ls from 'local-storage';
+import callApi from '../../../../libs/utils/api';
 import { MyContext } from '../../../../contexts';
+
 
 class RemoveDialog extends React.Component {
   constructor(props) {
@@ -18,16 +20,36 @@ class RemoveDialog extends React.Component {
     };
   }
 
+  handleCallApiForRemove=(data, openSnackBar) => {
+    const id = data.originalId;
+    const { onSubmit } = this.props;
+    callApi({ headers: { Authorization: ls.get('token') } },
+      `/trainee/${id}`, 'delete').then((response) => {
+      const { status } = response;
+      if (status === 'ok') {
+        this.setState({
+          message: 'This is a success Message! ',
+        }, () => {
+          const { message } = this.state;
+          openSnackBar(message, 'success');
+          onSubmit(data);
+        });
+      } else {
+        this.setState({
+          message: 'This is an error',
+        }, () => {
+          const { message } = this.state;
+          openSnackBar(message, 'error');
+        });
+      }
+    });
+  }
+
   handleSnackBarMessage = (data, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
     const isAfter = (moment(data.createdAt).isAfter(date));
     if (isAfter) {
-      this.setState({
-        message: 'This is a success Message! ',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'success');
-      });
+      this.handleCallApiForRemove(data, openSnackBar);
     } else {
       this.setState({
         message: 'This is an error',
@@ -40,7 +62,7 @@ class RemoveDialog extends React.Component {
 
   render = () => {
     const {
-      onClose, open, onSubmit, data,
+      onClose, open, data,
     } = this.props;
     return (
       <Dialog onClose={() => onClose()} aria-labelledby="simple-dialog-title" open={open}>
@@ -61,7 +83,7 @@ class RemoveDialog extends React.Component {
                 const { openSnackBar } = value;
                 return (
                   <>
-                    <Button color="primary" variant="contained" onClick={() => { onSubmit(data); this.handleSnackBarMessage(data, openSnackBar); }}>
+                    <Button color="primary" variant="contained" onClick={() => { this.handleSnackBarMessage(data, openSnackBar); }}>
                     Delete
                     </Button>
                   </>

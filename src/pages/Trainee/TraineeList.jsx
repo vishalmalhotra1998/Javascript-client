@@ -57,8 +57,15 @@ class TraineeList extends React.Component {
   }
 
   handleOnSubmitDelete = (values) => {
-    this.setState({ open: false, remOpen: false });
-    console.log('Deleted Items', values);
+    this.setState({ open: false, remOpen: false, loader: true });
+    const { page, rowsPerPage, count } = this.state;
+    console.log(values);
+    if (count - page * rowsPerPage !== 1) {
+      this.handleTableData(page * rowsPerPage, rowsPerPage);
+    } else {
+      this.setState({ page: page - 1 });
+      this.handleTableData((page - 1) * rowsPerPage, rowsPerPage);
+    }
   }
 
   handleSort = (value) => {
@@ -85,6 +92,7 @@ class TraineeList extends React.Component {
 
   handleChangePage = (event, newPage) => {
     const { rowsPerPage, message, status } = this.state;
+    console.log('===========>', newPage);
     const value = this.context;
     return status === 'ok'
       ? (this.setState({ page: newPage, loader: true }),
@@ -93,17 +101,19 @@ class TraineeList extends React.Component {
   }
 
   handleTableData = (skip, limit) => {
+    console.log(skip);
     callApi({ params: { skip, limit }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
-      const { records } = response.data;
+      const { records, count } = response.data;
       this.setState({
         tableData: records,
         loader: false,
         tableDataLength: records.length,
+        count,
       });
     });
   }
 
-  componentDidMount =() => {
+  componentDidMount = () => {
     console.log('---------Component Did Mount-----------');
     callApi({ params: { skip: 0, limit: 20 }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
       const { status, message, data } = response;
@@ -131,7 +141,7 @@ class TraineeList extends React.Component {
         <Box p={1} />
         <div className={classes.button}>
           <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-              Add Trainee
+            Add Trainee
           </Button>
         </div>
         <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />

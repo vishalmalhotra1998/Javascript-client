@@ -11,6 +11,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ls from 'local-storage';
+import callApi from '../../../../libs/utils/api';
 import { MyContext } from '../../../../contexts';
 
 const useStyles = {
@@ -27,6 +30,7 @@ class EditDialog extends React.Component {
       email: '',
       isValid: false,
       touched: {},
+      loader: false,
 
     };
   }
@@ -91,11 +95,35 @@ class EditDialog extends React.Component {
     });
   }
 
+  handleFormCallApi=(data, openSnackBar) => {
+    const { name, email, originalId } = data;
+    this.setState({ loader: true });
+    const { onSubmit } = this.props;
+    callApi({ data: { id: originalId, name, email }, headers: { Authorization: ls.get('token') } }, '/trainee', 'put').then((response) => {
+      const { status } = response;
+      if (status === 'ok') {
+        this.setState({
+          loader: false,
+        }, () => {
+          onSubmit({ name, email });
+          openSnackBar('This is a success Message!', 'success');
+        });
+      } else {
+        this.setState({ isValid: false }, () => {
+          openSnackBar('There is an Error ! ', 'error');
+        });
+      }
+    });
+  }
+
   render = () => {
     const {
-      open, onClose, onSubmit, classes, data,
+      open, onClose, classes, data,
     } = this.props;
-    const { name, email, isValid } = this.state;
+    const {
+      name, email, isValid, loader,
+    } = this.state;
+    const { originalId } = data;
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
@@ -150,8 +178,16 @@ class EditDialog extends React.Component {
             <MyContext.Consumer>
               {(value) => (
                 <>
-                  <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); value.openSnackBar('This is a success message ! ', 'success'); }} color="primary">
-
+                  <Button
+                    variant="contained"
+                    disabled={!isValid}
+                    onClick={() => {
+                      this.formReset();
+                      this.handleFormCallApi({ name, email, originalId }, value.openSnackBar);
+                    }}
+                    color="primary"
+                  >
+                    <span>{loader ? <CircularProgress size={20} /> : '' }</span>
               Submit
                   </Button>
                 </>
