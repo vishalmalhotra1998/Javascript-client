@@ -1,11 +1,12 @@
-import TextField from './TextField/index';
-import RadioField from './RadioField/index';
-import Slider from './Slider/slider';
-import SelectField from './SelectField/SelectField';
-import Button from './Button/index';
-import Math from './math/index';
+import TextField from './TextField';
+import RadioField from './RadioField';
+import Slider from './Slider';
+import SelectField from './SelectField';
+import Button from './Button';
+import Math from './math';
+import withLoaderAndMessage from './HOC';
 
 
 export {
-  TextField, RadioField, Slider, SelectField, Button, Math,
+  TextField, RadioField, Slider, SelectField, Button, Math, withLoaderAndMessage,
 };

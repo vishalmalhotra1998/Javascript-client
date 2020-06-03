@@ -7,10 +7,13 @@ import { Link } from 'react-router-dom';
 import * as moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ls from 'local-storage';
 import {
   FormDialog, TableComponent, EditDialog, RemoveDialog,
 } from './components';
 import trainee from './data/trainee';
+import callApi from '../../libs/utils/api';
+import { MyContext } from '../../contexts';
 
 const useStyles = {
 
@@ -30,7 +33,13 @@ class TraineeList extends React.Component {
       editOpen: false,
       remOpen: false,
       rowData: {},
-      rowsPerPage: 10,
+      rowsPerPage: 20,
+      tableData: [],
+      message: '',
+      status: '',
+      count: 0,
+      loader: true,
+      tableDataLength: 0,
     };
   }
 
@@ -47,7 +56,7 @@ class TraineeList extends React.Component {
     console.log(values);
   }
 
-  handleOnSubmitDelete=(values) => {
+  handleOnSubmitDelete = (values) => {
     this.setState({ open: false, remOpen: false });
     console.log('Deleted Items', values);
   }
@@ -74,96 +83,129 @@ class TraineeList extends React.Component {
     this.setState({ remOpen: true, rowData: values });
   }
 
-handleChangePage = (event, newPage) => {
-  this.setState({ page: newPage });
-};
+  handleChangePage = (event, newPage) => {
+    const { rowsPerPage, message, status } = this.state;
+    const value = this.context;
+    return status === 'ok'
+      ? (this.setState({ page: newPage, loader: true }),
+      this.handleTableData(newPage * rowsPerPage, rowsPerPage))
+      : (value.openSnackBar(message, status));
+  }
 
+  handleTableData = (skip, limit) => {
+    callApi({ params: { skip, limit }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
+      const { records } = response.data;
+      this.setState({
+        tableData: records,
+        loader: false,
+        tableDataLength: records.length,
+      });
+    });
+  }
 
-render() {
-  const {
-    open, order, orderBy, page, editOpen, rowData, remOpen, rowsPerPage,
-  } = this.state;
-  const { match: { url }, classes } = this.props;
-  const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-  return (
-    <>
-      <Box p={1} />
-      <div className={classes.button}>
-        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-            Add Trainee
-        </Button>
-      </div>
-      <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-      <Box p={1} />
-      <TableComponent
+  componentDidMount =() => {
+    console.log('---------Component Did Mount-----------');
+    callApi({ params: { skip: 0, limit: 20 }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
+      const { status, message, data } = response;
+      const { records, count } = data;
+      this.setState({
+        tableData: records,
+        tableDataLength: records.length,
+        message,
+        status,
+        count,
+        loader: false,
+      });
+    });
+  }
 
-        id="id"
+  render() {
+    const {
+      open, order, orderBy, page, editOpen, rowData, remOpen, rowsPerPage, tableData,
+      count, loader, tableDataLength,
+    } = this.state;
+    const { match: { url }, classes } = this.props;
+    const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+    return (
+      <>
+        <Box p={1} />
+        <div className={classes.button}>
+          <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+              Add Trainee
+          </Button>
+        </div>
+        <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
+        <Box p={1} />
+        <TableComponent
 
-        data={trainee}
+          id="id"
 
-        column={[{
-          field: 'name',
-          label: 'Name',
-        },
-        {
-          field: 'email',
-          label: 'Email-Address',
-          format: (value) => value && value.toUpperCase(),
+          data={tableData}
 
-        },
-        {
-          field: 'createdAt',
-          label: 'Date',
-          align: 'right',
-          format: getDateFormatted,
-        }]}
+          column={[{
+            field: 'name',
+            label: 'Name',
+          },
+          {
+            field: 'email',
+            label: 'Email-Address',
+            format: (value) => value && value.toUpperCase(),
 
-        actions={[{
-          icons: <EditIcon />,
-          handler: this.handleEditDialogOpen,
-        },
-        {
-          icons: <DeleteIcon />,
-          handler: this.handleRemoveDialogOpen,
+          },
+          {
+            field: 'createdAt',
+            label: 'Date',
+            align: 'right',
+            format: getDateFormatted,
+          }]}
 
-        }]}
+          actions={[{
+            icons: <EditIcon />,
+            handler: this.handleEditDialogOpen,
+          },
+          {
+            icons: <DeleteIcon />,
+            handler: this.handleRemoveDialogOpen,
 
-        order={order}
-        orderBy={orderBy}
-        onSort={this.handleSort}
-        onSelect={this.handleSelectChange}
-        count={100}
-        page={page}
-        onChangePage={this.handleChangePage}
-        rowsPerPage={rowsPerPage}
+          }]}
 
-      />
-      <EditDialog
-        open={editOpen}
-        onClose={this.handleClose}
-        onSubmit={this.onSubmitHandle}
-        data={rowData}
-      />
-      <RemoveDialog
-        open={remOpen}
-        onClose={this.handleClose}
-        onSubmit={this.handleOnSubmitDelete}
-        data={rowData}
-      />
-      <Box p={1} />
-      <ul>
-        {trainee.length && trainee.map((data) => (
-          <Fragment key={data.id}>
-            <li>
-              <Link to={`${url}/${data.id}`}>{data.name}</Link>
-            </li>
+          order={order}
+          orderBy={orderBy}
+          onSort={this.handleSort}
+          onSelect={this.handleSelectChange}
+          count={count}
+          page={page}
+          onChangePage={this.handleChangePage}
+          rowsPerPage={rowsPerPage}
+          loader={loader}
+          dataLength={tableDataLength}
+        />
+        <EditDialog
+          open={editOpen}
+          onClose={this.handleClose}
+          onSubmit={this.onSubmitHandle}
+          data={rowData}
+        />
+        <RemoveDialog
+          open={remOpen}
+          onClose={this.handleClose}
+          onSubmit={this.handleOnSubmitDelete}
+          data={rowData}
+        />
+        <Box p={1} />
+        <ul>
+          {trainee.length && trainee.map((data) => (
+            <Fragment key={data.id}>
+              <li>
+                <Link to={`${url}/${data.id}`}>{data.name}</Link>
+              </li>
 
-          </Fragment>
-        ))}
-      </ul>
-    </>
-  );
-}
+            </Fragment>
+          ))}
+        </ul>
+      </>
+    );
+  }
 }
 export default withStyles(useStyles, { withTheme: true })(TraineeList);
 
@@ -171,3 +213,4 @@ TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
 };
+TraineeList.contextType = MyContext;

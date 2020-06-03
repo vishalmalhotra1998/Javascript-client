@@ -11,6 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import { withLoaderAndMessage } from '../../../../components';
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -165,7 +166,7 @@ const TableComponent = (props) => {
   );
 };
 
-export default TableComponent;
+export default withLoaderAndMessage(TableComponent);
 
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,

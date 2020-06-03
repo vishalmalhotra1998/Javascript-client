@@ -182,7 +182,7 @@ hasError=() => {
                     disabled={!isValid}
                     onClick={async () => {
                       this.setState({ loader: true, isValid: false });
-                      this.handleLoader(await callApi({ email, password }, '/user/login', 'post'), value.openSnackBar);
+                      this.handleLoader(await callApi({ data: { email, password } }, '/user/login', 'post'), value.openSnackBar);
                     }}
                   >
                     <span>{loader ? <CircularProgress size={30} /> : ''}</span>
