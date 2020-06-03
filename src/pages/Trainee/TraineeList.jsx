@@ -88,17 +88,21 @@ class TraineeList extends React.Component {
     const value = this.context;
     return status === 'ok'
       ? (this.setState({ page: newPage, loader: true }),
-      this.handleTableData(newPage * rowsPerPage, rowsPerPage))
+      this.handleTableData({
+        params: { skip: newPage * rowsPerPage, limit: rowsPerPage },
+        headers: { Authorization: ls.get('token') },
+      }, '/trainee', 'Get'))
       : (value.openSnackBar(message, status));
   }
 
-  handleTableData = (skip, limit) => {
-    callApi({ params: { skip, limit }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
-      const { records } = response.data;
+  handleTableData = (data) => {
+    callApi(...data).then((response) => {
+      const { records, count } = response.data;
       this.setState({
         tableData: records,
         loader: false,
         tableDataLength: records.length,
+        count,
       });
     });
   }
