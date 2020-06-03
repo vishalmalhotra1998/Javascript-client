@@ -92,7 +92,6 @@ class TraineeList extends React.Component {
 
   handleChangePage = (event, newPage) => {
     const { rowsPerPage, message, status } = this.state;
-    console.log('===========>', newPage);
     const value = this.context;
     return status === 'ok'
       ? (this.setState({ page: newPage, loader: true }),
@@ -101,7 +100,6 @@ class TraineeList extends React.Component {
   }
 
   handleTableData = (skip, limit) => {
-    console.log(skip);
     callApi({ params: { skip, limit }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
       const { records, count } = response.data;
       this.setState({
