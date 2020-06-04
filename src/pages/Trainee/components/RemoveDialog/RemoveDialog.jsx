@@ -8,6 +8,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
 import ls from 'local-storage';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import callApi from '../../../../libs/utils/api';
 import { MyContext } from '../../../../contexts';
 
@@ -17,18 +18,21 @@ class RemoveDialog extends React.Component {
     super(props);
     this.state = {
       message: '',
+      loader: false,
     };
   }
 
   handleCallApiForRemove=(data, openSnackBar) => {
     const id = data.originalId;
     const { onSubmit } = this.props;
+    this.setState({ loader: true });
     callApi({ headers: { Authorization: ls.get('token') } },
       `/trainee/${id}`, 'delete').then((response) => {
       const { status } = response;
       if (status === 'ok') {
         this.setState({
           message: 'This is a success Message! ',
+          loader: false,
         }, () => {
           const { message } = this.state;
           openSnackBar(message, 'success');
@@ -37,6 +41,7 @@ class RemoveDialog extends React.Component {
       } else {
         this.setState({
           message: 'This is an error',
+          loader: false,
         }, () => {
           const { message } = this.state;
           openSnackBar(message, 'error');
@@ -64,6 +69,7 @@ class RemoveDialog extends React.Component {
     const {
       onClose, open, data,
     } = this.props;
+    const { loader } = this.state;
     return (
       <Dialog onClose={() => onClose()} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
@@ -83,7 +89,10 @@ class RemoveDialog extends React.Component {
                 const { openSnackBar } = value;
                 return (
                   <>
-                    <Button color="primary" variant="contained" onClick={() => { this.handleSnackBarMessage(data, openSnackBar); }}>
+                    <Button disabled={loader} color="primary" variant="contained" onClick={() => { this.handleSnackBarMessage(data, openSnackBar); }}>
+                      <span>
+                        {loader ? <CircularProgress size={20} /> : ''}
+                      </span>
                     Delete
                     </Button>
                   </>
