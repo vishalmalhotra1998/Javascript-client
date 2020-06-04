@@ -11,13 +11,6 @@ const withLoaderAndMessage = (WrappedComponenet) => function NewComponenet(props
       </Box>
     );
   }
-  if (!dataLength) {
-    return (
-      <Box paddingLeft={72}>
-        <h2>Oops No more Trainees</h2>
-      </Box>
-    );
-  }
   return (<WrappedComponenet loader={loader} dataLength={dataLength} {...rest} />);
 };
 

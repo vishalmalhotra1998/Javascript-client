@@ -11,6 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import { withLoaderAndMessage } from '../../../../components';
 
 const StyledTableCell = withStyles((theme) => ({
@@ -69,7 +70,7 @@ const TableComponent = (props) => {
 
   const {
     id, data, column, order, orderBy, onSort, onSelect, actions,
-    count, page, onChangePage, rowsPerPage,
+    count, page, onChangePage, rowsPerPage, dataLength,
   } = props;
 
   const handleSortIcon = (e) => {
@@ -116,7 +117,7 @@ const TableComponent = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.length && data.map((element) => (
+            {dataLength ? data.map((element) => (
               <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
                 {column.map(({ field, align, format }) => (
 
@@ -147,12 +148,16 @@ const TableComponent = (props) => {
                 }
               </StyledTableRow>
 
-            ))}
+            )) : (
+              <Box paddingLeft={72}>
+                <h2>Oops No more Trainees</h2>
+              </Box>
+            )}
 
           </TableBody>
         </Table>
       </TableContainer>
-      {count && (
+      {count ? (
         <TablePagination
           component="div"
           count={count}
@@ -161,7 +166,7 @@ const TableComponent = (props) => {
           rowsPerPageOptions={[0]}
           onChangePage={onChangePage}
         />
-      )}
+      ) : ''}
     </>
   );
 };

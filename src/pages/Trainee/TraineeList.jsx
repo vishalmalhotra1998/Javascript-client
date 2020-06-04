@@ -64,19 +64,24 @@ class TraineeList extends React.Component {
   handleOnSubmitDelete = (values) => {
     this.setState({ open: false, remOpen: false, loader: true });
     const { page, rowsPerPage, count } = this.state;
-    console.log(values);
     if (count - page * rowsPerPage !== 1) {
       this.handleTableData({
         params: { skip: page * rowsPerPage, limit: rowsPerPage },
         headers: { Authorization: ls.get('token') },
       }, '/trainee', 'Get');
-    } else {
+    } else if (page !== 0) {
       this.setState({ page: page - 1 });
       this.handleTableData({
         params: { skip: (page - 1) * rowsPerPage, limit: rowsPerPage },
         headers: { Authorization: ls.get('token') },
       }, '/trainee', 'Get');
+    } else {
+      this.handleTableData({
+        params: { skip: (page) * rowsPerPage, limit: rowsPerPage },
+        headers: { Authorization: ls.get('token') },
+      }, '/trainee', 'Get');
     }
+    console.log(values);
   }
 
   handleSort = (value) => {
@@ -104,13 +109,14 @@ class TraineeList extends React.Component {
   handleChangePage = (event, newPage) => {
     const { rowsPerPage, message, status } = this.state;
     const value = this.context;
+    const { openSnackBar } = value;
     return status === 'ok'
       ? (this.setState({ page: newPage, loader: true }),
       this.handleTableData({
         params: { skip: newPage * rowsPerPage, limit: rowsPerPage },
         headers: { Authorization: ls.get('token') },
       }, '/trainee', 'Get'))
-      : (value.openSnackBar(message, status));
+      : (openSnackBar(message, status));
   }
 
   handleTableData = (data, url, method) => {
