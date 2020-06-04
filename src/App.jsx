@@ -1,9 +1,9 @@
 import React from 'react';
-import { TextEditor } from './pages';
+import { InputDemo } from './pages';
 
 function App() {
   return (
-    <TextEditor />
+    <InputDemo />
   );
 }
 
