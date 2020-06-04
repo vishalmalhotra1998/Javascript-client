@@ -4,25 +4,25 @@ import { ButtonField } from './style';
 
 const Button = (props) => {
   const {
-    disabled, onClick, value,
+    disabled, onClick, value, color,
   } = props;
   return (
     <>
-      <ButtonField type="Button" value={value} disabled={disabled} onClick={onClick} />
+      <ButtonField color={color} type="button" value={value} disabled={disabled} onClick={onClick} />
     </>
   );
 };
 
 
 Button.propTypes = {
-  disabled: propTypes.bool.isRequired,
   onClick: propTypes.func.isRequired,
   value: propTypes.string.isRequired,
+  color: propTypes.string,
+  disabled: propTypes.bool,
 };
 
-Button.defaultTypes = {
-  disbaled: false,
-  style: {},
+Button.defaultProps = {
+  disabled: false,
   color: 'default',
 };
 

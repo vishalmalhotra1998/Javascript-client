@@ -9,18 +9,17 @@ const TextField = (props) => {
   return (
     <>
       <Input type="text" error={error} onChange={onChange} value={value} onBlur={onBlur} />
-      {error ? <Error>{error}</Error> : <br />}
+      {error ? <Error>{error}</Error> : ''}
     </>
   );
 };
 TextField.propTypes = {
-  error: propTypes.string.isRequired,
+  error: propTypes.string,
   value: propTypes.string.isRequired,
   onChange: propTypes.func.isRequired,
   onBlur: propTypes.func.isRequired,
 };
-TextField.defaultTypes = {
+TextField.defaultProps = {
   error: '',
-
 };
 export default TextField;

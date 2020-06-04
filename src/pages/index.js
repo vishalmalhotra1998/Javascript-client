@@ -1,3 +1,2 @@
-import TextEditor from './TextFieldDemo/index';
-
-export default TextEditor;
+export { TextEditor } from './TextFieldDemo';
+export { InputDemo } from './InputDemo';

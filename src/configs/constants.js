@@ -4,7 +4,7 @@ export const PUBLIC_IMAGE_FOLDER = '/images/';
 export const DEFAULT_BANNER_IMAGE = 'banner/default.png';
 export const imageArray = ['cloud.png', 'dns-server.png', 'full-stack-web-development.jpg', 'js.jpg', 'load-balancer.png'];
 
-export const Options = [
+export const options = [
   {
     label: 'Cricket',
     value: 'cricket',
@@ -46,27 +46,27 @@ export const radioFootballOptions = [
 ];
 
 export const CRICKET = 'cricket';
-export const Default = 'Select';
+export const defaultValue = 'Select';
 
 export const ValidateSchema = yup.object().shape({
-  text: yup
+  name: yup
     .string()
     .min(3)
-    .required('Name is a required Field')
+    .required()
     .label('Name'),
-  SelectField: yup
+  sport: yup
     .string()
     .required()
     .label('SelectField'),
   cricket: yup
     .string()
-    .when('SelectField', {
+    .when('sport', {
       is: 'cricket',
       then: yup.string().required('What do you do  ?'),
     }),
   football: yup
     .string()
-    .when('SelectField', {
+    .when('sport', {
       is: 'football',
       then: yup.string().required('What do you do ?'),
     }),
