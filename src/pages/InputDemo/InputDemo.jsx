@@ -39,15 +39,9 @@ class InputDemo extends React.Component {
 
   handleRadioChange = (values) => {
     const { sport } = this.state;
-    if (sport === CRICKET) {
-      this.setState({ cricket: values.target.value, football: '' }, () => {
-        console.log(this.state);
-      });
-    } else {
-      this.setState({ football: values.target.value, cricket: '' }, () => {
-        console.log(this.state);
-      });
-    }
+    this.setState({ [sport]: values.target.value }, () => {
+      console.log(this.state);
+    });
   }
 
   checkForRadioOptions = () => {

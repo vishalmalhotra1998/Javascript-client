@@ -18,7 +18,7 @@ const SelectField = (props) => {
     </Select>
   );
 
-  const errorHandler = error ? (
+  const errorField = error ? (
     <Error>
       {error}
     </Error>
@@ -27,7 +27,7 @@ const SelectField = (props) => {
   return (
     <>
       {selectField}
-      {errorHandler}
+      {errorField}
     </>
   );
 };

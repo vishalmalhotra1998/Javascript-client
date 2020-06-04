@@ -15,7 +15,7 @@ const RadioField = (props) => {
     </div>
   ));
 
-  const errorHandler = error ? (
+  const errorField = error ? (
     <Error>
       {error}
     </Error>
@@ -24,7 +24,7 @@ const RadioField = (props) => {
   return (
     <>
       {radioField}
-      {errorHandler}
+      {errorField}
     </>
   );
 };
