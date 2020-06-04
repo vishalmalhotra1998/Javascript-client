@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField, SelectField, RadioField } from '../../components';
 import {
-  Options, radioCricketOptions, radioFootballOptions, CRICKET, Default,
+  options, radioCricketOptions, radioFootballOptions, CRICKET, defaultValue,
 } from '../../configs/constants';
 
 import { PSelectField } from '../../components/SelectField/Style';
@@ -26,7 +26,7 @@ class InputDemo extends React.Component {
   }
 
   handleSportChange = (values) => {
-    if (values.target.value === Default) {
+    if (values.target.value === defaultValue) {
       this.setState({ sport: '', cricket: '', football: '' }, () => {
         console.log(this.state);
       });
@@ -56,28 +56,27 @@ class InputDemo extends React.Component {
   }
 
   render() {
-    const { sport, name, cricket, football } = this.state;
+    const {
+      sport, name, cricket, football,
+    } = this.state;
     return (
       <>
         <PTextField>Name</PTextField>
-        <br />
         <TextField value={name} onChange={this.handleNameChange} />
-        <br />
         <PSelectField>Select the game you play ?</PSelectField>
-        {Options.length && (
+        {options.length && (
           <SelectField
-            Options={Options}
+            options={options}
             onChange={this.handleSportChange}
             value={sport}
           />
         )}
-        <br />
-        { sport && Options.length
+        { sport && options.length
         && (
           <>
             <PRadioField> What you do ?</PRadioField>
             <RadioField
-              Options={
+              options={
                 this.checkForRadioOptions()
               }
               onChange={this.handleRadioChange}

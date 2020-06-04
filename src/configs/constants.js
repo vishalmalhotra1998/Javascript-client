@@ -2,7 +2,7 @@ export const PUBLIC_IMAGE_FOLDER = '/images/';
 export const DEFAULT_BANNER_IMAGE = 'banner/default.png';
 export const imageArray = ['cloud.png', 'dns-server.png', 'full-stack-web-development.jpg', 'js.jpg', 'load-balancer.png'];
 
-export const Options = [
+export const options = [
   {
     label: 'Cricket',
     value: 'cricket',
@@ -44,4 +44,4 @@ export const radioFootballOptions = [
 ];
 
 export const CRICKET = 'cricket';
-export const Default = 'Select';
+export const defaultValue = 'Select';

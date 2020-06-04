@@ -4,34 +4,43 @@ import { Select, Error } from './Style';
 
 const SelectField = (props) => {
   const {
-    Options, onChange, value, error,
+    options, onChange, value, error,
   } = props;
+
+  const selectField = (
+    <Select value={value} error={error} onChange={onChange}>
+      <option>Select</option>
+      {options.map(({ value: optionValue, label }) => (
+        <option key={optionValue} value={optionValue}>
+          {label}
+        </option>
+      ))}
+    </Select>
+  );
+
+  const errorHandler = error ? (
+    <Error>
+      {error}
+    </Error>
+  ) : '';
 
   return (
     <>
-      <Select value={value} error={error} onChange={onChange}>
-        <option>Select</option>
-        {Options.map(({ value: val, label }) => (<option key={val} value={val}>{label}</option>))}
-      </Select>
-      {error ? (
-        <Error>
-          { error}
-          {' '}
-        </Error>
-      ) : ''}
+      {selectField}
+      {errorHandler}
     </>
   );
 };
 
 SelectField.propTypes = {
-  Options: propTypes.arrayOf(propTypes.object),
+  options: propTypes.arrayOf(propTypes.object),
   onChange: propTypes.func.isRequired,
   error: propTypes.string,
   value: propTypes.string.isRequired,
 };
 SelectField.defaultProps = {
   error: '',
-  Options: [],
+  options: [],
 };
 
 
