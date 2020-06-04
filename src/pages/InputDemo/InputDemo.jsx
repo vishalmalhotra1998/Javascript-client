@@ -19,27 +19,27 @@ class InputDemo extends React.Component {
     };
   }
 
-  handleNameChange = (values) => {
-    this.setState({ name: values.target.value }, () => {
+  handleNameChange = (event) => {
+    this.setState({ name: event.target.value }, () => {
       console.log(this.state);
     });
   }
 
-  handleSportChange = (values) => {
-    if (values.target.value === defaultValue) {
+  handleSportChange = (event) => {
+    if (event.target.value === defaultValue) {
       this.setState({ sport: '', cricket: '', football: '' }, () => {
         console.log(this.state);
       });
     } else {
-      this.setState({ sport: values.target.value, cricket: '', football: '' }, () => {
+      this.setState({ sport: event.target.value, cricket: '', football: '' }, () => {
         console.log(this.state);
       });
     }
   }
 
-  handleRadioChange = (values) => {
+  handleRadioChange = (event) => {
     const { sport } = this.state;
-    this.setState({ [sport]: values.target.value }, () => {
+    this.setState({ [sport]: event.target.value }, () => {
       console.log(this.state);
     });
   }
