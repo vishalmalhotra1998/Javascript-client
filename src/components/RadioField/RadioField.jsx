@@ -5,12 +5,12 @@ import { Error } from './Style';
 
 const RadioField = (props) => {
   const {
-    options, onChange, error, value,
+    options, onChange, error, value, onBlur,
   } = props;
 
   const radioField = options.map(({ value: optionValue, label }) => (
     <div key={label}>
-      <input type="radio" name={value} value={optionValue} onChange={onChange} />
+      <input type="radio" name={value} value={optionValue} onChange={onChange} onBlur={onBlur}/>
       {label}
     </div>
   ));
@@ -35,6 +35,7 @@ RadioField.propTypes = {
   onChange: propTypes.func.isRequired,
   value: propTypes.string.isRequired,
   error: propTypes.string,
+  onBlur: propTypes.func.isRequired,
 };
 RadioField.defaultProps = {
   error: '',

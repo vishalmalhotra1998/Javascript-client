@@ -4,11 +4,11 @@ import { Select, Error } from './Style';
 
 const SelectField = (props) => {
   const {
-    options, onChange, value, error,
+    options, onChange, value, error, onBlur
   } = props;
 
   const selectField = (
-    <Select value={value} error={error} onChange={onChange}>
+    <Select value={value} error={error} onChange={onChange} onBlur={onBlur}>
       <option>Select</option>
       {options.map(({ value: optionValue, label }) => (
         <option key={optionValue} value={optionValue}>
@@ -37,6 +37,7 @@ SelectField.propTypes = {
   onChange: propTypes.func.isRequired,
   error: propTypes.string,
   value: propTypes.string.isRequired,
+  onBlur: propTypes.func.isRequired,
 };
 SelectField.defaultProps = {
   error: '',
