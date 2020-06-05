@@ -3,9 +3,9 @@ import {
   TextField, SelectField, RadioField, Button,
 } from '../../components';
 import {
-  options, radioCricketOptions, radioFootballOptions, CRICKET, defaultValue, ValidateSchema,
+  options, radioCricketOptions, radioFootballOptions, CRICKET, defaultValue,
 } from '../../configs/constants';
-
+import { ValidateSchema } from '../../configs/ValidateSchema';
 import { PSelectField } from '../../components/SelectField/Style';
 import { PRadioField } from '../../components/RadioField/Style';
 import { PTextField } from '../../components/TextField/style';
@@ -64,7 +64,7 @@ class InputDemo extends React.Component {
     const {
       name, sport, cricket, football, touched,
     } = this.state;
-    const errorStateHandler = {};
+    const parsedError = {};
     ValidateSchema.validate({
       name,
       sport,
@@ -72,17 +72,17 @@ class InputDemo extends React.Component {
       football,
     }, { abortEarly: false }).then(() => {
       this.setState({
-        errorMessage: errorStateHandler,
+        errorMessage: parsedError,
         isValid: true,
       });
     }).catch((error) => {
       error.inner.forEach((element) => {
         if (touched[element.path]) {
-          errorStateHandler[element.path] = element.message;
+          parsedError[element.path] = element.message;
         }
       });
       this.setState({
-        errorMessage: errorStateHandler,
+        errorMessage: parsedError,
         isValid: false,
       });
     });
