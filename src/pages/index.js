@@ -1,4 +1,3 @@
-import TextEditor from './TextFieldDemo/index';
-import ChildrenDemo from './ChildrenDemo/index';
-
-export { TextEditor, ChildrenDemo };
+export { TextEditor } from './TextFieldDemo';
+export { InputDemo } from './InputDemo';
+export { ChildrenDemo } from './ChildrenDemo';

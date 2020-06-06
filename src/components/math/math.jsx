@@ -28,7 +28,6 @@ const Math = (props) => {
     break;
   }
   }
-  console.log(children);
   if (children) {
     return (children(first, second, operator, result));
   }

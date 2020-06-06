@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Math } from '../../components/index';
+import { Math } from '../../components';
 
 class ChildrenDemo extends Component {
   constructor(props) {
