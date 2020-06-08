@@ -35,14 +35,7 @@ const Math = (props) => {
   return (
     <>
       <p>
-        {first}
-        {' '}
-        {operator}
-        {' '}
-        {second}
-=
-        {' '}
-        {result}
+        {`${first} and ${second} is ${result} `}
       </p>
     </>
   );
@@ -53,7 +46,10 @@ Math.propTypes = {
   first: propTypes.number.isRequired,
   second: propTypes.number.isRequired,
   operator: propTypes.string.isRequired,
-  children: propTypes.func.isRequired,
+  children: propTypes.func,
+};
+Math.defaultProps = {
+  children: undefined,
 };
 
 export default Math;
