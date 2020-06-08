@@ -13,16 +13,16 @@ class ChildrenDemo extends Component {
       return (<p>{`Sum of ${first} and ${second} is ${result} `}</p>);
     }
     case '-': {
-      return (<p>{`Sum of ${first} and ${second} is ${result} `}</p>);
+      return (<p>{`Substraction of ${first} and ${second} is ${result} `}</p>);
     }
     case '*': {
-      return (<p>{`Sum of ${first} and ${second} is ${result} `}</p>);
+      return (<p>{`Multiplication of ${first} and ${second} is ${result} `}</p>);
     }
     case '/': {
-      return (<p>{`Sum of ${first} and ${second} is ${result} `}</p>);
+      return (<p>{`Division of ${first} and ${second} is ${result} `}</p>);
     }
     default: {
-      return (<p>{`Sum of ${first} and ${second} is ${result} `}</p>);
+      return (<p>{`${first} and ${second} is ${result} `}</p>);
     }
     }
   }
