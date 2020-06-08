@@ -22,7 +22,7 @@ class ChildrenDemo extends Component {
       return (<p>{`Division of ${first} and ${second} is ${result} `}</p>);
     }
     default: {
-      return (<p>{`${first} and ${second} is ${result} `}</p>);
+      return (<p>{` ${first} ${operator} ${second} = ${result} `}</p>);
     }
     }
   }

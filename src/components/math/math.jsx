@@ -35,7 +35,7 @@ const Math = (props) => {
   return (
     <>
       <p>
-        {`${first} and ${second} is ${result} `}
+        {`${first} ${operator} ${second} = ${result} `}
       </p>
     </>
   );
