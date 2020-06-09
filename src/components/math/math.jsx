@@ -28,7 +28,6 @@ const Math = (props) => {
     break;
   }
   }
-  console.log(children);
   if (children) {
     return (children(first, second, operator, result));
   }
@@ -36,14 +35,7 @@ const Math = (props) => {
   return (
     <>
       <p>
-        {first}
-        {' '}
-        {operator}
-        {' '}
-        {second}
-=
-        {' '}
-        {result}
+        {`${first} ${operator} ${second} = ${result} `}
       </p>
     </>
   );
@@ -54,7 +46,10 @@ Math.propTypes = {
   first: propTypes.number.isRequired,
   second: propTypes.number.isRequired,
   operator: propTypes.string.isRequired,
-  children: propTypes.func.isRequired,
+  children: propTypes.func,
+};
+Math.defaultProps = {
+  children: undefined,
 };
 
 export default Math;

@@ -1,5 +1,4 @@
-import TextEditor from './TextFieldDemo/index';
-import ChildrenDemo from './ChildrenDemo/index';
-import TraineeComponent from './Trainee/index';
-
-export { TextEditor, ChildrenDemo, TraineeComponent };
+export { TextEditor } from './TextFieldDemo';
+export { InputDemo } from './InputDemo';
+export { ChildrenDemo } from './ChildrenDemo';
+export { TraineeComponent } from './Trainee';
