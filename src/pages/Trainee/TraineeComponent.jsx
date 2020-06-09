@@ -10,13 +10,11 @@ class TraineeComponent extends React.Component {
     };
   }
 
-   handleClickOpen = () => {
-     this.setState({ open: true });
-   };
-
-   handleClose = () => {
-     this.setState({ open: false });
-   };
+   handleClickEvent=() => {
+     this.setState((prevState) => ({
+       open: !prevState.open,
+     }));
+   }
 
    onSubmitHandle = (values) => {
      this.setState({ open: false });
@@ -27,10 +25,10 @@ class TraineeComponent extends React.Component {
      const { open } = this.state;
      return (
        <>
-         <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+         <Button variant="outlined" color="primary" onClick={this.handleClickEvent}>
        Add Trainee
          </Button>
-         <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
+         <FormDialog open={open} onClose={this.handleClickEvent} onSubmit={this.onSubmitHandle} />
        </>
      );
    }

@@ -29,58 +29,42 @@ class FormDialog extends React.Component {
       name: '',
       email: '',
       password: '',
-      passwordConfirmation: '',
+      confirmPassword: '',
       errorMessage: {},
       touched: {},
       isValid: false,
     };
   }
 
-    handleNameChange = (event) => {
-      this.setState({ name: event.target.value }, () => {
+    handleFieldChange = (field) => (event) => {
+      this.setState({ [field]: event.target.value }, () => {
         this.hasError();
       });
-    };
-
-    handleEmailChange = (event) => {
-      this.setState({ email: event.target.value }, () => {
-        this.hasError();
-      });
-    };
-
-    handlePasswordChange = (event) => {
-      this.setState({ password: event.target.value }, () => {
-        this.hasError();
-      });
-    };
-
-    handleConfirmPasswordChange = (event) => {
-      this.setState({ passwordConfirmation: event.target.value }, () => {
-        this.hasError();
-      });
-    };
+    }
 
     hasError = () => {
       const {
         name,
         email,
         password,
-        passwordConfirmation,
+        confirmPassword,
         touched,
       } = this.state;
+
       const parsedError = {};
       FormSchema.validate(
         {
           name,
           email,
           password,
-          passwordConfirmation,
+          confirmPassword,
         },
         { abortEarly: false },
       )
         .then(() => {
           this.setState({
             isValid: true,
+            errorMessage: {},
           });
         })
         .catch((error) => {
@@ -116,7 +100,7 @@ class FormDialog extends React.Component {
         classes, open, onClose, onSubmit,
       } = this.props;
       const {
-        name, email, password, errorMessage, isValid,
+        name, email, password, confirmPassword, errorMessage, isValid,
       } = this.state;
       return (
         <div>
@@ -145,10 +129,11 @@ class FormDialog extends React.Component {
                           </InputAdornment>
                         ),
                       }}
+                      value={name}
                       helperText={errorMessage.name}
                       fullWidth
                       variant="outlined"
-                      onChange={this.handleNameChange}
+                      onChange={this.handleFieldChange('name')}
                       onBlur={() => this.isTouched('name')}
                       required
                       error={Boolean(errorMessage.name)}
@@ -164,10 +149,11 @@ class FormDialog extends React.Component {
                           </InputAdornment>
                         ),
                       }}
+                      value={email}
                       helperText={errorMessage.email}
                       fullWidth
                       variant="outlined"
-                      onChange={this.handleEmailChange}
+                      onChange={this.handleFieldChange('email')}
                       onBlur={() => this.isTouched('email')}
                       error={Boolean(errorMessage.email)}
                     />
@@ -183,10 +169,11 @@ class FormDialog extends React.Component {
                           </InputAdornment>
                         ),
                       }}
+                      value={password}
                       helperText={errorMessage.password}
                       fullWidth
                       variant="outlined"
-                      onChange={this.handlePasswordChange}
+                      onChange={this.handleFieldChange('password')}
                       onBlur={() => this.isTouched('password')}
                       error={Boolean(errorMessage.password)}
                     />
@@ -201,21 +188,14 @@ class FormDialog extends React.Component {
                           </InputAdornment>
                         ),
                       }}
+                      value={confirmPassword}
                       type="password"
                       fullWidth
-                      helperText={
-                        errorMessage.passwordConfirmation
-                      }
+                      helperText={errorMessage.confirmPassword}
                       variant="outlined"
-                      onChange={
-                        this.handleConfirmPasswordChange
-                      }
-                      onBlur={() => this.isTouched(
-                        'passwordConfirmation',
-                      )}
-                      error={Boolean(
-                        errorMessage.passwordConfirmation,
-                      )}
+                      onChange={this.handleFieldChange('confirmPassword')}
+                      onBlur={() => this.isTouched('confirmPassword')}
+                      error={Boolean(errorMessage.confirmPassword)}
                     />
                   </Grid>
                 </Grid>
