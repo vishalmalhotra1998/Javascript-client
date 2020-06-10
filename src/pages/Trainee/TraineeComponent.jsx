@@ -10,28 +10,28 @@ class TraineeComponent extends React.Component {
     };
   }
 
-   handleClickEvent=() => {
-     this.setState((prevState) => ({
-       open: !prevState.open,
-     }));
-   }
+  toggleDialogBox = () => {
+    this.setState((prevState) => ({
+      open: !prevState.open,
+    }));
+  }
 
-   onSubmitHandle = (values) => {
-     this.setState({ open: false });
-     console.log(values);
-   }
+  onSubmitHandle = (values) => {
+    this.toggleDialogBox();
+    console.log(values);
+  }
 
-   render() {
-     const { open } = this.state;
-     return (
-       <>
-         <Button variant="outlined" color="primary" onClick={this.handleClickEvent}>
-       Add Trainee
-         </Button>
-         <FormDialog open={open} onClose={this.handleClickEvent} onSubmit={this.onSubmitHandle} />
-       </>
-     );
-   }
+  render() {
+    const { open } = this.state;
+    return (
+      <>
+        <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+          Add Trainee
+        </Button>
+        <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
+      </>
+    );
+  }
 }
 
 export default TraineeComponent;

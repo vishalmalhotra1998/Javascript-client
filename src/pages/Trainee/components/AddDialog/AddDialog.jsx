@@ -10,7 +10,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import PersonIcon from '@material-ui/icons/Person';
 import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { withStyles } from '@material-ui/core/styles';
 import propTypes from 'prop-types';
@@ -95,6 +94,14 @@ class FormDialog extends React.Component {
       );
     };
 
+      isError=(field) => {
+        const { errorMessage } = this.state;
+        if (errorMessage[field]) {
+          return true;
+        }
+        return false;
+      }
+
     render = () => {
       const {
         classes, open, onClose, onSubmit,
@@ -136,7 +143,7 @@ class FormDialog extends React.Component {
                       onChange={this.handleFieldChange('name')}
                       onBlur={() => this.isTouched('name')}
                       required
-                      error={Boolean(errorMessage.name)}
+                      error={this.isError('name')}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -155,7 +162,7 @@ class FormDialog extends React.Component {
                       variant="outlined"
                       onChange={this.handleFieldChange('email')}
                       onBlur={() => this.isTouched('email')}
-                      error={Boolean(errorMessage.email)}
+                      error={this.isError('email')}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -165,7 +172,7 @@ class FormDialog extends React.Component {
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
-                            <VisibilityIcon />
+                            <VisibilityOffIcon />
                           </InputAdornment>
                         ),
                       }}
@@ -175,7 +182,7 @@ class FormDialog extends React.Component {
                       variant="outlined"
                       onChange={this.handleFieldChange('password')}
                       onBlur={() => this.isTouched('password')}
-                      error={Boolean(errorMessage.password)}
+                      error={this.isError('password')}
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -195,7 +202,7 @@ class FormDialog extends React.Component {
                       variant="outlined"
                       onChange={this.handleFieldChange('confirmPassword')}
                       onBlur={() => this.isTouched('confirmPassword')}
-                      error={Boolean(errorMessage.confirmPassword)}
+                      error={this.isError('confirmPassword')}
                     />
                   </Grid>
                 </Grid>
