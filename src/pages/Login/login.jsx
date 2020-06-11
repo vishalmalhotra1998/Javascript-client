@@ -160,7 +160,6 @@ class SignIn extends React.Component {
                   error={this.isError('password')}
                 />
                 <Button
-                  type="submit"
                   fullWidth
                   variant="contained"
                   color="primary"
