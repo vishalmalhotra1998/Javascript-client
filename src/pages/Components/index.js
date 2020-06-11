@@ -1,3 +1,1 @@
-import ButtonAppBar from './NavBar/index';
-
-export default ButtonAppBar;
+export { ButtonAppBar } from './NavBar';

@@ -1,3 +1,1 @@
-import TraineeComponent from './TraineeComponent';
-
-export default TraineeComponent;
+export { default as TraineeComponent } from './TraineeComponent';

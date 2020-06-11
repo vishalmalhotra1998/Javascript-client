@@ -1,14 +1,15 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { TraineeComponent } from './pages/index';
+import { TraineeComponent } from './pages';
 import theme from './theme';
-
 
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Typography><TraineeComponent /></Typography>
+      <Typography component="span">
+        <TraineeComponent />
+      </Typography>
     </ThemeProvider>
   );
 }

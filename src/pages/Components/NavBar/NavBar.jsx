@@ -28,7 +28,7 @@ export default function ButtonAppBar() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="text" className={classes.title}>
+          <Typography className={classes.title}>
             Trainee Portal
           </Typography>
           <Typography>

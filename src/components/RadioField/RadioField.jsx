@@ -1,45 +1,44 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import propTypes from 'prop-types';
 import { Error } from './Style';
 
 
 const RadioField = (props) => {
   const {
-    Options, onChange, onBlur, error,
+    options, onChange, error, value, onBlur,
   } = props;
+
+  const radioField = options.map(({ value: optionValue, label }) => (
+    <div key={label}>
+      <input type="radio" name={value} value={optionValue} onChange={onChange} onBlur={onBlur}/>
+      {label}
+    </div>
+  ));
+
+  const errorField = error ? (
+    <Error>
+      {error}
+    </Error>
+  ) : '';
+
   return (
     <>
-      {
-
-        Options.map(({ value, label }) => (
-          <Fragment key={label}>
-            <input type="radio" name="Sports" value={value} onChange={onChange} onBlur={onBlur} />
-            {label}
-            <br />
-          </Fragment>
-        ))
-
-      }
-      {error ? (
-        <Error>
-          { error }
-          {' '}
-        </Error>
-      ) : <br />}
+      {radioField}
+      {errorField}
     </>
   );
 };
 
 
 RadioField.propTypes = {
-  Options: propTypes.arrayOf(propTypes.object).isRequired,
+  options: propTypes.arrayOf(propTypes.object),
   onChange: propTypes.func.isRequired,
   value: propTypes.string.isRequired,
-  error: propTypes.string.isRequired,
+  error: propTypes.string,
   onBlur: propTypes.func.isRequired,
 };
-RadioField.defaultTypes = {
+RadioField.defaultProps = {
   error: '',
-  Options: [],
+  options: [],
 };
 export default RadioField;
