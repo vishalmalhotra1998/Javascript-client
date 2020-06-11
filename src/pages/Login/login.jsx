@@ -1,7 +1,6 @@
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -40,7 +39,7 @@ class SignIn extends React.Component {
     this.state = {
       email: '',
       password: '',
-      isValid: false,
+      showButton: false,
       touched: {},
       errorMessage: {},
 
@@ -62,7 +61,7 @@ class SignIn extends React.Component {
       }, { abortEarly: false }).then(() => {
         this.setState({
           errorMessage: {},
-          isValid: true,
+          showButton: true,
         });
       }).catch((error) => {
         error.inner.forEach((element) => {
@@ -72,7 +71,7 @@ class SignIn extends React.Component {
         });
         this.setState({
           errorMessage: parsedError,
-          isValid: false,
+          showButton: false,
         });
       });
     }
@@ -99,14 +98,12 @@ class SignIn extends React.Component {
     render = () => {
       const { classes } = this.props;
       const {
-        isValid, errorMessage, email, password,
+        showButton, errorMessage, email, password,
       } = this.state;
 
       return (
 
         <Container component="main" maxWidth="xs">
-          <CssBaseline />
-
           <Box boxShadow={6} padding={3} marginTop={6}>
             <div className={classes.paper}>
               <Avatar className={classes.avatar}>
@@ -168,7 +165,7 @@ class SignIn extends React.Component {
                   variant="contained"
                   color="primary"
                   className={classes.submit}
-                  disabled={!isValid}
+                  disabled={!showButton}
                 >
                     Sign In
                 </Button>

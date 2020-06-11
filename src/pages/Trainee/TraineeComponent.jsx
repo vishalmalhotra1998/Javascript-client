@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import { ButtonAppBar } from '../Components';
+import { NavBar } from '../Components';
 import { FormDialog } from './components';
 
 
@@ -28,7 +28,7 @@ class TraineeComponent extends React.Component {
       const { open } = this.state;
       return (
         <>
-          <ButtonAppBar />
+          <NavBar />
           <Box p={1} />
           <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
                     Add Trainee

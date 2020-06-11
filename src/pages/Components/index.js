@@ -1,1 +1,1 @@
-export { ButtonAppBar } from './NavBar';
+export { NavBar } from './NavBar';

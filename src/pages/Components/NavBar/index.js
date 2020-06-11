@@ -1,1 +1,1 @@
-export { default as ButtonAppBar } from './NavBar';
+export { default as NavBar } from './NavBar';
