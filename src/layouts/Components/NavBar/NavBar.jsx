@@ -22,14 +22,14 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ButtonAppBar() {
+export default function NavBar() {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
+          <Typography className={classes.title}>
             Trainee Portal
           </Typography>
           <Typography>

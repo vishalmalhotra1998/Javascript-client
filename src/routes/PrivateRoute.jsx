@@ -1,9 +1,9 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { Route } from 'react-router-dom';
-import { PrivateLayout } from '../layouts/index';
+import { PrivateLayout } from '../layouts';
 
-const PrivateLayoutRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={(matchProps) => (
@@ -13,9 +13,9 @@ const PrivateLayoutRoute = ({ component: Component, ...rest }) => (
     )}
   />
 );
-export default PrivateLayoutRoute;
+export default PrivateRoute;
 
-PrivateLayoutRoute.propTypes = {
+PrivateRoute.propTypes = {
 
   component: propTypes.elementType.isRequired,
 

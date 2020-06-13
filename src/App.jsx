@@ -2,25 +2,27 @@ import React from 'react';
 import {
   BrowserRouter as Router, Route, Redirect, Switch,
 } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   TextEditor, ChildrenDemo, TraineeComponent, SignIn, InputDemo, NoMatch,
-} from './pages/index';
-import { AuthLayoutRoute, PrivateLayoutRoute } from './routes/index';
+} from './pages';
+import { AuthRoute, PrivateRoute } from './routes';
 
 
 function App() {
   return (
+
     <Router>
       <Switch>
         <Route exact path="/">
           <Redirect to="/login" />
         </Route>
-        <AuthLayoutRoute exact path="/login" component={SignIn} />
-        <PrivateLayoutRoute exact path="/trainee" component={TraineeComponent} />
-        <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
-        <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
-        <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
-        <PrivateLayoutRoute component={NoMatch} />
+        <AuthRoute exact path="/login" component={SignIn} />
+        <PrivateRoute exact path="/trainee" component={TraineeComponent} />
+        <PrivateRoute exact path="/TextFieldDemo" component={TextEditor} />
+        <PrivateRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+        <PrivateRoute exact path="/InputDemo" component={InputDemo} />
+        <PrivateRoute component={NoMatch} />
       </Switch>
     </Router>
   );

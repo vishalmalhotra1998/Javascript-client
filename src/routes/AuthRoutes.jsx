@@ -1,9 +1,9 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { Route } from 'react-router-dom';
-import { AuthLayout } from '../layouts/index';
+import { AuthLayout } from '../layouts';
 
-const AuthLayoutRoute = ({ component: Component, ...rest }) => (
+const AuthRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={(matchProps) => (
@@ -13,9 +13,9 @@ const AuthLayoutRoute = ({ component: Component, ...rest }) => (
     )}
   />
 );
-export default AuthLayoutRoute;
+export default AuthRoute;
 
-AuthLayoutRoute.propTypes = {
+AuthRoute.propTypes = {
 
   component: propTypes.elementType.isRequired,
 

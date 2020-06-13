@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import FormDialog from './components/index';
+import { FormDialog } from './components';
 
 class TraineeComponent extends React.Component {
   constructor(props) {
@@ -11,31 +11,29 @@ class TraineeComponent extends React.Component {
     };
   }
 
-   handleClickOpen = () => {
-     this.setState({ open: true });
-   };
+    toggleDialogBox = () => {
+      this.setState((prevState) => ({
+        open: !prevState.open,
+      }));
+    }
 
-   handleClose = () => {
-     this.setState({ open: false });
-   };
+    onSubmitHandle = (values) => {
+      this.toggleDialogBox();
+      console.log(values);
+    }
 
-   onSubmitHandle = (values) => {
-     this.setState({ open: false });
-     console.log(values);
-   }
-
-   render() {
-     const { open } = this.state;
-     return (
-       <>
-         <Box p={1} />
-         <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-       Add Trainee
-         </Button>
-         <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-       </>
-     );
-   }
+    render() {
+      const { open } = this.state;
+      return (
+        <>
+          <Box p={1} />
+          <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                    Add Trainee
+          </Button>
+          <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
+        </>
+      );
+    }
 }
 
 export default TraineeComponent;

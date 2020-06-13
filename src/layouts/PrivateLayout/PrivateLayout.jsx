@@ -1,10 +1,11 @@
 import React from 'react';
-import ButtonAppBar from '../Components/NavBar/index';
+import { NavBar } from '../Components';
 
 const PrivateLayout = ({ children, ...rest }) => (
   <>
-    <div><ButtonAppBar /></div>
-    <br />
+    <div>
+      <NavBar />
+    </div>
     <div>{children}</div>
   </>
 );

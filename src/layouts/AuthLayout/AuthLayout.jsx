@@ -1,13 +1,13 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import Copyright from '../Components/Footer/Footer';
+import { Footer } from '../Components';
 
 const AuthLayout = ({ children, ...rest }) => (
   <>
     <div>{children}</div>
     <div>
       {' '}
-      <Copyright />
+      <Footer />
     </div>
   </>
 
