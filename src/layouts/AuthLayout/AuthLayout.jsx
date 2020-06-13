@@ -2,7 +2,7 @@ import React from 'react';
 import propTypes from 'prop-types';
 import { Footer } from '../Components';
 
-const AuthLayout = ({ children, ...rest }) => (
+const AuthLayout = ({ children }) => (
   <>
     <div>{children}</div>
     <div>

@@ -14,23 +14,23 @@ const useStyles = makeStyles({
     flexGrow: 1,
   },
   textSize:
-  {
-    fontSize: '1rem',
-  },
+    {
+      fontSize: '1rem',
+    },
   padding: {
     marginRight: 30,
   },
 });
 
-export default function NavBar() {
+const NavBar = () => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <Typography className={classes.title}>
-            Trainee Portal
+          <Typography variant="h5" className={classes.title}>
+                        Trainee Portal
           </Typography>
           <Typography>
             <Button className={classes.textSize} component={Link} to="/Trainee" size="small" color="inherit">Trainee</Button>
@@ -43,4 +43,6 @@ export default function NavBar() {
       </AppBar>
     </div>
   );
-}
+};
+
+export default NavBar;
