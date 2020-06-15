@@ -11,8 +11,9 @@ const PrivateLayout = ({ children }) => (
   </>
 );
 
-export default PrivateLayout;
 
 PrivateLayout.propTypes = {
   children: propTypes.element.isRequired,
 };
+
+export default PrivateLayout;

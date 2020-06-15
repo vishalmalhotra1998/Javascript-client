@@ -13,10 +13,12 @@ const AuthRoute = ({ component: Component, ...rest }) => (
     )}
   />
 );
-export default AuthRoute;
+
 
 AuthRoute.propTypes = {
 
   component: propTypes.elementType.isRequired,
 
 };
+
+export default AuthRoute;

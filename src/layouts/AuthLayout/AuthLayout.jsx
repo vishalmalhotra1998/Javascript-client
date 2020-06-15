@@ -6,17 +6,16 @@ const AuthLayout = ({ children }) => (
   <>
     <div>{children}</div>
     <div>
-      {' '}
       <Footer />
     </div>
   </>
 
 );
 
-export default AuthLayout;
-
 AuthLayout.propTypes = {
 
   children: propTypes.element.isRequired,
 
 };
+
+export default AuthLayout;

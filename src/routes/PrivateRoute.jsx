@@ -13,10 +13,12 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     )}
   />
 );
-export default PrivateRoute;
+
 
 PrivateRoute.propTypes = {
 
   component: propTypes.elementType.isRequired,
 
 };
+
+export default PrivateRoute;
