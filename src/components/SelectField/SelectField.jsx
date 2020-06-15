@@ -4,7 +4,7 @@ import { Select, Error } from './Style';
 
 const SelectField = (props) => {
   const {
-    options, onChange, value, error, onBlur
+    options, onChange, value, error, onBlur,
   } = props;
 
   const selectField = (

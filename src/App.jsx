@@ -1,19 +1,32 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import {
+  BrowserRouter as Router, Route, Redirect, Switch,
+} from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { TraineeComponent } from './pages';
-import theme from './theme';
+import {
+  TextEditor, ChildrenDemo, TraineeComponent, SignIn, InputDemo, NoMatch,
+} from './pages';
+import { AuthRoute, PrivateRoute } from './routes';
+
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <Typography component="span">
-        <CssBaseline>
-          <TraineeComponent />
-        </CssBaseline>
-      </Typography>
-    </ThemeProvider>
+
+    <Router>
+      <CssBaseline>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/login" />
+          </Route>
+          <AuthRoute exact path="/login" component={SignIn} />
+          <PrivateRoute exact path="/trainee" component={TraineeComponent} />
+          <PrivateRoute exact path="/TextFieldDemo" component={TextEditor} />
+          <PrivateRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+          <PrivateRoute exact path="/InputDemo" component={InputDemo} />
+          <PrivateRoute component={NoMatch} />
+        </Switch>
+      </CssBaseline>
+    </Router>
   );
 }
 

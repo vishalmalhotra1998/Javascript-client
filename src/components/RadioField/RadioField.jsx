@@ -10,7 +10,7 @@ const RadioField = (props) => {
 
   const radioField = options.map(({ value: optionValue, label }) => (
     <div key={label}>
-      <input type="radio" name={value} value={optionValue} onChange={onChange} onBlur={onBlur}/>
+      <input type="radio" name={value} value={optionValue} onChange={onChange} onBlur={onBlur} />
       {label}
     </div>
   ));
