@@ -14,7 +14,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import propTypes from 'prop-types';
 import ls from 'local-storage';
-// import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
 import { MyContext } from '../../contexts';
 
