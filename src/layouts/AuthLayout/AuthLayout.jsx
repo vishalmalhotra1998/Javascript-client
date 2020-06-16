@@ -1,22 +1,21 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import Copyright from '../Components/Footer/Footer';
+import { Footer } from '../Components';
 
-const AuthLayout = ({ children, ...rest }) => (
+const AuthLayout = ({ children }) => (
   <>
     <div>{children}</div>
     <div>
-      {' '}
-      <Copyright />
+      <Footer />
     </div>
   </>
 
 );
-
-export default AuthLayout;
 
 AuthLayout.propTypes = {
 
   children: propTypes.element.isRequired,
 
 };
+
+export default AuthLayout;

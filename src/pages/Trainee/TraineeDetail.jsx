@@ -9,7 +9,7 @@ import Box from '@material-ui/core/Box';
 import * as moment from 'moment';
 import { useParams, useHistory } from 'react-router-dom';
 import trainee from './data/trainee';
-import NoMatch from '../NoMatch/index';
+import { NoMatch } from '../NoMatch';
 
 
 const useStyles = makeStyles({
@@ -38,17 +38,10 @@ const TraineeDetails = () => {
   const classes = useStyles();
   const { id } = useParams();
   const history = useHistory();
-  let matchedUser;
-  if (trainee.length) {
-    trainee.forEach((data) => {
-      if (data.id === id) {
-        matchedUser = data;
-      }
-    });
-  }
-  return (
+  const matchedUser = trainee.length ? (trainee.find((data) => data.id === id)) : '';
+  const userCard = (
     <>
-      { Object.keys(matchedUser).length
+      {matchedUser
         ? (
           <Card className={classes.root}>
             <CardMedia
@@ -76,5 +69,6 @@ const TraineeDetails = () => {
       </div>
     </>
   );
+  return (userCard);
 };
 export default TraineeDetails;

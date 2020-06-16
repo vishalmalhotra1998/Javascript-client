@@ -1,3 +1,1 @@
-import TraineeRoutes from './Trainee';
-
-export default TraineeRoutes;
+export { default as TraineeRoute } from './Trainee';

@@ -5,7 +5,6 @@ import TraineeDetails from './TraineeDetail';
 
 const TraineeRoutes = () => {
   const { path } = useRouteMatch();
-
   return (
     <Switch>
       <Route exact path={path} component={TraineeList} />
