@@ -11,6 +11,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import { withLoaderAndMessage } from '../../../../components';
 
@@ -70,8 +71,45 @@ const TableComponent = (props) => {
 
   const {
     id, data, column, order, orderBy, onSort, onSelect, actions,
-    count, page, onChangePage, rowsPerPage, dataLength,
+    count, page, onChangePage, rowsPerPage, dataLength, loader,
   } = props;
+
+  const tableBody = dataLength ? data.map((element) => (
+    <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
+      {column.map(({ field, align, format }) => (
+
+        <StyledTableCell align={align}>
+          {format ? format(element[field]) : element[field]}
+        </StyledTableCell>
+
+      ))}
+      {
+        <StyledTableCell>
+
+          {
+            actions.map((
+              { icons, handler },
+            ) => (
+              <div>
+                <Button
+                  className={classes.background}
+                  onClick={() => { handler(element); }}
+                >
+                  {icons}
+                </Button>
+              </div>
+            ))
+          }
+
+        </StyledTableCell>
+      }
+    </StyledTableRow>
+
+  )) : (
+    <Box paddingLeft={72}>
+      <h2>Oops No more Trainees</h2>
+    </Box>
+  );
 
   const handleSortIcon = (e) => {
     e.target.style.color = 'black';
@@ -117,43 +155,13 @@ const TableComponent = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {dataLength ? data.map((element) => (
-              <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
-                {column.map(({ field, align, format }) => (
-
-                  <StyledTableCell align={align}>
-                    {format ? format(element[field]) : element[field]}
-                  </StyledTableCell>
-
-                ))}
-                {
-                  <StyledTableCell>
-
-                    {
-                      actions.map((
-                        { icons, handler },
-                      ) => (
-                        <div>
-                          <Button
-                            className={classes.background}
-                            onClick={() => { handler(element); }}
-                          >
-                            {icons}
-                          </Button>
-                        </div>
-                      ))
-                    }
-
-                  </StyledTableCell>
-                }
-              </StyledTableRow>
-
-            )) : (
-              <Box paddingLeft={72}>
-                <h2>Oops No more Trainees</h2>
-              </Box>
-            )}
-
+            {
+              loader ? (
+                <Box paddingLeft={72}>
+                  <CircularProgress />
+                </Box>
+              ) : (tableBody)
+            }
           </TableBody>
         </Table>
       </TableContainer>
@@ -171,8 +179,6 @@ const TableComponent = (props) => {
   );
 };
 
-export default withLoaderAndMessage(TableComponent);
-
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,
   data: propTypes.arrayOf(propTypes.object).isRequired,
@@ -186,6 +192,8 @@ TableComponent.propTypes = {
   page: propTypes.number,
   onChangePage: propTypes.func.isRequired,
   rowsPerPage: propTypes.number,
+  dataLength: propTypes.number.isRequired,
+  loader: propTypes.bool.isRequired,
 };
 
 TableComponent.defaultProps = {
@@ -194,3 +202,5 @@ TableComponent.defaultProps = {
   page: 0,
   rowsPerPage: 100,
 };
+
+export default withLoaderAndMessage(TableComponent);
