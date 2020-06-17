@@ -69,6 +69,10 @@ const TraineeDetails = () => {
       </div>
     </>
   );
-  return (userCard);
+  return (
+    <Box p={3}>
+      {userCard}
+    </Box>
+  );
 };
 export default TraineeDetails;
