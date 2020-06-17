@@ -1,1 +1,2 @@
-export { default as TraineeComponent } from './TraineeComponent';
+export { default as TraineeDetails } from './TraineeDetail';
+export { default as TraineeList } from './TraineeList';
