@@ -15,11 +15,7 @@ import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import propTypes from 'prop-types';
-import ls from 'local-storage';
 import FormSchema from './schema';
-import callApi from '../../../../libs/utils/api';
-import { MyContext } from '../../../../contexts';
-
 
 const useStyles = {
   root: {
@@ -98,25 +94,9 @@ isTouched=(keys) => {
   }, () => { this.hasError(); });
 }
 
-handleCallApi= (value) => {
-  const { name, email, password } = value;
-  const { onSubmit } = this.props;
-  this.setState({ loader: true, isValid: false });
-  callApi({ data: { name, email, password }, headers: { Authorization: ls.get('token') } },
-    '/trainee', 'post').then((data) => {
-    const { status, message } = data;
-    const { context } = this;
-    const { openSnackBar } = context;
-    this.setState({ isValid: false });
-    onSubmit({ name, email, password });
-    if (status === 'ok') openSnackBar(message, 'success');
-  });
-};
-
-
   render=() => {
     const {
-      classes, open, onClose,
+      classes, open, onClose, onSubmit,
     } = this.props;
     const {
       name, email, password, errorMessage, isValid, loader,
@@ -217,7 +197,7 @@ handleCallApi= (value) => {
             <Button onClick={onClose} color="primary">
             Cancel
             </Button>
-            <Button disabled={!isValid} onClick={() => { this.handleCallApi({ name, email, password }); }} variant="contained" color="primary">
+            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email, password }); }} variant="contained" color="primary">
               <span>{loader ? <CircularProgress size={20} /> : ''}</span>
             Submit
             </Button>
@@ -234,5 +214,3 @@ FormDialog.propTypes = {
   classes: propTypes.element.isRequired,
 };
 export default withStyles(useStyles, { withTheme: true })(FormDialog);
-
-FormDialog.contextType = MyContext;

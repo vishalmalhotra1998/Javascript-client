@@ -67,7 +67,7 @@ class RemoveDialog extends React.Component {
 
   render = () => {
     const {
-      onClose, open, data,
+      onClose, open, data, onSubmit
     } = this.props;
     const { loader } = this.state;
     return (
@@ -89,7 +89,7 @@ class RemoveDialog extends React.Component {
                 const { openSnackBar } = value;
                 return (
                   <>
-                    <Button disabled={loader} color="primary" variant="contained" onClick={() => { this.handleSnackBarMessage(data, openSnackBar); }}>
+                    <Button disabled={loader} color="primary" variant="contained" onClick={() => { onSubmit(data); }}>
                       <span>
                         {loader ? <CircularProgress size={20} /> : ''}
                       </span>

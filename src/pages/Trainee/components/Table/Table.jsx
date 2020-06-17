@@ -73,6 +73,7 @@ const TableComponent = (props) => {
     id, data, column, order, orderBy, onSort, onSelect, actions,
     count, page, onChangePage, rowsPerPage, dataLength, loader,
   } = props;
+
   const tableBody = dataLength ? data.map((element) => (
     <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
       {column.map(({ field, align, format }) => (

@@ -7,9 +7,10 @@ import { Link } from 'react-router-dom';
 import * as moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ls from 'local-storage';
 import { flowRight as Compose } from 'lodash';
 import { graphql } from '@apollo/react-hoc';
+import { Mutation } from '@apollo/react-components';
+import { CREATE_TRAINEE, UPDATE_TRAINEE, DELETE_TRAINEE } from './mutation';
 import {
   FormDialog, TableComponent, EditDialog, RemoveDialog,
 } from './components';
@@ -37,12 +38,6 @@ class TraineeList extends React.Component {
       remOpen: false,
       rowData: {},
       rowsPerPage: 20,
-      tableData: [],
-      message: '',
-      status: '',
-      count: 0,
-      loader: true,
-      tableDataLength: 0,
     };
   }
 
@@ -54,37 +49,40 @@ class TraineeList extends React.Component {
       this.setState({ open: false, editOpen: false, remOpen: false });
     };
 
-    onSubmitHandle = (values) => {
+    onSubmitHandle = (createTrainee, openSnackBar) => async (values) => {
       this.setState({ open: false, editOpen: false });
-      const { page, rowsPerPage } = this.state;
-      this.handleTableData({
-        params: { skip: page * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get');
-      console.log(values);
+      const { name, email, password } = values;
+      const response = await createTrainee({ variables: { name, email, password } });
+      const { data } = response;
+      const { createTrainee: resData } = data;
+      return resData ? openSnackBar('Succesfully Added', 'success') : openSnackBar('There is An Error!', 'error');
     }
 
-    handleOnSubmitDelete = (values) => {
-      this.setState({ open: false, remOpen: false, loader: true });
-      const { page, rowsPerPage, count } = this.state;
-      if (count - page * rowsPerPage !== 1) {
-        this.handleTableData({
-          params: { skip: page * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
-      } else if (page !== 0) {
+    handleOnSubmitDelete = (deleteTrainee, openSnackBar) => async (values) => {
+      this.setState({ open: false, remOpen: false });
+      const { originalId } = values;
+      const { page, rowsPerPage } = this.state;
+      const {
+        data: {
+          getAllTrainee: {
+            records = [],
+            count = 0,
+          } = {},
+        },
+      } = this.props;
+      if (count - page * rowsPerPage === 1) {
         this.setState({ page: page - 1 });
-        this.handleTableData({
-          params: { skip: (page - 1) * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
-      } else {
-        this.handleTableData({
-          params: { skip: (page) * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
       }
-      console.log(values);
+      const response = await deleteTrainee({ variables: { id: originalId } });
+      return response ? openSnackBar('Successful deleted', 'success') : openSnackBar('There is an Error!', 'error');
+    }
+
+    onSubmitEditHandle = (updateTrainee, openSnackBar) => async (values) => {
+      const { name, email, originalId } = values;
+      const response = await updateTrainee(
+        { variables: { id: originalId, name, email } },
+      );
+      return response ? (openSnackBar('Successfull Updated', 'success')) : (openSnackBar('There is an Error!', 'error'));
     }
 
     handleSort = (value) => {
@@ -144,85 +142,119 @@ class TraineeList extends React.Component {
           loading,
           refetch,
         },
+        match: { url }, classes,
       } = this.props;
-      const { match: { url }, classes } = this.props;
+      const contextValue = this.context;
+      const { openSnackBar } = contextValue;
+      const variables = { skip: page * rowsPerPage, limit: rowsPerPage };
       const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
       return (
         <>
-          <Box p={1} />
-          <div className={classes.button}>
-            <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-                        Add Trainee
-            </Button>
-          </div>
-          <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-          <Box p={1} />
-          <TableComponent
+          <Mutation mutation={DELETE_TRAINEE} refetchQueries={[{ query: GET_TRAINEE, variables }]}>
+            {(deleteTrainee) => (
+              <>
+                <Mutation mutation={UPDATE_TRAINEE}>
+                  {
+                    (updateTrainee) => (
+                      <>
+                        <Mutation
+                          mutation={CREATE_TRAINEE}
+                          refetchQueries={[{ query: GET_TRAINEE, variables }]}
+                        >
+                          {(createTrainee) => (
+                            <>
+                              <Box p={1} />
+                              <div className={classes.button}>
+                                <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
+                                                                Add Trainee
+                                </Button>
+                              </div>
+                              <FormDialog
+                                open={open}
+                                onClose={this.handleClose}
+                                onSubmit={this.onSubmitHandle(createTrainee, openSnackBar)}
+                              />
+                              <Box p={1} />
+                              <TableComponent
 
-            id="id"
+                                id="id"
 
-            data={records}
+                                data={records}
 
-            column={[{
-              field: 'name',
-              label: 'Name',
-            },
-            {
-              field: 'email',
-              label: 'Email-Address',
-              format: (value) => value && value.toUpperCase(),
+                                column={[{
+                                  field: 'name',
+                                  label: 'Name',
+                                },
+                                {
+                                  field: 'email',
+                                  label: 'Email-Address',
+                                  format: (value) => value && value.toUpperCase(),
 
-            },
-            {
-              field: 'createdAt',
-              label: 'Date',
-              align: 'right',
-              format: getDateFormatted,
-            }]}
+                                },
+                                {
+                                  field: 'createdAt',
+                                  label: 'Date',
+                                  align: 'right',
+                                  format: getDateFormatted,
+                                }]}
 
-            actions={[{
-              icons: <EditIcon />,
-              handler: this.handleEditDialogOpen,
-            },
-            {
-              icons: <DeleteIcon />,
-              handler: this.handleRemoveDialogOpen,
+                                actions={[{
+                                  icons: <EditIcon />,
+                                  handler: this.handleEditDialogOpen,
+                                },
+                                {
+                                  icons: <DeleteIcon />,
+                                  handler: this.handleRemoveDialogOpen,
 
-            }]}
+                                }]}
 
-            order={order}
-            orderBy={orderBy}
-            onSort={this.handleSort}
-            onSelect={this.handleSelectChange}
-            count={count}
-            page={page}
-            onChangePage={this.handleChangePage(refetch)}
-            rowsPerPage={rowsPerPage}
-            loader={loading}
-            dataLength={records.length}
-          />
-          <EditDialog
-            open={editOpen}
-            onClose={this.handleClose}
-            onSubmit={this.onSubmitHandle}
-            data={rowData}
-          />
-          <RemoveDialog
-            open={remOpen}
-            onClose={this.handleClose}
-            onSubmit={this.handleOnSubmitDelete}
-            data={rowData}
-          />
-          <Box p={1} />
-          <ul>
-            {trainee.length && trainee.map((traineeData) => (
-              <Fragment key={traineeData.id}>
-                <li>
-                  <Link to={`${url}/${traineeData.id}`}>{traineeData.name}</Link>
-                </li>
-              </Fragment>
-            ))}
-          </ul>
+                                order={order}
+                                orderBy={orderBy}
+                                onSort={this.handleSort}
+                                onSelect={this.handleSelectChange}
+                                count={count}
+                                page={page}
+                                onChangePage={this.handleChangePage(refetch)}
+                                rowsPerPage={rowsPerPage}
+                                loader={loading}
+                                dataLength={records.length}
+                              />
+                              <EditDialog
+                                open={editOpen}
+                                onClose={this.handleClose}
+                                onSubmit={this.onSubmitEditHandle(updateTrainee, openSnackBar)}
+                                data={rowData}
+                              />
+                              <RemoveDialog
+                                open={remOpen}
+                                onClose={this.handleClose}
+                                onSubmit={this.handleOnSubmitDelete(deleteTrainee, openSnackBar)}
+                                data={rowData}
+                              />
+                              <Box p={1} />
+                              <ul>
+                                {trainee.length && trainee.map((traineeData) => (
+                                  <Fragment key={traineeData.id}>
+                                    <li>
+                                      <Link to={`${url}/${traineeData.id}`}>{traineeData.name}</Link>
+                                    </li>
+                                  </Fragment>
+                                ))}
+                              </ul>
+
+                            </>
+                          )}
+
+                        </Mutation>
+                      </>
+                    )
+                  }
+
+                </Mutation>
+              </>
+            )}
+          </Mutation>
+
         </>
       );
     }
