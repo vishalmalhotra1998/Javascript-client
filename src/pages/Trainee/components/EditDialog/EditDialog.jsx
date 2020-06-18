@@ -84,19 +84,31 @@ class EditDialog extends React.Component {
     }
 
     formReset = () => {
-      const { onClose } = this.props;
       this.setState({
         name: '',
         email: '',
         isValid: false,
         touched: {},
+        loader: false,
       });
-      onClose();
+    }
+
+    toggleLoaderAndButton=() => {
+      this.setState((prevState) => ({
+        loader: !prevState.loader,
+        isValid: !prevState.isValid,
+      }));
+    }
+
+    handleLoader= async (data) => {
+      const { onSubmit } = this.props;
+      await onSubmit(data);
+      this.toggleLoaderAndButton();
     }
 
     render = () => {
       const {
-        open, onClose, classes, data, onSubmit,
+        open, onClose, classes, data,
       } = this.props;
       const {
         name, email, isValid, loader,
@@ -104,7 +116,7 @@ class EditDialog extends React.Component {
       const { originalId } = data;
       return (
         <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
-          <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+          <DialogTitle id="simple-dialog-title">Accounts</DialogTitle>
           <DialogContent>
             <div className={classes.root}>
               <Grid container spacing={2}>
@@ -156,8 +168,8 @@ class EditDialog extends React.Component {
                 variant="contained"
                 disabled={!isValid}
                 onClick={() => {
-                  onSubmit({ name, email, originalId });
-                  this.formReset();
+                  this.handleLoader({ name, email, originalId });
+                  this.toggleLoaderAndButton();
                 }}
                 color="primary"
               >

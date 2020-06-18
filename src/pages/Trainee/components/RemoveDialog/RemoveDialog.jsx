@@ -6,68 +6,32 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
-import * as moment from 'moment';
-import ls from 'local-storage';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import callApi from '../../../../libs/utils/api';
-import { MyContext } from '../../../../contexts';
 
 
 class RemoveDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
       loader: false,
     };
   }
 
-  handleCallApiForRemove=(data, openSnackBar) => {
-    const id = data.originalId;
-    const { onSubmit } = this.props;
-    this.setState({ loader: true });
-    callApi({ headers: { Authorization: ls.get('token') } },
-      `/trainee/${id}`, 'delete').then((response) => {
-      const { status } = response;
-      if (status === 'ok') {
-        this.setState({
-          message: 'This is a success Message! ',
-          loader: false,
-        }, () => {
-          const { message } = this.state;
-          openSnackBar(message, 'success');
-          onSubmit(data);
-        });
-      } else {
-        this.setState({
-          message: 'This is an error',
-          loader: false,
-        }, () => {
-          const { message } = this.state;
-          openSnackBar(message, 'error');
-        });
-      }
-    });
+  toggleLoader = () => {
+    this.setState((prevState) => ({
+      loader: !prevState.loader,
+    }));
   }
 
-  handleSnackBarMessage = (data, openSnackBar) => {
-    const date = '2019-02-14T18:15:11.778Z';
-    const isAfter = (moment(data.createdAt).isAfter(date));
-    if (isAfter) {
-      this.handleCallApiForRemove(data, openSnackBar);
-    } else {
-      this.setState({
-        message: 'This is an error',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'error');
-      });
-    }
+  handleLoader = async (data) => {
+    const { onSubmit } = this.props;
+    await onSubmit(data);
+    this.toggleLoader();
   }
 
   render = () => {
     const {
-      onClose, open, data, onSubmit
+      onClose, open, data,
     } = this.props;
     const { loader } = this.state;
     return (
@@ -83,22 +47,17 @@ class RemoveDialog extends React.Component {
             <Button onClick={() => onClose()} variant="contained">
               Cancel
             </Button>
-
-            <MyContext.Consumer>
-              {(value) => {
-                const { openSnackBar } = value;
-                return (
-                  <>
-                    <Button disabled={loader} color="primary" variant="contained" onClick={() => { onSubmit(data); }}>
-                      <span>
-                        {loader ? <CircularProgress size={20} /> : ''}
-                      </span>
-                    Delete
-                    </Button>
-                  </>
-                );
-              }}
-            </MyContext.Consumer>
+            <Button
+              disabled={loader}
+              color="primary"
+              variant="contained"
+              onClick={() => { this.handleLoader(data); this.toggleLoader(); }}
+            >
+              <span>
+                {loader ? <CircularProgress size={20} /> : ''}
+              </span>
+              Delete
+            </Button>
           </DialogActions>
         </DialogContent>
       </Dialog>

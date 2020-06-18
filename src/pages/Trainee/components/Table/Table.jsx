@@ -171,7 +171,7 @@ const TableComponent = (props) => {
           count={count}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[0]}
+          rowsPerPageOptions={[]}
           onChangePage={onChangePage}
         />
       ) : ''}
