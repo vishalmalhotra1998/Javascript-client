@@ -70,17 +70,20 @@ class TraineeList extends React.Component {
       const {
         data: {
           getAllTrainee: {
+            records = [],
             count = 0,
           } = {},
           refetch,
         },
       } = this.props;
       const response = await deleteTrainee({ variables: { id: originalId } });
-      if (count - page * rowsPerPage === 1 && page > 0) {
+      if (records.length === 1 && page > 0) {
         this.setState({ page: page - 1 }, () => {
           const { page: updatePage } = this.state;
           refetch({ skip: updatePage, limit: rowsPerPage });
         });
+      } else if (page === 0 && count > 0 && records.length === 1) {
+        refetch({ skip: page, limit: rowsPerPage });
       }
       this.setState({ remOpen: false });
       if (response) {
@@ -160,7 +163,7 @@ class TraineeList extends React.Component {
           return {
             getAllTrainee: {
               ...prev.getAllTrainee,
-              count: prev.getAllTrainee.count,
+              count: prev.getAllTrainee.count - 1,
               records: updateRecords,
             },
           };
@@ -177,7 +180,7 @@ class TraineeList extends React.Component {
           return {
             getAllTrainee: {
               ...prev.getAllTrainee,
-              count: prev.getAllTrainee.count,
+              count: prev.getAllTrainee.count - 1,
               records: delRecords,
             },
           };
@@ -200,7 +203,6 @@ class TraineeList extends React.Component {
         },
         match: { url }, classes,
       } = this.props;
-
       const variables = { skip: page * rowsPerPage, limit: rowsPerPage };
       const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
       return (
@@ -280,7 +282,7 @@ class TraineeList extends React.Component {
                                 onChangePage={this.handleChangePage(refetch)}
                                 rowsPerPage={rowsPerPage}
                                 loader={loading}
-                                dataLength={records.length}
+                                dataLength={count}
                               />
                               <EditDialog
                                 open={editOpen}
