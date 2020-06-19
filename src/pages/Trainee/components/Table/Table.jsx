@@ -17,8 +17,8 @@ const useStyles = makeStyles((theme) => ({
   table: {
     minWidth: 650,
     border: 'solid',
-    borderWidth:'thin',
-    borderColor:'lightGrey'
+    borderWidth: 'thin',
+    borderColor: 'lightGrey',
   },
   color: {
     color: 'grey',
@@ -27,42 +27,45 @@ const useStyles = makeStyles((theme) => ({
 
 const TableComponent = (props) => {
   const classes = useStyles();
-
   const { id, data, column } = props;
 
+  const tableHeading = (
+    <TableRow key={column}>
+      {column.length && column.map((col) => (
+        <TableCell align={col.align} className={classes.color}>{col.label}</TableCell>
+      ))}
+    </TableRow>
+  );
+
+  const tableBody = data.length && data.map((element) => (
+    <TableRow key={element[id]}>
+      {column.map(({ field, align }) => (
+
+        <TableCell align={align}>{element[field]}</TableCell>
+
+      ))}
+    </TableRow>
+
+  ));
   return (
     <TableContainer component={Paper} className={classes.container}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
-          <TableRow key={id}>
-            {column.length && column.map((col) => (
-              <TableCell align={col.align} className={classes.color}>{col.label}</TableCell>
-            ))}
-
-          </TableRow>
+          {tableHeading}
         </TableHead>
         <TableBody>
-          {data.length && data.map((element) => (
-            <TableRow key={element[id]}>
-              {column.map(({ field, align }) => (
-
-                <TableCell align={align}>{element[field]}</TableCell>
-
-              ))}
-            </TableRow>
-
-          ))}
-
+          {tableBody}
         </TableBody>
       </Table>
     </TableContainer>
   );
 };
 
-export default TableComponent;
 
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,
   data: propTypes.arrayOf(propTypes.object).isRequired,
   column: propTypes.arrayOf(propTypes.object).isRequired,
 };
+
+export default TableComponent;

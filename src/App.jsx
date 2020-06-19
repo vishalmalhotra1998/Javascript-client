@@ -2,26 +2,30 @@ import React from 'react';
 import {
   BrowserRouter as Router, Route, Redirect, Switch,
 } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {
-  TextEditor, ChildrenDemo, TraineeRoutes, SignIn, InputDemo, NoMatch,
-} from './pages/index';
-import { AuthLayoutRoute, PrivateLayoutRoute } from './routes/index';
+  TextEditor, ChildrenDemo, TraineeDetails, TraineeList, SignIn, InputDemo, NoMatch,
+} from './pages';
+import { AuthRoute, PrivateRoute } from './routes';
 
 
 function App() {
   return (
     <Router>
-      <Switch>
-        <Route exact path="/">
-          <Redirect to="/login" />
-        </Route>
-        <AuthLayoutRoute exact path="/login" component={SignIn} />
-        <PrivateLayoutRoute path="/Trainee" component={TraineeRoutes} />
-        <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
-        <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
-        <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
-        <PrivateLayoutRoute component={NoMatch} />
-      </Switch>
+      <CssBaseline>
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/login" />
+          </Route>
+          <AuthRoute exact path="/login" component={SignIn} />
+          <PrivateRoute exact path="/trainee" component={TraineeList} />
+          <PrivateRoute exact path="/trainee/:id" component={TraineeDetails} />
+          <PrivateRoute exact path="/TextFieldDemo" component={TextEditor} />
+          <PrivateRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+          <PrivateRoute exact path="/InputDemo" component={InputDemo} />
+          <PrivateRoute component={NoMatch} />
+        </Switch>
+      </CssBaseline>
     </Router>
   );
 }

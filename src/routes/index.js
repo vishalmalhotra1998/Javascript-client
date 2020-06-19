@@ -1,4 +1,2 @@
-import AuthLayoutRoute from './AuthRoutes';
-import PrivateLayoutRoute from './PrivateRoute';
-
-export { AuthLayoutRoute, PrivateLayoutRoute };
+export { default as AuthRoute } from './AuthRoutes';
+export { default as PrivateRoute } from './PrivateRoute';
