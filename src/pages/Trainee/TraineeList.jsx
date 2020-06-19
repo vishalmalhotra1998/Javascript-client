@@ -1,11 +1,19 @@
 import React, { Fragment } from 'react';
-import propTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import propTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import { Link } from 'react-router-dom';
-import { FormDialog } from './components';
+import { FormDialog, TableComponent } from './components';
 import trainee from './data/trainee';
 
+const useStyles = {
+
+  button: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+};
 class TraineeList extends React.Component {
   constructor(props) {
     super(props);
@@ -37,6 +45,20 @@ class TraineeList extends React.Component {
           </Button>
           <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
           <Box p={1} />
+          <TableComponent
+            id="id"
+            data={trainee}
+            column={[{
+              field: 'name',
+              label: 'Name',
+              align: 'center',
+            },
+            {
+              field: 'email',
+              label: 'Email-Address',
+
+            }]}
+          />
           <ul>
             {trainee.length && trainee.map((data) => (
               <Fragment key={data.id}>
@@ -52,8 +74,9 @@ class TraineeList extends React.Component {
       return (traineeList);
     }
 }
+
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
 };
 
-export default TraineeList;
+export default withStyles(useStyles, { withTheme: true })(TraineeList);
