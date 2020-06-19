@@ -46,11 +46,8 @@ class TraineeList extends React.Component {
           <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
           <Box p={1} />
           <TableComponent
-
             id="id"
-
             data={trainee}
-
             column={[{
               field: 'name',
               label: 'Name',

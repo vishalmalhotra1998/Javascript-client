@@ -8,6 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,42 +31,54 @@ const TableComponent = (props) => {
   const { id, data, column } = props;
 
   const tableHeading = (
-    <TableRow key={column}>
-      {column.length && column.map((col) => (
-        <TableCell align={col.align} className={classes.color}>{col.label}</TableCell>
+    <TableRow key={id}>
+      {column.map((col) => (
+        <TableCell
+          key={col.label}
+          align={col.align}
+          className={classes.color}
+        >
+          {col.label}
+        </TableCell>
       ))}
     </TableRow>
   );
 
-  const tableBody = data.length && data.map((element) => (
+  const tableBody = data.map((element) => (
     <TableRow key={element[id]}>
       {column.map(({ field, align }) => (
 
-        <TableCell align={align}>{element[field]}</TableCell>
+        <TableCell key={field} align={align}>{element[field]}</TableCell>
 
       ))}
     </TableRow>
 
   ));
   return (
-    <TableContainer component={Paper} className={classes.container}>
-      <Table className={classes.table} aria-label="simple table">
-        <TableHead>
-          {tableHeading}
-        </TableHead>
-        <TableBody>
-          {tableBody}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box p={2}>
+      <TableContainer component={Paper} className={classes.container}>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            {tableHeading}
+          </TableHead>
+          <TableBody>
+            {tableBody}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };
 
 
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,
-  data: propTypes.arrayOf(propTypes.object).isRequired,
-  column: propTypes.arrayOf(propTypes.object).isRequired,
+  data: propTypes.arrayOf(propTypes.object),
+  column: propTypes.arrayOf(propTypes.object),
+};
+TableComponent.defaultProps = {
+  data: [],
+  column: [],
 };
 
 export default TableComponent;
