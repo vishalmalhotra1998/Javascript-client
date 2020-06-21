@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Copyright = () => {
+const Footer = () => {
   const classes = useStyles();
   return (
     <div className={classes.footer}>
@@ -23,4 +23,4 @@ const Copyright = () => {
   );
 };
 
-export default Copyright;
+export default Footer;

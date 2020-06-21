@@ -25,95 +25,90 @@ class TraineeList extends React.Component {
     };
   }
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
+    toggleDialogBox = () => {
+      this.setState((prevState) => ({
+        open: !prevState.open,
+      }));
+    }
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
+    onSubmitHandle = (values) => {
+      this.toggleDialogBox();
+      console.log(values);
+    }
 
-  onSubmitHandle = (values) => {
-    this.setState({ open: false });
-    console.log(values);
-  }
+    handleSelectChange = (value) => {
+      console.log(value);
+    }
 
-  handleSort = (value) => {
-    const { orderBy, order } = this.state;
-    const isAsc = orderBy === value && order === 'asc';
-    const data = isAsc ? 'desc' : 'asc';
-    this.setState({
-      order: data,
-      orderBy: value,
-    });
-  }
+    handleSort = (value) => {
+      const { orderBy, order } = this.state;
+      const isAsc = orderBy === value && order === 'asc';
+      const data = isAsc ? 'desc' : 'asc';
+      this.setState({
+        order: data,
+        orderBy: value,
+      });
+    }
 
-  handleSelectChange = (value) => {
-    console.log(value);
-  }
+    render() {
+      const { open, order, orderBy } = this.state;
+      const { match: { url }, classes } = this.props;
+      const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+      const traineeList = (
+        <>
+          <Box p={1} />
+          <div className={classes.button}>
+            <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                Add Trainee
+            </Button>
+          </div>
+          <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
+          <Box p={1} />
+          <TableComponent
+            id="id"
+            data={trainee}
+            column={[{
+              field: 'name',
+              label: 'Name',
+              align: 'center',
+            },
+            {
+              field: 'email',
+              label: 'Email-Address',
+              format: (value) => value && value.toUpperCase(),
 
+            },
+            {
+              field: 'createdAt',
+              label: 'Date',
+              align: 'right',
+              format: getDateFormatted,
+            },
+            ]}
+            order={order}
+            orderBy={orderBy}
+            onSort={this.handleSort}
+            onSelect={this.handleSelectChange}
+          />
+          <ul>
+            {trainee.length && trainee.map((data) => (
+              <Fragment key={data.id}>
+                <li>
+                  <Link to={`${url}/${data.id}`}>{data.name}</Link>
+                </li>
 
-  render() {
-    const { open, order, orderBy } = this.state;
-    const { match: { url }, classes } = this.props;
-    const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-    return (
-      <>
-        <Box p={1} />
-        <div className={classes.button}>
-          <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-            Add Trainee
-          </Button>
-        </div>
-        <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-        <Box p={1} />
-        <TableComponent
-
-          id="id"
-
-          data={trainee}
-
-          column={[{
-            field: 'name',
-            label: 'Name',
-          },
-          {
-            field: 'email',
-            label: 'Email-Address',
-            format: (value) => value && value.toUpperCase(),
-
-          },
-          {
-            field: 'createdAt',
-            label: 'Date',
-            align: 'right',
-            format: getDateFormatted,
-          }]}
-
-          order={order}
-          orderBy={orderBy}
-          onSort={this.handleSort}
-          onSelect={this.handleSelectChange}
-
-        />
-        <Box p={1} />
-        <ul>
-          {trainee.length && trainee.map((data) => (
-            <Fragment key={data.id}>
-              <li>
-                <Link to={`${url}/${data.id}`}>{data.name}</Link>
-              </li>
-
-            </Fragment>
-          ))}
-        </ul>
-      </>
-    );
-  }
+              </Fragment>
+            ))}
+          </ul>
+        </>
+      );
+      return (traineeList);
+    }
 }
-export default withStyles(useStyles, { withTheme: true })(TraineeList);
 
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
 };
+
+export default withStyles(useStyles, { withTheme: true })(TraineeList);
