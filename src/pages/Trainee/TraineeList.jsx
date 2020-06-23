@@ -21,7 +21,7 @@ class TraineeList extends React.Component {
     this.state = {
       open: false,
       order: 'asc',
-      orderBy: 'Date',
+      orderBy: '',
     };
   }
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import propTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,42 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
-
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-}))(TableRow);
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 650,
-    border: 'solid',
-    borderWidth: 'thin',
-    borderColor: 'lightGrey',
-  },
-  color: {
-    color: 'grey',
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-
-}));
+import { StyledTableRow, useStyles } from './Style';
 
 const TableComponent = (props) => {
   const classes = useStyles();
@@ -93,7 +57,12 @@ const TableComponent = (props) => {
   );
 
   const tableBody = data.map((element) => (
-    <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
+    <StyledTableRow
+      hover
+      className={classes.style}
+      onClick={() => onSelect(element)}
+      key={element[id]}
+    >
       {column.map(({ field, align, format }) => (
 
         <TableCell key={field} align={align}>
