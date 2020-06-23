@@ -30,45 +30,29 @@ class EditDialog extends React.Component {
     };
   }
 
-   handleNameChange = (event) => {
-     const { touched } = this.setState;
-     this.setState({
-       name: event.target.value,
-       isValid: true,
-     }, () => {
-       this.setState({
-         touched: {
-           ...touched,
-           name: true,
-         },
-       });
-     });
-   };
 
-   handleEmailChange = (event) => {
+   handleFieldChange=(field) => (event) => {
      const { touched } = this.state;
      this.setState({
-       email: event.target.value,
+       [field]: event.target.value,
        isValid: true,
      }, () => {
        this.setState({
          touched: {
            ...touched,
-           email: true,
+           [field]: true,
          },
        });
      });
-   };
+   }
 
      isTouched=(value) => {
        const { touched } = this.state;
        const { data } = this.props;
-       console.log(data);
        this.setState({
          touched: {
            ...touched,
            [value]: true,
-
          },
          isValid: true,
        }, () => {
@@ -104,7 +88,7 @@ class EditDialog extends React.Component {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  id="outlined-helperText"
+                  id="Name"
                   label="Name"
                   defaultValue={data.name}
                   InputProps={{
@@ -116,14 +100,14 @@ class EditDialog extends React.Component {
                   }}
                   fullWidth
                   variant="outlined"
-                  onChange={this.handleNameChange}
+                  onChange={this.handleFieldChange('name')}
                   onBlur={() => { this.isTouched('name'); }}
 
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="outlined-helperText"
+                  id="Email"
                   label="Email Address"
                   InputProps={{
                     startAdornment: (
@@ -135,7 +119,7 @@ class EditDialog extends React.Component {
                   fullWidth
                   defaultValue={data.email}
                   variant="outlined"
-                  onChange={this.handleEmailChange}
+                  onChange={this.handleFieldChange('email')}
                   onBlur={() => { this.isTouched('email'); }}
 
                 />
@@ -146,7 +130,7 @@ class EditDialog extends React.Component {
             <Button onClick={onClose} color="primary">
             Cancel
             </Button>
-            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); } } color="primary">
+            <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); }} color="primary">
 
             Submit
             </Button>
@@ -162,7 +146,7 @@ EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
   data: PropTypes.objectOf(PropTypes.string).isRequired,
-  classes: PropTypes.elementType.isRequired,
+  classes: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default withStyles(useStyles)(EditDialog);

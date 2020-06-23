@@ -18,7 +18,7 @@ class RemoveDialog extends React.Component {
       onClose, open, onSubmit, data,
     } = this.props;
     return (
-      <Dialog onClose={() => onClose()} aria-labelledby="simple-dialog-title" open={open}>
+      <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
         <div>
           <DialogContentText>
@@ -27,11 +27,10 @@ class RemoveDialog extends React.Component {
         </div>
         <DialogContent>
           <DialogActions>
-            <Button onClick={() => onClose()} variant="contained">
+            <Button onClick={onClose} variant="contained">
               Cancel
             </Button>
             <Button color="primary" variant="contained" onClick={() => { onSubmit(data); }}>
-
               Submit
             </Button>
           </DialogActions>
