@@ -5,7 +5,11 @@ import propTypes from 'prop-types';
 import Box from '@material-ui/core/Box';
 import { Link } from 'react-router-dom';
 import * as moment from 'moment';
-import { FormDialog, TableComponent } from './components';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+import {
+  FormDialog, TableComponent, EditDialog, RemoveDialog,
+} from './components';
 import trainee from './data/trainee';
 
 const useStyles = {
@@ -19,15 +23,32 @@ class TraineeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      showAddOpen: false,
       order: 'asc',
       orderBy: '',
+      page: 0,
+      showEditOpen: false,
+      showRemoveOpen: false,
+      rowData: {},
+      rowsPerPage: 10,
     };
   }
 
     toggleDialogBox = () => {
       this.setState((prevState) => ({
-        open: !prevState.open,
+        showAddOpen: !prevState.showAddOpen,
+      }));
+    }
+
+    toggleRemoveDialogBox = () => {
+      this.setState((prevState) => ({
+        showRemoveOpen: !prevState.showRemoveOpen,
+      }));
+    }
+
+    toggleEditDialogBox = () => {
+      this.setState((prevState) => ({
+        showEditOpen: !prevState.showEditOpen,
       }));
     }
 
@@ -50,8 +71,35 @@ class TraineeList extends React.Component {
       });
     }
 
+    handleEditDialogOpen = (values) => {
+      this.toggleEditDialogBox();
+      this.setState({ rowData: values });
+    }
+
+     onSubmitEdit=(values) => {
+       this.toggleEditDialogBox();
+       console.log('Edited Items', values);
+     }
+
+      handleRemoveDialogOpen = (values) => {
+        this.toggleRemoveDialogBox();
+        this.setState({ rowData: values });
+      }
+
+      onSubmitDelete=(values) => {
+        this.toggleRemoveDialogBox();
+        console.log('Deleted Items', values);
+      }
+
+    handleChangePage = (event, newPage) => {
+      this.setState({ page: newPage });
+    };
+
+
     render() {
-      const { open, order, orderBy } = this.state;
+      const {
+        showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
+      } = this.state;
       const { match: { url }, classes } = this.props;
       const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
       const traineeList = (
@@ -62,7 +110,11 @@ class TraineeList extends React.Component {
                 Add Trainee
             </Button>
           </div>
-          <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
+          <FormDialog
+            open={showAddOpen}
+            onClose={this.toggleDialogBox}
+            onSubmit={this.toggleDialogBox}
+          />
           <Box p={1} />
           <TableComponent
             id="id"
@@ -85,11 +137,39 @@ class TraineeList extends React.Component {
               format: getDateFormatted,
             },
             ]}
+            actions={[{
+              icons: <EditIcon />,
+              handler: this.handleEditDialogOpen,
+              key: 'editIcon',
+            },
+            {
+              icons: <DeleteIcon />,
+              handler: this.handleRemoveDialogOpen,
+              key: 'removeIcon',
+
+            }]}
             order={order}
             orderBy={orderBy}
             onSort={this.handleSort}
             onSelect={this.handleSelectChange}
+            count={100}
+            page={page}
+            onChangePage={this.handleChangePage}
+            rowsPerPage={rowsPerPage}
           />
+          <EditDialog
+            open={showEditOpen}
+            onClose={this.toggleEditDialogBox}
+            onSubmit={this.onSubmitEdit}
+            data={rowData}
+          />
+          <RemoveDialog
+            open={showRemoveOpen}
+            onClose={this.toggleRemoveDialogBox}
+            onSubmit={this.onSubmitDelete}
+            data={rowData}
+          />
+          <Box p={1} />
           <ul>
             {trainee.length && trainee.map((data) => (
               <Fragment key={data.id}>

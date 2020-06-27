@@ -37,6 +37,15 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  button: {
+    padding: 0,
+    border: 'none',
+    background: 'none',
+  },
+  buttonSetup: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 
 }));
 

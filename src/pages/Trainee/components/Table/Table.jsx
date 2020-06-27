@@ -7,16 +7,21 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import { StyledTableRow, useStyles } from './Style';
 
 const TableComponent = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+
   const {
-    id, data, column, order, orderBy, onSort, onSelect,
+    id, data, column, order, orderBy, onSort, onSelect, actions,
+    count, page, onChangePage, rowsPerPage,
   } = props;
+
   const handleSortIcon = (e) => {
     e.target.style.color = 'black';
     setOpen(true);
@@ -53,6 +58,7 @@ const TableComponent = (props) => {
           </TableSortLabel>
         </TableCell>
       ))}
+      <TableCell />
     </TableRow>
   );
 
@@ -70,9 +76,41 @@ const TableComponent = (props) => {
         </TableCell>
 
       ))}
+      {
+        <TableCell>
+          <div className={classes.buttonSetup}>
+            {
+              actions.map((
+                { icons, handler, key },
+              ) => (
+                <div key={key}>
+                  <Button
+                    className={classes.background}
+                    onClick={() => { handler(element); }}
+                  >
+                    {icons}
+                  </Button>
+                </div>
+              ))
+            }
+          </div>
+        </TableCell>
+      }
+
     </StyledTableRow>
 
   ));
+
+  const tablePagination = count && (
+    <TablePagination
+      component="div"
+      count={count}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      rowsPerPageOptions={[]}
+      onChangePage={onChangePage}
+    />
+  );
   return (
     <Box p={2}>
       <TableContainer component={Paper} className={classes.container}>
@@ -85,6 +123,7 @@ const TableComponent = (props) => {
           </TableBody>
         </Table>
       </TableContainer>
+      {tablePagination}
     </Box>
   );
 };
@@ -94,16 +133,24 @@ TableComponent.propTypes = {
   id: propTypes.string.isRequired,
   data: propTypes.arrayOf(propTypes.object),
   column: propTypes.arrayOf(propTypes.object),
+  actions: propTypes.arrayOf(propTypes.object).isRequired,
   order: propTypes.oneOf(['asc', 'desc']),
   orderBy: propTypes.string,
   onSort: propTypes.func.isRequired,
   onSelect: propTypes.func.isRequired,
+  count: propTypes.number.isRequired,
+  page: propTypes.number,
+  onChangePage: propTypes.func.isRequired,
+  rowsPerPage: propTypes.number,
 };
+
 TableComponent.defaultProps = {
   data: [],
   column: [],
   order: 'asc',
   orderBy: '',
+  page: 0,
+  rowsPerPage: 100,
 };
 
 export default TableComponent;
