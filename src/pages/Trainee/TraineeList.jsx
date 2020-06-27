@@ -23,12 +23,12 @@ class TraineeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      showAddOpen: false,
       order: 'asc',
       orderBy: '',
       page: 0,
-      editOpen: false,
-      removeOpen: false,
+      showEditOpen: false,
+      showRemoveOpen: false,
       rowData: {},
       rowsPerPage: 10,
     };
@@ -36,19 +36,19 @@ class TraineeList extends React.Component {
 
     toggleDialogBox = () => {
       this.setState((prevState) => ({
-        open: !prevState.open,
+        showAddOpen: !prevState.showAddOpen,
       }));
     }
 
     toggleRemoveDialogBox = () => {
       this.setState((prevState) => ({
-        removeOpen: !prevState.removeOpen,
+        showRemoveOpen: !prevState.showRemoveOpen,
       }));
     }
 
     toggleEditDialogBox = () => {
       this.setState((prevState) => ({
-        editOpen: !prevState.editOpen,
+        showEditOpen: !prevState.showEditOpen,
       }));
     }
 
@@ -98,7 +98,7 @@ class TraineeList extends React.Component {
 
     render() {
       const {
-        open, order, orderBy, page, rowData, rowsPerPage, editOpen, removeOpen,
+        showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
       } = this.state;
       const { match: { url }, classes } = this.props;
       const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
@@ -110,7 +110,11 @@ class TraineeList extends React.Component {
                 Add Trainee
             </Button>
           </div>
-          <FormDialog open={open} onClose={this.toggleDialogBox} onSubmit={this.toggleDialogBox} />
+          <FormDialog
+            open={showAddOpen}
+            onClose={this.toggleDialogBox}
+            onSubmit={this.toggleDialogBox}
+          />
           <Box p={1} />
           <TableComponent
             id="id"
@@ -136,10 +140,12 @@ class TraineeList extends React.Component {
             actions={[{
               icons: <EditIcon />,
               handler: this.handleEditDialogOpen,
+              key: 'editIcon',
             },
             {
               icons: <DeleteIcon />,
               handler: this.handleRemoveDialogOpen,
+              key: 'removeIcon',
 
             }]}
             order={order}
@@ -152,13 +158,13 @@ class TraineeList extends React.Component {
             rowsPerPage={rowsPerPage}
           />
           <EditDialog
-            open={editOpen}
+            open={showEditOpen}
             onClose={this.toggleEditDialogBox}
             onSubmit={this.onSubmitEdit}
             data={rowData}
           />
           <RemoveDialog
-            open={removeOpen}
+            open={showRemoveOpen}
             onClose={this.toggleRemoveDialogBox}
             onSubmit={this.onSubmitDelete}
             data={rowData}

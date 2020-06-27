@@ -81,9 +81,9 @@ const TableComponent = (props) => {
           <div className={classes.buttonSetup}>
             {
               actions.map((
-                { icons, handler }, index,
+                { icons, handler, key },
               ) => (
-                <div key={Number(index)}>
+                <div key={key}>
                   <Button
                     className={classes.background}
                     onClick={() => { handler(element); }}
@@ -107,7 +107,7 @@ const TableComponent = (props) => {
       count={count}
       page={page}
       rowsPerPage={rowsPerPage}
-      rowsPerPageOptions={[0]}
+      rowsPerPageOptions={[]}
       onChangePage={onChangePage}
     />
   );
