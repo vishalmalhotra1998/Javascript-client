@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import { SnackBarConsumer } from '../../../../contexts';
 import FormSchema from './schema';
 
 const useStyles = {
@@ -108,8 +109,13 @@ class EditDialog extends React.Component {
        });
      }
 
-    handleOnClick=(data) => {
+    handleOnClick=(data, openSnackBar) => {
       const { onSubmit } = this.props;
+      const snackBarMessages = {
+        success: 'Trainee Updated Successfully',
+      };
+      const snackBarMessage = snackBarMessages.success;
+      openSnackBar(snackBarMessage, 'success');
       onSubmit(data);
       this.formReset();
     }
@@ -130,7 +136,7 @@ class EditDialog extends React.Component {
     } = this.state;
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
-        <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
+        <DialogTitle id="simple-dialog-title">Edit Trainee</DialogTitle>
         <DialogContent>
           <div className={classes.root}>
             <Grid container spacing={2}>
@@ -182,10 +188,19 @@ class EditDialog extends React.Component {
             <Button onClick={this.handleOnClose} color="primary">
             Cancel
             </Button>
-            <Button disabled={!showButton} onClick={() => this.handleOnClick({ name, email })} color="primary">
+            <SnackBarConsumer>
+              {(value) => {
+                const { openSnackBar } = value;
+                return (
+                  <>
+                    <Button disabled={!showButton} onClick={() => this.handleOnClick({ name, email }, openSnackBar)} color="primary">
 
-            Submit
-            </Button>
+              Submit
+                    </Button>
+                  </>
+                );
+              }}
+            </SnackBarConsumer>
           </DialogActions>
         </DialogContent>
       </Dialog>
