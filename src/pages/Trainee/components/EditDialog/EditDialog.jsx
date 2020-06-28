@@ -12,6 +12,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { MyContext } from '../../../../contexts';
+import FormSchema from './schema';
 
 const useStyles = {
   root: {
@@ -19,83 +20,116 @@ const useStyles = {
   },
 };
 
+const editDialogStates = {
+  name: '',
+  email: '',
+  showButton: false,
+  touched: {},
+  errorMessage: {},
+
+};
+
 class EditDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      email: '',
-      isValid: false,
-      touched: {},
-
+      ...editDialogStates,
     };
   }
 
-  handleNameChange = (event) => {
-    const { touched } = this.setState;
-    this.setState({
-      name: event.target.value,
-      isValid: true,
-    }, () => {
-      this.setState({
-        touched: {
-          ...touched,
-          name: true,
-        },
-      });
-    });
-  };
 
-  handleEmailChange = (event) => {
-    const { touched } = this.state;
-    this.setState({
-      email: event.target.value,
-      isValid: true,
-    }, () => {
-      this.setState({
-        touched: {
-          ...touched,
-          email: true,
-        },
-      });
-    });
-  };
+   handleFieldChange=(field) => (event) => {
+     this.setState({
+       [field]: event.target.value,
+     }, () => {
+       this.hasError();
+       this.isTouched(field);
+     });
+   }
 
-  isTouched = (value) => {
-    const { touched } = this.state;
-    const { data } = this.props;
-    this.setState({
-      touched: {
-        ...touched,
-        [value]: true,
+   hasError=() => {
+     const { name, email, touched } = this.state;
+     const parsedError = {};
+     FormSchema.validate({
+       name,
+       email,
+     }, { abortEarly: false }).then(() => {
+       this.setState({
+         showButton: true,
+         errorMessage: parsedError,
+       });
+     }).catch((error) => {
+       const { inner } = error;
+       inner.forEach((element) => {
+         if (touched[element.path]) {
+           parsedError[element.path] = element.message;
+         }
+       });
+       this.setState({
+         errorMessage: parsedError,
+         showButton: false,
+       });
+     });
+   }
 
-      },
-      isValid: true,
-    }, () => {
-      Object.keys(data).forEach((keys) => {
-        if (!touched[keys]) {
-          this.setState({
-            [keys]: data[keys],
-          });
-        }
-      });
-    });
-  }
+     isTouched=(value) => {
+       const { touched } = this.state;
+       const { data } = this.props;
+       const touchedField = {};
+       this.setState({
+         touched: {
+           ...touched,
+           [value]: true,
+         },
+       }, () => {
+         const { touched: newTouched } = this.state;
+         const stateObject = this.state;
+         Object.keys(data).forEach((keys) => {
+           if (!newTouched[keys] || !stateObject[value]) {
+             touchedField[keys] = data[keys];
+           }
+         });
+         this.setState({
+           ...touchedField,
+         }, () => this.hasError());
+       });
+     }
 
-  formReset = () => {
-    this.setState({
-      name: '',
-      email: '',
-      isValid: false,
-      touched: {},
-    });
-  }
+     isError = (fields) => {
+       const { errorMessage } = this.state;
+       if (errorMessage[fields]) {
+         return true;
+       }
+       return false;
+     }
+
+     formReset=() => {
+       this.setState({
+         ...editDialogStates,
+       });
+     }
+
+    handleOnClick=(data, openSnackBar) => {
+      const { onSubmit } = this.props;
+      openSnackBar('This is a success message ! ', 'success');
+      onSubmit(data);
+      this.formReset();
+    }
+
+    handleOnClose=() => {
+      const { onClose } = this.props;
+      onClose();
+      this.formReset();
+    }
+
 
   render = () => {
     const {
-      open, onClose, onSubmit, classes, data,
+      open, onClose, classes, data,
     } = this.props;
-    const { name, email, isValid } = this.state;
+    const {
+      name, email, showButton, errorMessage,
+    } = this.state;
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle id="simple-dialog-title">Set backup account</DialogTitle>
@@ -104,7 +138,7 @@ class EditDialog extends React.Component {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  id="outlined-helperText"
+                  id="Name"
                   label="Name"
                   defaultValue={data.name}
                   InputProps={{
@@ -116,14 +150,16 @@ class EditDialog extends React.Component {
                   }}
                   fullWidth
                   variant="outlined"
-                  onChange={this.handleNameChange}
-                  onBlur={() => { this.isTouched('name'); }}
+                  onChange={this.handleFieldChange('name')}
+                  onBlur={() => this.isTouched('name')}
+                  error={this.isError('name')}
+                  helperText={errorMessage.name}
 
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  id="outlined-helperText"
+                  id="Email"
                   label="Email Address"
                   InputProps={{
                     startAdornment: (
@@ -135,27 +171,31 @@ class EditDialog extends React.Component {
                   fullWidth
                   defaultValue={data.email}
                   variant="outlined"
-                  onChange={this.handleEmailChange}
-                  onBlur={() => { this.isTouched('email'); }}
+                  onChange={this.handleFieldChange('email')}
+                  onBlur={() => this.isTouched('email')}
+                  error={this.isError('email')}
+                  helperText={errorMessage.email}
 
                 />
               </Grid>
             </Grid>
           </div>
           <DialogActions>
-            <Button onClick={onClose} color="primary">
-              Cancel
+            <Button onClick={this.handleOnClose} color="primary">
+            Cancel
             </Button>
-
             <MyContext.Consumer>
-              {(value) => (
-                <>
-                  <Button disabled={!isValid} onClick={() => { onSubmit({ name, email }); this.formReset(); value.openSnackBar('This is a success message ! ', 'success'); }} color="primary">
+              {(value) => {
+                const { openSnackBar } = value;
+                return (
+                  <>
+                    <Button disabled={!showButton} onClick={() => this.handleOnClick({ name, email }, openSnackBar)} color="primary">
 
               Submit
-                  </Button>
-                </>
-              )}
+                    </Button>
+                  </>
+                );
+              }}
             </MyContext.Consumer>
           </DialogActions>
         </DialogContent>
@@ -169,7 +209,7 @@ EditDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
   data: PropTypes.objectOf(PropTypes.string).isRequired,
-  classes: PropTypes.elementType.isRequired,
+  classes: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 export default withStyles(useStyles)(EditDialog);
