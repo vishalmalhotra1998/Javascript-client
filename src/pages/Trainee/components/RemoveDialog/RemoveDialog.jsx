@@ -7,8 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
-
-import { MyContext } from '../../../../contexts';
+import { SnackBarConsumer } from '../../../../contexts';
 
 class RemoveDialog extends React.Component {
   constructor(props) {
@@ -20,11 +19,13 @@ class RemoveDialog extends React.Component {
     const date = '2019-02-14T18:15:11.778Z';
     const { onSubmit } = this.props;
     const isAfter = (moment(data.createdAt).isAfter(date));
-    if (isAfter) {
-      openSnackBar('This is a success Message! ', 'success');
-    } else {
-      openSnackBar('This is an error', 'error');
-    }
+    const snackBarMessages = {
+      success: 'Trainee Succesfully Deleted',
+      error: 'Error While deleted !',
+    };
+    const status = isAfter ? 'success' : 'error';
+    const snackBarMessage = snackBarMessages[status];
+    openSnackBar(snackBarMessage, status);
     onSubmit(data);
   }
 
@@ -43,7 +44,7 @@ class RemoveDialog extends React.Component {
             <Button onClick={onClose} variant="contained">
               Cancel
             </Button>
-            <MyContext.Consumer>
+            <SnackBarConsumer>
               {(value) => {
                 const { openSnackBar } = value;
                 return (
@@ -54,7 +55,7 @@ class RemoveDialog extends React.Component {
                   </>
                 );
               }}
-            </MyContext.Consumer>
+            </SnackBarConsumer>
           </DialogActions>
         </DialogContent>
       </Dialog>
