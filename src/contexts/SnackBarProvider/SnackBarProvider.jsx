@@ -5,13 +5,17 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 const MyContext = React.createContext();
 
+const snackBarStates = {
+  message: '',
+  status: '',
+  open: false,
+};
+
 class SnackBarProvider extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
-      status: '',
-      open: false,
+      ...snackBarStates,
     };
   }
 
@@ -19,14 +23,14 @@ class SnackBarProvider extends React.Component {
     this.setState({
       message,
       status,
-      open: true,
     });
+    this.toggleButtonSnackbar();
   }
 
-  handleCloseSnackBar = () => {
-    this.setState({
-      open: false,
-    });
+  toggleButtonSnackbar = () => {
+    this.setState((prevState) => ({
+      open: !prevState.open,
+    }));
   }
 
   render() {
@@ -45,7 +49,7 @@ class SnackBarProvider extends React.Component {
           open={open}
           message={message}
           status={status}
-          onClose={this.handleCloseSnackBar}
+          onClose={this.toggleButtonSnackbar}
         />
       </>
     );
