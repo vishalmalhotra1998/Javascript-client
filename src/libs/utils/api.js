@@ -13,7 +13,7 @@ const apiCall = async (apiData, endPoint, method) => {
     const { data } = response;
     return data;
   } catch (error) {
-    return ({ message: 'There is an Error!', status: 'error' });
+    return ({ message: error.message, status: 'error' });
   }
 };
 
