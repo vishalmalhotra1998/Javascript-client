@@ -10,7 +10,7 @@ const apiCall = async (apiData, endPoint, method) => {
         ...apiData,
       },
     });
-    const { data } = response;
+    const { data } = response || {};
     return data;
   } catch (error) {
     return ({ message: error.message, status: 'error' });
