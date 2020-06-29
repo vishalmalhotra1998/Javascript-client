@@ -6,7 +6,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 
-
 const useStyles = makeStyles({
   root: {
     flexGrow: 1,
@@ -25,7 +24,9 @@ const useStyles = makeStyles({
 
 const NavBar = () => {
   const classes = useStyles();
-
+  const handleLogout = () => {
+    localStorage.clear();
+  };
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -38,7 +39,7 @@ const NavBar = () => {
             <Button className={classes.textSize} component={Link} to="/TextFieldDemo" size="small" color="inherit">TextField Demo</Button>
             <Button className={classes.textSize} component={Link} to="/InputDemo" size="small" color="inherit">Input Demo</Button>
             <Button className={`${classes.textSize} ${classes.padding}`} component={Link} to="/ChildrenDemo" size="small" color="inherit">Children Demo</Button>
-            <Button className={classes.textSize} size="small" color="inherit">Logout</Button>
+            <Button className={classes.textSize} component={Link} to="/login" onClick={handleLogout} size="small" color="inherit">Logout</Button>
           </Typography>
         </Toolbar>
       </AppBar>

@@ -9,9 +9,12 @@ import Container from '@material-ui/core/Container';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import EmailIcon from '@material-ui/icons/Email';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import propTypes from 'prop-types';
+import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
+import { SnackBarConsumer } from '../../contexts';
 
 const useStyles = (theme) => ({
   paper: {
@@ -40,9 +43,9 @@ class SignIn extends React.Component {
       email: '',
       password: '',
       showButton: false,
+      loader: false,
       touched: {},
       errorMessage: {},
-
     };
   }
 
@@ -95,10 +98,35 @@ class SignIn extends React.Component {
       return false;
     }
 
+    toggleLoaderAndShowButton = () => {
+      this.setState((prevState) => ({
+        loader: !prevState.loader,
+        showButton: !prevState.showButton,
+      }));
+    }
+
+    handleOnClick = async (openSnackBar) => {
+      this.toggleLoaderAndShowButton();
+      const { email, password } = this.state;
+      const apiData = { email, password };
+      const endPoint = '/user/login';
+      const method = 'post';
+      const loginData = await callApi(apiData, endPoint, method);
+      const { message, status, data: token } = loginData;
+      const { history } = this.props;
+      this.toggleLoaderAndShowButton();
+      if (token) {
+        localStorage.setItem('token', token);
+        history.push('/trainee');
+      } else {
+        openSnackBar(message, status);
+      }
+    }
+
     render = () => {
       const { classes } = this.props;
       const {
-        showButton, errorMessage, email, password,
+        showButton, errorMessage, email, password, loader,
       } = this.state;
 
       return (
@@ -159,15 +187,24 @@ class SignIn extends React.Component {
                   helperText={errorMessage.password}
                   error={this.isError('password')}
                 />
-                <Button
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  disabled={!showButton}
-                >
-                    Sign In
-                </Button>
+                <SnackBarConsumer>
+                  {(value) => {
+                    const { openSnackBar } = value;
+                    return (
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        disabled={!showButton}
+                        onClick={() => this.handleOnClick(openSnackBar)}
+                      >
+                        <span>{loader ? <CircularProgress size={30} /> : ''}</span>
+                                            Sign In
+                      </Button>
+                    );
+                  }}
+                </SnackBarConsumer>
               </form>
             </div>
           </Box>
@@ -175,8 +212,10 @@ class SignIn extends React.Component {
       );
     }
 }
+
 export default withStyles(useStyles, { withTheme: true })(SignIn);
 
 SignIn.propTypes = {
-  classes: propTypes.objectOf(propTypes.any).isRequired,
+  classes: propTypes.objectOf(propTypes.string).isRequired,
+  history: propTypes.objectOf(propTypes.any).isRequired,
 };

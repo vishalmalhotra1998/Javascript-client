@@ -10,6 +10,7 @@ const snackBarStates = {
   status: '',
   open: false,
 };
+
 const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
 class SnackBarProvider extends React.Component {
