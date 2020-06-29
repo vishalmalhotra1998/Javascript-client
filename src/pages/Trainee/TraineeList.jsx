@@ -23,151 +23,172 @@ class TraineeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      showAddOpen: false,
       order: 'asc',
-      orderBy: 'Date',
+      orderBy: '',
       page: 0,
-      editOpen: false,
-      remOpen: false,
+      showEditOpen: false,
+      showRemoveOpen: false,
       rowData: {},
       rowsPerPage: 10,
     };
   }
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
+    toggleDialogBox = () => {
+      this.setState((prevState) => ({
+        showAddOpen: !prevState.showAddOpen,
+      }));
+    }
 
-  handleClose = () => {
-    this.setState({ open: false, editOpen: false, remOpen: false });
-  };
+    toggleRemoveDialogBox = () => {
+      this.setState((prevState) => ({
+        showRemoveOpen: !prevState.showRemoveOpen,
+      }));
+    }
 
-  onSubmitHandle = (values) => {
-    this.setState({ open: false, editOpen: false });
-    console.log(values);
-  }
+    toggleEditDialogBox = () => {
+      this.setState((prevState) => ({
+        showEditOpen: !prevState.showEditOpen,
+      }));
+    }
 
-  handleOnSubmitDelete=(values) => {
-    this.setState({ open: false, remOpen: false });
-    console.log('Deleted Items', values);
-  }
+    onSubmitHandle = (values) => {
+      this.toggleDialogBox();
+      console.log(values);
+    }
 
-  handleSort = (value) => {
-    const { orderBy, order } = this.state;
-    const isAsc = orderBy === value && order === 'asc';
-    const data = isAsc ? 'desc' : 'asc';
-    this.setState({
-      order: data,
-      orderBy: value,
-    });
-  }
+    handleSelectChange = (value) => {
+      console.log(value);
+    }
 
-  handleSelectChange = (value) => {
-    console.log(value);
-  }
+    handleSort = (value) => {
+      const { orderBy, order } = this.state;
+      const isAsc = orderBy === value && order === 'asc';
+      const data = isAsc ? 'desc' : 'asc';
+      this.setState({
+        order: data,
+        orderBy: value,
+      });
+    }
 
-  handleEditDialogOpen = (values) => {
-    this.setState({ editOpen: true, rowData: values });
-  }
+    handleEditDialogOpen = (values) => {
+      this.toggleEditDialogBox();
+      this.setState({ rowData: values });
+    }
 
-  handleRemoveDialogOpen = (values) => {
-    this.setState({ remOpen: true, rowData: values });
-  }
+     onSubmitEdit=(values) => {
+       this.toggleEditDialogBox();
+       console.log('Edited Items', values);
+     }
 
-handleChangePage = (event, newPage) => {
-  this.setState({ page: newPage });
-};
+      handleRemoveDialogOpen = (values) => {
+        this.toggleRemoveDialogBox();
+        this.setState({ rowData: values });
+      }
+
+      onSubmitDelete=(values) => {
+        this.toggleRemoveDialogBox();
+        console.log('Deleted Items', values);
+      }
+
+    handleChangePage = (event, newPage) => {
+      this.setState({ page: newPage });
+    };
 
 
-render() {
-  const {
-    open, order, orderBy, page, editOpen, rowData, remOpen, rowsPerPage,
-  } = this.state;
-  const { match: { url }, classes } = this.props;
-  const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-  return (
-    <>
-      <Box p={1} />
-      <div className={classes.button}>
-        <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-            Add Trainee
-        </Button>
-      </div>
-      <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-      <Box p={1} />
-      <TableComponent
+    render() {
+      const {
+        showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
+      } = this.state;
+      const { match: { url }, classes } = this.props;
+      const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+      const traineeList = (
+        <>
+          <Box p={1} />
+          <div className={classes.button}>
+            <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                Add Trainee
+            </Button>
+          </div>
+          <FormDialog
+            open={showAddOpen}
+            onClose={this.toggleDialogBox}
+            onSubmit={this.toggleDialogBox}
+          />
+          <Box p={1} />
+          <TableComponent
+            id="id"
+            data={trainee}
+            column={[{
+              field: 'name',
+              label: 'Name',
+              align: 'center',
+            },
+            {
+              field: 'email',
+              label: 'Email-Address',
+              format: (value) => value && value.toUpperCase(),
 
-        id="id"
+            },
+            {
+              field: 'createdAt',
+              label: 'Date',
+              align: 'right',
+              format: getDateFormatted,
+            },
+            ]}
+            actions={[{
+              icons: <EditIcon />,
+              handler: this.handleEditDialogOpen,
+              key: 'editIcon',
+            },
+            {
+              icons: <DeleteIcon />,
+              handler: this.handleRemoveDialogOpen,
+              key: 'removeIcon',
 
-        data={trainee}
+            }]}
+            order={order}
+            orderBy={orderBy}
+            onSort={this.handleSort}
+            onSelect={this.handleSelectChange}
+            count={100}
+            page={page}
+            onChangePage={this.handleChangePage}
+            rowsPerPage={rowsPerPage}
+          />
+          <EditDialog
+            open={showEditOpen}
+            onClose={this.toggleEditDialogBox}
+            onSubmit={this.onSubmitEdit}
+            data={rowData}
+          />
+          <RemoveDialog
+            open={showRemoveOpen}
+            onClose={this.toggleRemoveDialogBox}
+            onSubmit={this.onSubmitDelete}
+            data={rowData}
+          />
+          <Box p={1} />
+          <ul>
+            {trainee.length && trainee.map((data) => (
+              <Fragment key={data.id}>
+                <li>
+                  <Link to={`${url}/${data.id}`}>{data.name}</Link>
+                </li>
 
-        column={[{
-          field: 'name',
-          label: 'Name',
-        },
-        {
-          field: 'email',
-          label: 'Email-Address',
-          format: (value) => value && value.toUpperCase(),
-
-        },
-        {
-          field: 'createdAt',
-          label: 'Date',
-          align: 'right',
-          format: getDateFormatted,
-        }]}
-
-        actions={[{
-          icons: <EditIcon />,
-          handler: this.handleEditDialogOpen,
-        },
-        {
-          icons: <DeleteIcon />,
-          handler: this.handleRemoveDialogOpen,
-
-        }]}
-
-        order={order}
-        orderBy={orderBy}
-        onSort={this.handleSort}
-        onSelect={this.handleSelectChange}
-        count={100}
-        page={page}
-        onChangePage={this.handleChangePage}
-        rowsPerPage={rowsPerPage}
-
-      />
-      <EditDialog
-        open={editOpen}
-        onClose={this.handleClose}
-        onSubmit={this.onSubmitHandle}
-        data={rowData}
-      />
-      <RemoveDialog
-        open={remOpen}
-        onClose={this.handleClose}
-        onSubmit={this.handleOnSubmitDelete}
-        data={rowData}
-      />
-      <Box p={1} />
-      <ul>
-        {trainee.length && trainee.map((data) => (
-          <Fragment key={data.id}>
-            <li>
-              <Link to={`${url}/${data.id}`}>{data.name}</Link>
-            </li>
-
-          </Fragment>
-        ))}
-      </ul>
-    </>
-  );
+              </Fragment>
+            ))}
+          </ul>
+        </>
+      );
+      return (traineeList);
+    }
 }
-}
-export default withStyles(useStyles, { withTheme: true })(TraineeList);
 
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
 };
+
+export default withStyles(useStyles, { withTheme: true })(TraineeList);

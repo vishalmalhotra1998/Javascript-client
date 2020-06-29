@@ -17,7 +17,7 @@ const FormSchema = yup.object().shape({
     .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.')
     .required()
     .label('password'),
-  passwordConfirmation: yup
+  confirmPassword: yup
     .string()
     .oneOf([yup.ref('password'), null], 'Must match password')
     .required()

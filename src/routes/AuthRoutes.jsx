@@ -4,7 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 import ls from 'local-storage';
 import { AuthLayout } from '../layouts';
 
-const AuthLayoutRoute = ({ component: Component, ...rest }) => (
+const AuthRoute = ({ component: Component, ...rest }) => (
   !ls.get('token') ? (
     <Route
       {...rest}
@@ -16,10 +16,9 @@ const AuthLayoutRoute = ({ component: Component, ...rest }) => (
     />
   ) : <Redirect to="/trainee" />
 );
-export default AuthLayoutRoute;
 
-AuthLayoutRoute.propTypes = {
-
+AuthRoute.propTypes = {
   component: propTypes.elementType.isRequired,
-
 };
+
+export default AuthRoute;

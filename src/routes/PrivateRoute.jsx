@@ -4,7 +4,7 @@ import { Route, Redirect } from 'react-router-dom';
 import ls from 'local-storage';
 import { PrivateLayout } from '../layouts';
 
-const PrivateLayoutRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component, ...rest }) => (
   ls.get('token') ? (
     <Route
       {...rest}
@@ -16,10 +16,9 @@ const PrivateLayoutRoute = ({ component: Component, ...rest }) => (
     />
   ) : <Redirect to="/login" />
 );
-export default PrivateLayoutRoute;
 
-PrivateLayoutRoute.propTypes = {
-
+PrivateRoute.propTypes = {
   component: propTypes.elementType.isRequired,
-
 };
+
+export default PrivateRoute;
