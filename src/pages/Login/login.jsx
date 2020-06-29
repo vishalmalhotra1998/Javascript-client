@@ -12,7 +12,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import propTypes from 'prop-types';
-import ls from 'local-storage';
 import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
 import { SnackBarConsumer } from '../../contexts';
@@ -109,12 +108,15 @@ class SignIn extends React.Component {
     handleOnClick = async (openSnackBar) => {
       this.toggleLoaderAndShowButton();
       const { email, password } = this.state;
-      const loginData = await callApi({ email, password }, '/user/login', 'post');
+      const apiData = { email, password };
+      const endPoint = '/user/login';
+      const method = 'post';
+      const loginData = await callApi(apiData, endPoint, method);
       const { message, status, data: token } = loginData;
       const { history } = this.props;
       this.toggleLoaderAndShowButton();
-      if (status === 'ok') {
-        ls.set('token', token);
+      if (token) {
+        localStorage.setItem('token', token);
         history.push('/trainee');
       } else {
         openSnackBar(message, status);
@@ -198,7 +200,7 @@ class SignIn extends React.Component {
                         onClick={() => this.handleOnClick(openSnackBar)}
                       >
                         <span>{loader ? <CircularProgress size={30} /> : ''}</span>
-                                        Sign In
+                                            Sign In
                       </Button>
                     );
                   }}

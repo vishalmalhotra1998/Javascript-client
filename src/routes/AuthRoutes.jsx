@@ -1,11 +1,10 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import ls from 'local-storage';
 import { AuthLayout } from '../layouts';
 
 const AuthRoute = ({ component: Component, ...rest }) => (
-  !ls.get('token') ? (
+  !localStorage.getItem('token') ? (
     <Route
       {...rest}
       render={(matchProps) => (
