@@ -1,5 +1,4 @@
 import React from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles, createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -24,7 +23,6 @@ const NoMatch = () => {
 
   return (
     <div className={classes.root}>
-      <CssBaseline />
       <ThemeProvider theme={theme}>
         <Container component="main" className={classes.main} maxWidth="sm">
           <Typography align="center" color="textSecondary" variant="h2" gutterBottom>

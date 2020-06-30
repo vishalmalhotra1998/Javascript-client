@@ -1,3 +1,1 @@
-import Slider from './slider';
-
-export default Slider;
+export { default as Slider } from './slider';

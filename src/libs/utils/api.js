@@ -8,7 +8,7 @@ const apiCall = async (apiData, endPoint, method) => {
       url: URL,
       ...apiData,
     });
-    const { data } = response;
+    const { data } = response || {};
     return data;
   } catch (error) {
     return ({ message: error.message, status: 'error' });

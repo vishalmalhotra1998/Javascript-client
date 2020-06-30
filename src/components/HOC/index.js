@@ -1,3 +1,1 @@
-import withLoaderAndMessage from './withLoaderAndMessage';
-
-export default withLoaderAndMessage;
+export { default as withLoaderAndMessage } from './withLoaderAndMessage';
