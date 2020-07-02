@@ -69,13 +69,11 @@ class TraineeList extends React.Component {
       const { page, rowsPerPage } = this.state;
       const apiData = {
         params: { skip: page * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: localStorage.getItem('token') },
       };
       const url = '/trainee';
       const method = 'get';
       this.handleTableData(apiData, url, method);
       console.log(values);
-
     };
 
     handleSelectChange = (value) => {
@@ -122,38 +120,35 @@ class TraineeList extends React.Component {
         const { page } = this.state;
         const apiData = {
           params: { skip: page * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: localStorage.getItem('token') },
         };
         const url = '/trainee';
         const method = 'get';
-        this.handleTableData(apiData, url, method);
         this.toggleLoader();
+        this.handleTableData(apiData, url, method);
       });
     };
 
-  handleTableData = (data, url, method) => {
-    callApi(data, url, method).then((response) => {
-      const { data: { records = [], count = 0 } } = response;
-      this.setState({
-        tableData: records,
-        count,
-      });
-      this.toggleLoader();
-    });
-  }
-
-componentDidMount =() => {
-  console.log('---------Component Did Mount-----------');
-  const apiData = { params: { skip: 0, limit: 20 }, headers: { Authorization: localStorage.getItem('token') } };
-  const url = '/trainee';
-  const method = 'get';
-  callApi(apiData, url, method).then((response) => {
-    const { data: { records = [], count = 0 } } = response;
-    this.toggleLoader();
+  handleTableData = async (data, url, method) => {
+    const responseData = await callApi(data, url, method);
+    const { data: { records = [], count = 0 } } = responseData;
     this.setState({
       tableData: records,
       count,
     });
+    this.toggleLoader();
+  }
+
+componentDidMount = async () => {
+  const { page, rowsPerPage } = this.state;
+  const apiData = { params: { skip: page, limit: rowsPerPage } };
+  const url = '/trainee';
+  const method = 'get';
+  const responseData = await callApi(apiData, url, method);
+  const { data: { records = [], count = 0 } } = responseData;
+  this.toggleLoader();
+  this.setState({
+    tableData: records,
+    count,
   });
 }
 

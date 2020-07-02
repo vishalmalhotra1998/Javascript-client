@@ -127,7 +127,7 @@ class FormDialog extends React.Component {
 
 handleCallApi= async (value, openSnackBar) => {
   const { onSubmit } = this.props;
-  const apiData = { data: { ...value }, headers: { Authorization: localStorage.getItem('token') } };
+  const apiData = { data: { ...value } };
   const url = '/trainee';
   const method = 'post';
   this.toggleLoaderAndShowButton();

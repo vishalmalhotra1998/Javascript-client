@@ -7,6 +7,7 @@ const apiCall = async (apiData, endPoint, method) => {
       method,
       url: URL,
       ...apiData,
+      headers: { Authorization: localStorage.getItem('token') },
     });
     const { data } = response || {};
     return data;
