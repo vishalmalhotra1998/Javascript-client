@@ -1,3 +1,1 @@
-import { SnackBarProvider, MyContext } from './SnackBarProvider';
-
-export { SnackBarProvider, MyContext };
+export { SnackBarProvider, SnackBarConsumer } from './SnackBarProvider';

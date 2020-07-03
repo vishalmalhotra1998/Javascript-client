@@ -7,98 +7,89 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
-import ls from 'local-storage';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import callApi from '../../../../libs/utils/api';
-import { MyContext } from '../../../../contexts';
+import { SnackBarConsumer } from '../../../../contexts';
 
 
 class RemoveDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
       loader: false,
+      showButton: true,
     };
   }
 
-  handleCallApiForRemove=(data, openSnackBar) => {
-    const id = data.originalId;
-    const { onSubmit } = this.props;
-    this.setState({ loader: true });
-    callApi({ headers: { Authorization: ls.get('token') } },
-      `/trainee/${id}`, 'delete').then((response) => {
-      const { status } = response;
-      if (status === 'ok') {
-        this.setState({
-          message: 'This is a success Message! ',
-          loader: false,
-        }, () => {
-          const { message } = this.state;
-          openSnackBar(message, 'success');
-          onSubmit(data);
-        });
-      } else {
-        this.setState({
-          message: 'This is an error',
-          loader: false,
-        }, () => {
-          const { message } = this.state;
-          openSnackBar(message, 'error');
-        });
-      }
-    });
+  toggleLoaderAndButton=() => {
+    this.setState((prevState) => ({
+      loader: !prevState.loader,
+      showButton: !prevState.showButton,
+    }));
   }
 
-  handleSnackBarMessage = (data, openSnackBar) => {
+  handleOnClick = (removeData, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
-    const isAfter = (moment(data.createdAt).isAfter(date));
-    if (isAfter) {
-      this.handleCallApiForRemove(data, openSnackBar);
+    const isAfter = (moment(removeData.createdAt).isAfter(date));
+    const snackBarMessages = {
+      success: 'Trainee Succesfully Deleted',
+      error: 'Error While deleted !',
+    };
+    const status = isAfter ? 'success' : 'error';
+    const snackBarMessage = snackBarMessages[status];
+    if (status === 'success') {
+      this.handleCallApiForRemove(removeData, openSnackBar, snackBarMessages);
     } else {
-      this.setState({
-        message: 'This is an error',
-      }, () => {
-        const { message } = this.state;
-        openSnackBar(message, 'error');
-      });
+      openSnackBar(snackBarMessage, status);
     }
+  }
+
+
+  handleCallApiForRemove = async (removeData, openSnackBar, snackBarMessages) => {
+    const { originalId: id } = removeData;
+    const { onSubmit } = this.props;
+    this.toggleLoaderAndButton();
+    const apiData = '';
+    const url = `/trainee/${id}`;
+    const method = 'delete';
+    const responseData = await callApi(apiData, url, method);
+    const { data } = responseData;
+    const status = data ? 'success' : 'error';
+    const snackBarMessage = snackBarMessages[status];
+    openSnackBar(snackBarMessage, status);
+    this.toggleLoaderAndButton();
+    onSubmit(removeData);
   }
 
   render = () => {
     const {
       onClose, open, data,
     } = this.props;
-    const { loader } = this.state;
+    const { loader, showButton } = this.state;
     return (
-      <Dialog onClose={() => onClose()} aria-labelledby="simple-dialog-title" open={open}>
+      <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="lg" fullWidth>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
-        <div>
-          <DialogContentText>
-            Do you really want to delete trainee ?
-          </DialogContentText>
-        </div>
+        <DialogContentText>
+           Do you really want to delete trainee ?
+        </DialogContentText>
         <DialogContent>
           <DialogActions>
-            <Button onClick={() => onClose()} variant="contained">
+            <Button onClick={onClose} variant="contained">
               Cancel
             </Button>
-
-            <MyContext.Consumer>
+            <SnackBarConsumer>
               {(value) => {
                 const { openSnackBar } = value;
                 return (
                   <>
-                    <Button disabled={loader} color="primary" variant="contained" onClick={() => { this.handleSnackBarMessage(data, openSnackBar); }}>
-                      <span>
-                        {loader ? <CircularProgress size={20} /> : ''}
-                      </span>
+                    <Button disabled={!showButton} color="primary" variant="contained" onClick={() => this.handleOnClick(data, openSnackBar)}>
+                      <span>{loader ? <CircularProgress size={20} /> : ''}</span>
                     Delete
                     </Button>
                   </>
                 );
               }}
-            </MyContext.Consumer>
+            </SnackBarConsumer>
           </DialogActions>
         </DialogContent>
       </Dialog>

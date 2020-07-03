@@ -1,7 +1,6 @@
 import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
@@ -13,10 +12,9 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import propTypes from 'prop-types';
-import ls from 'local-storage';
 import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
-import { MyContext } from '../../contexts';
+import { SnackBarConsumer } from '../../contexts';
 
 const useStyles = (theme) => ({
   paper: {
@@ -44,162 +42,180 @@ class SignIn extends React.Component {
     this.state = {
       email: '',
       password: '',
+      showButton: false,
       loader: false,
-      isValid: false,
       touched: {},
       errorMessage: {},
     };
   }
 
-  handleEmailChange=(values) => {
-    this.setState({ email: values.target.value }, () => {
-      this.hasError();
-    });
-  }
+    handleFieldChange = (field) => (event) => {
+      this.setState({
+        [field]: event.target.value,
+      }, () => this.hasError(), this.isTouched(field));
+    }
 
-  handlePasswordChange=(values) => {
-    this.setState({ password: values.target.value }, () => {
-      this.hasError();
-    });
-  }
+    hasError = () => {
+      const { email, password, touched } = this.state;
+      const parsedError = {};
+      signInSchema.validate({
+        email,
+        password,
+      }, { abortEarly: false }).then(() => {
+        this.setState({
+          errorMessage: {},
+          showButton: true,
+        });
+      }).catch((error) => {
+        error.inner.forEach((element) => {
+          if (touched[element.path]) {
+            parsedError[element.path] = element.message;
+          }
+        });
+        this.setState({
+          errorMessage: parsedError,
+          showButton: false,
+        });
+      });
+    }
 
-hasError=() => {
-  const { email, password, touched } = this.state;
-  const parsedError = {};
+    isTouched = (keys) => {
+      const { touched } = this.state;
+      this.setState({
+        touched: {
+          ...touched,
+          [keys]: true,
+        },
 
-  signInSchema.validate({
-    email,
-    password,
-  }, { abortEarly: false }).then(() => {
-    this.setState({
-      errorMessage: {},
-      isValid: true,
-    });
-  }).catch((error) => {
-    error.inner.forEach((element) => {
-      if (touched[element.path]) {
-        parsedError[element.path] = element.message;
+      }, () => { this.hasError(); });
+    }
+
+    isError = (fields) => {
+      const { errorMessage } = this.state;
+      if (errorMessage[fields]) {
+        return true;
       }
-    });
+      return false;
+    }
 
-    this.setState({
-      errorMessage: parsedError,
-      isValid: false,
-    });
-  });
+    toggleLoaderAndShowButton = () => {
+      this.setState((prevState) => ({
+        loader: !prevState.loader,
+        showButton: !prevState.showButton,
+      }));
+    }
+
+    handleOnClick = async (openSnackBar) => {
+      this.toggleLoaderAndShowButton();
+      const { email, password } = this.state;
+      const apiData = { data: { email, password } };
+      const endPoint = '/user/login';
+      const method = 'post';
+      const loginData = await callApi(apiData, endPoint, method);
+      const { message, status, data: token } = loginData;
+      const { history } = this.props;
+      this.toggleLoaderAndShowButton();
+      if (token) {
+        localStorage.setItem('token', token);
+        history.push('/trainee');
+      } else {
+        openSnackBar(message, status);
+      }
+    }
+
+    render = () => {
+      const { classes } = this.props;
+      const {
+        showButton, errorMessage, email, password, loader,
+      } = this.state;
+
+      return (
+
+        <Container component="main" maxWidth="xs">
+          <Box boxShadow={6} padding={3} marginTop={6}>
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                            Login
+              </Typography>
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={this.handleFieldChange('email')}
+                  onBlur={() => { this.isTouched('email'); }}
+                  autoFocus
+                  helperText={errorMessage.email}
+                  error={this.isError('email')}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VisibilityIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  value={password}
+                  autoComplete="current-password"
+                  onChange={this.handleFieldChange('password')}
+                  onBlur={() => { this.isTouched('password'); }}
+                  helperText={errorMessage.password}
+                  error={this.isError('password')}
+                />
+                <SnackBarConsumer>
+                  {(value) => {
+                    const { openSnackBar } = value;
+                    return (
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        className={classes.submit}
+                        disabled={!showButton}
+                        onClick={() => this.handleOnClick(openSnackBar)}
+                      >
+                        <span>{loader ? <CircularProgress size={30} /> : ''}</span>
+                                            Sign In
+                      </Button>
+                    );
+                  }}
+                </SnackBarConsumer>
+              </form>
+            </div>
+          </Box>
+        </Container>
+      );
+    }
 }
 
- isTouched=(keys) => {
-   const { touched } = this.state;
-   this.setState({
-     touched: {
-       ...touched,
-       [keys]: true,
-     },
-
-   }, () => { this.hasError(); });
- }
-
- handleLoader=(data, openSnackBar) => {
-   const { message, status, data: token } = data;
-   const { history } = this.props;
-   this.setState({ loader: false, isValid: true }, () => (status === 'ok' ? (
-     ls.set('token', token),
-     history.push('/trainee'))
-     : (openSnackBar(message, status))));
- }
-
-  render=() => {
-    const { classes } = this.props;
-    const {
-      isValid, errorMessage, email, password, loader,
-    } = this.state;
-    return (
-
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-
-        <Box boxShadow={6} padding={3} marginTop={6}>
-          <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-          Login
-            </Typography>
-            <form className={classes.form} noValidate>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <EmailIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={this.handleEmailChange}
-                onBlur={() => { this.isTouched('email'); }}
-                autoFocus
-                helperText={errorMessage.email}
-                error={errorMessage.email}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <VisibilityIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={this.handlePasswordChange}
-                onBlur={() => { this.isTouched('password'); }}
-                helperText={errorMessage.password}
-                error={errorMessage.password}
-              />
-              <MyContext.Consumer>
-                {(value) => (
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    className={classes.submit}
-                    disabled={!isValid}
-                    onClick={async () => {
-                      this.setState({ loader: true, isValid: false });
-                      this.handleLoader(await callApi({ data: { email, password } }, '/user/login', 'post'), value.openSnackBar);
-                    }}
-                  >
-                    <span>{loader ? <CircularProgress size={30} /> : ''}</span>
-                 Sign In
-                  </Button>
-                )}
-              </MyContext.Consumer>
-            </form>
-          </div>
-        </Box>
-      </Container>
-    );
-  }
-}
 export default withStyles(useStyles, { withTheme: true })(SignIn);
 
 SignIn.propTypes = {
   classes: propTypes.objectOf(propTypes.string).isRequired,
-  history: propTypes.objectOf(propTypes.string).isRequired,
+  history: propTypes.objectOf(propTypes.any).isRequired,
 };

@@ -12,6 +12,7 @@ const ButtonField = styled.input`
 
 `;
 const ButtonDiv = styled.div`
+ padding-top:2%;
  padding-left: 74%;
  display: flex;
  justify-content: space-around;
