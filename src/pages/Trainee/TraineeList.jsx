@@ -111,7 +111,6 @@ class TraineeList extends React.Component {
       }
 
     handleChangePage = (event, newPage) => {
-      this.setState({ page: newPage });
       const {
         rowsPerPage,
       } = this.state;

@@ -131,11 +131,11 @@ handleCallApi= async (value, openSnackBar) => {
   const url = '/trainee';
   const method = 'post';
   this.toggleLoaderAndShowButton();
-  const data = await callApi(apiData, url, method);
-  const { status, message } = data;
+  const responseData = await callApi(apiData, url, method);
+  const { message, data } = responseData;
   this.toggleLoaderAndShowButton();
   onSubmit(value);
-  if (status === 'ok') openSnackBar(message, 'success');
+  if (data) openSnackBar(message, 'success');
   this.formReset();
 };
 
