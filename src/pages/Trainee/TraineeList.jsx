@@ -31,7 +31,7 @@ class TraineeList extends React.Component {
       showEditOpen: false,
       showRemoveOpen: false,
       rowData: {},
-      rowsPerPage: 20,
+      rowsPerPage: 10,
       tableData: [],
       count: 0,
       loader: true,
@@ -63,17 +63,22 @@ class TraineeList extends React.Component {
       }));
     }
 
-    onSubmitAdd = (values) => {
-      this.toggleDialogBox();
-      this.toggleLoader();
+    onSubmitAdd = async (values, openSnackBar) => {
       const { page, rowsPerPage } = this.state;
-      const apiData = {
+      let apiData = { data: { ...values } };
+      let url = '/trainee';
+      let method = 'post';
+      const responseData = await callApi(apiData, url, method);
+      const { message, data } = responseData;
+      if (data) openSnackBar(message, 'success');
+      apiData = {
         params: { skip: page * rowsPerPage, limit: rowsPerPage },
       };
-      const url = '/trainee';
-      const method = 'get';
+      url = '/trainee';
+      method = 'get';
+      this.toggleDialogBox();
+      this.toggleLoader();
       this.handleTableData(apiData, url, method);
-      console.log(values);
     };
 
     handleSelectChange = (value) => {
@@ -95,9 +100,26 @@ class TraineeList extends React.Component {
       this.setState({ rowData: values });
     }
 
-     onSubmitEdit=(values) => {
+     onSubmitEdit= async (editValues, openSnackBar) => {
+       const snackBarMessages = {
+         success: 'Trainee Updated Successfully',
+         error: 'Error in Updating the field',
+       };
+       let apiData = { data: { ...editValues } };
+       let url = '/trainee';
+       let method = 'put';
+       const responseData = await callApi(apiData, url, method);
+       const { data } = responseData;
+       const status = data ? 'success' : 'error';
+       const snackBarMessage = snackBarMessages[status];
+       openSnackBar(snackBarMessage, status);
+       const { page, rowsPerPage } = this.state;
+       apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+       url = '/trainee';
+       method = 'get';
        this.toggleEditDialogBox();
-       console.log('Edited Items', values);
+       this.toggleLoader();
+       this.handleTableData(apiData, url, method);
      }
 
       handleRemoveDialogOpen = (values) => {
@@ -105,16 +127,45 @@ class TraineeList extends React.Component {
         this.setState({ rowData: values });
       }
 
-      onSubmitDelete=(values) => {
+      onSubmitDelete = async (removeValues, openSnackBar) => {
+        const snackBarMessages = {
+          success: 'Trainee Succesfully Deleted',
+          error: 'Error While deleted !',
+        };
+        const { id } = removeValues;
+        let apiData = '';
+        let url = `/trainee/${id}`;
+        let method = 'delete';
+        const responseData = await callApi(apiData, url, method);
+        const { data } = responseData;
+        const status = data ? 'success' : 'error';
+        const snackBarMessage = snackBarMessages[status];
+        openSnackBar(snackBarMessage, status);
+        const { page, rowsPerPage, count } = this.state;
+        const totalRowsInPage = count - (page * rowsPerPage);
+        url = '/trainee';
+        method = 'get';
+        if (totalRowsInPage === 1 && page > 0) {
+          this.setState({ page: page - 1 }, () => {
+            const { page: newPage } = this.state;
+            apiData = { params: { skip: newPage * rowsPerPage, limit: rowsPerPage } };
+            this.handleTableData(apiData, url, method);
+          });
+          this.toggleRemoveDialogBox();
+          this.toggleLoader();
+          return true;
+        }
+        apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+        this.handleTableData(apiData, url, method);
         this.toggleRemoveDialogBox();
-        console.log('Deleted Items', values);
+        this.toggleLoader();
+        return true;
       }
 
     handleChangePage = (event, newPage) => {
       const {
         rowsPerPage,
       } = this.state;
-
       this.setState({ page: newPage }, () => {
         const { page } = this.state;
         const apiData = {

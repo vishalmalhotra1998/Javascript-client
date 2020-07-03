@@ -11,6 +11,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { SnackBarConsumer } from '../../../../contexts';
 import FormSchema from './schema';
 
@@ -26,6 +27,7 @@ const editDialogStates = {
   showButton: false,
   touched: {},
   errorMessage: {},
+  loader: false,
 
 };
 
@@ -37,6 +39,17 @@ class EditDialog extends React.Component {
     };
   }
 
+  toggleLoader= () => {
+    this.setState((prevState) => ({
+      loader: !prevState.loader,
+    }));
+  }
+
+  toggleShowButton=() => {
+    this.setState((prevState) => ({
+      showButton: !prevState.showButton,
+    }));
+  }
 
    handleFieldChange=(field) => (event) => {
      this.setState({
@@ -54,8 +67,8 @@ class EditDialog extends React.Component {
        name,
        email,
      }, { abortEarly: false }).then(() => {
+       this.toggleShowButton();
        this.setState({
-         showButton: true,
          errorMessage: parsedError,
        });
      }).catch((error) => {
@@ -67,8 +80,8 @@ class EditDialog extends React.Component {
        });
        this.setState({
          errorMessage: parsedError,
-         showButton: false,
        });
+       this.toggleShowButton();
      });
    }
 
@@ -109,14 +122,13 @@ class EditDialog extends React.Component {
        });
      }
 
-    handleOnClick=(data, openSnackBar) => {
-      const { onSubmit } = this.props;
-      const snackBarMessages = {
-        success: 'Trainee Updated Successfully',
-      };
-      const snackBarMessage = snackBarMessages.success;
-      openSnackBar(snackBarMessage, 'success');
-      onSubmit(data);
+    handleOnClick= async (editData, openSnackBar) => {
+      this.toggleLoader();
+      this.toggleShowButton();
+      const { onSubmit, data: { originalId: id } } = this.props;
+      await onSubmit({ ...editData, id }, openSnackBar);
+      this.toggleLoader();
+      this.toggleShowButton();
       this.formReset();
     }
 
@@ -126,13 +138,12 @@ class EditDialog extends React.Component {
       this.formReset();
     }
 
-
   render = () => {
     const {
       open, onClose, classes, data,
     } = this.props;
     const {
-      name, email, showButton, errorMessage,
+      name, email, showButton, errorMessage, loader,
     } = this.state;
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open}>
@@ -194,7 +205,7 @@ class EditDialog extends React.Component {
                 return (
                   <>
                     <Button disabled={!showButton} onClick={() => this.handleOnClick({ name, email }, openSnackBar)} color="primary">
-
+                      <span>{loader ? <CircularProgress size={30} /> : ''}</span>
               Submit
                     </Button>
                   </>

@@ -7,32 +7,44 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { SnackBarConsumer } from '../../../../contexts';
+
 
 class RemoveDialog extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      loader: false,
+      showButton: true,
+    };
   }
 
-  handleOnClick = (data, openSnackBar) => {
+  toggleLoaderAndButton=() => {
+    this.setState((prevState) => ({
+      loader: !prevState.loader,
+      showButton: !prevState.showButton,
+    }));
+  }
+
+  handleOnClick = async (removeData, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
+    const isAfter = (moment(removeData.createdAt).isAfter(date));
     const { onSubmit } = this.props;
-    const isAfter = (moment(data.createdAt).isAfter(date));
-    const snackBarMessages = {
-      success: 'Trainee Succesfully Deleted',
-      error: 'Error While deleted !',
-    };
-    const status = isAfter ? 'success' : 'error';
-    const snackBarMessage = snackBarMessages[status];
-    openSnackBar(snackBarMessage, status);
-    onSubmit(data);
+    this.toggleLoaderAndButton();
+    if (isAfter) {
+      await onSubmit(removeData, openSnackBar);
+      this.toggleLoaderAndButton();
+    } else {
+      openSnackBar('Error While Deleting !', 'error');
+    }
   }
 
   render = () => {
     const {
       onClose, open, data,
     } = this.props;
+    const { loader, showButton } = this.state;
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="lg" fullWidth>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
@@ -49,7 +61,8 @@ class RemoveDialog extends React.Component {
                 const { openSnackBar } = value;
                 return (
                   <>
-                    <Button color="primary" variant="contained" onClick={() => this.handleOnClick(data, openSnackBar)}>
+                    <Button disabled={!showButton} color="primary" variant="contained" onClick={() => this.handleOnClick(data, openSnackBar)}>
+                      <span>{loader ? <CircularProgress size={20} /> : ''}</span>
                     Delete
                     </Button>
                   </>
