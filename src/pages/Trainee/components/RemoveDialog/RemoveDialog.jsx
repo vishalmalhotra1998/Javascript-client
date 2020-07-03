@@ -8,7 +8,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import * as moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import callApi from '../../../../libs/utils/api';
 import { SnackBarConsumer } from '../../../../contexts';
 
 
@@ -31,34 +30,23 @@ class RemoveDialog extends React.Component {
   handleOnClick = (removeData, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
     const isAfter = (moment(removeData.createdAt).isAfter(date));
-    const snackBarMessages = {
-      success: 'Trainee Succesfully Deleted',
-      error: 'Error While deleted !',
-    };
-    const status = isAfter ? 'success' : 'error';
-    const snackBarMessage = snackBarMessages[status];
-    if (status === 'success') {
-      this.handleCallApiForRemove(removeData, openSnackBar, snackBarMessages);
+    if (isAfter) {
+      this.toggleLoaderAndButton();
+      this.handleCallApiForRemove(removeData, openSnackBar);
     } else {
-      openSnackBar(snackBarMessage, status);
+      openSnackBar('Error While Deleting !', 'error');
     }
   }
 
 
-  handleCallApiForRemove = async (removeData, openSnackBar, snackBarMessages) => {
+  handleCallApiForRemove = async (removeData, openSnackBar) => {
     const { originalId: id } = removeData;
     const { onSubmit } = this.props;
-    this.toggleLoaderAndButton();
     const apiData = '';
     const url = `/trainee/${id}`;
     const method = 'delete';
-    const responseData = await callApi(apiData, url, method);
-    const { data } = responseData;
-    const status = data ? 'success' : 'error';
-    const snackBarMessage = snackBarMessages[status];
-    openSnackBar(snackBarMessage, status);
+    await onSubmit(openSnackBar, { apiData, url, method });
     this.toggleLoaderAndButton();
-    onSubmit(removeData);
   }
 
   render = () => {

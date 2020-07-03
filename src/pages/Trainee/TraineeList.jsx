@@ -31,7 +31,7 @@ class TraineeList extends React.Component {
       showEditOpen: false,
       showRemoveOpen: false,
       rowData: {},
-      rowsPerPage: 20,
+      rowsPerPage: 10,
       tableData: [],
       count: 0,
       loader: true,
@@ -95,15 +95,24 @@ class TraineeList extends React.Component {
       this.setState({ rowData: values });
     }
 
-     onSubmitEdit=(values) => {
+     onSubmitEdit= async (openSnackBar, editParameters) => {
+       const snackBarMessages = {
+         success: 'Trainee Updated Successfully',
+         error: 'Error in Updating the field',
+       };
+       let { apiData, url, method } = editParameters;
+       const responseData = await callApi(apiData, url, method);
+       const { data } = responseData;
+       const status = data ? 'success' : 'error';
+       const snackBarMessage = snackBarMessages[status];
+       openSnackBar(snackBarMessage, status);
+       const { page, rowsPerPage } = this.state;
+       apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+       url = '/trainee';
+       method = 'get';
        this.toggleEditDialogBox();
        this.toggleLoader();
-       const { page, rowsPerPage } = this.state;
-       const apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
-       const url = '/trainee';
-       const method = 'get';
        this.handleTableData(apiData, url, method);
-       console.log('Edited Items', values);
      }
 
       handleRemoveDialogOpen = (values) => {
@@ -111,32 +120,42 @@ class TraineeList extends React.Component {
         this.setState({ rowData: values });
       }
 
-      onSubmitDelete=(values) => {
-        this.toggleRemoveDialogBox();
-        this.toggleLoader();
+      onSubmitDelete = async (openSnackBar, removeParameters) => {
+        const snackBarMessages = {
+          success: 'Trainee Succesfully Deleted',
+          error: 'Error While deleted !',
+        };
+        let { apiData, url, method } = removeParameters;
+        const responseData = await callApi(apiData, url, method);
+        const { data } = responseData;
+        const status = data ? 'success' : 'error';
+        const snackBarMessage = snackBarMessages[status];
+        openSnackBar(snackBarMessage, status);
         const { page, rowsPerPage, count } = this.state;
         const totalRowsInPage = count - (page * rowsPerPage);
-        const url = '/trainee';
-        const method = 'get';
-        if (totalRowsInPage !== 1 || (totalRowsInPage === 1 && page === 0)) {
-          const apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
-          this.handleTableData(apiData, url, method);
-        }
+        url = '/trainee';
+        method = 'get';
         if (totalRowsInPage === 1 && page > 0) {
           this.setState({ page: page - 1 }, () => {
             const { page: newPage } = this.state;
-            const apiData = { params: { skip: newPage * rowsPerPage, limit: rowsPerPage } };
+            apiData = { params: { skip: newPage * rowsPerPage, limit: rowsPerPage } };
             this.handleTableData(apiData, url, method);
           });
+          this.toggleRemoveDialogBox();
+          this.toggleLoader();
+          return true;
         }
-        console.log('Deleted Items', values);
+        apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+        this.handleTableData(apiData, url, method);
+        this.toggleRemoveDialogBox();
+        this.toggleLoader();
+        return true;
       }
 
     handleChangePage = (event, newPage) => {
       const {
         rowsPerPage,
       } = this.state;
-
       this.setState({ page: newPage }, () => {
         const { page } = this.state;
         const apiData = {

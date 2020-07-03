@@ -14,7 +14,6 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { SnackBarConsumer } from '../../../../contexts';
 import FormSchema from './schema';
-import callApi from '../../../../libs/utils/api';
 
 const useStyles = {
   root: {
@@ -40,14 +39,13 @@ class EditDialog extends React.Component {
     };
   }
 
-  toggleLoader=() => {
+  toggleLoader= () => {
     this.setState((prevState) => ({
       loader: !prevState.loader,
-      showButton: !prevState.showButton,
     }));
   }
 
-  toggleButton=() => {
+  toggleShowButton=() => {
     this.setState((prevState) => ({
       showButton: !prevState.showButton,
     }));
@@ -69,8 +67,8 @@ class EditDialog extends React.Component {
        name,
        email,
      }, { abortEarly: false }).then(() => {
+       this.toggleShowButton();
        this.setState({
-         showButton: true,
          errorMessage: parsedError,
        });
      }).catch((error) => {
@@ -82,8 +80,8 @@ class EditDialog extends React.Component {
        });
        this.setState({
          errorMessage: parsedError,
-         showButton: false,
        });
+       this.toggleShowButton();
      });
    }
 
@@ -125,29 +123,17 @@ class EditDialog extends React.Component {
      }
 
     handleOnClick= async (editData, openSnackBar) => {
+      this.toggleLoader();
+      this.toggleShowButton();
       const { onSubmit, data: { originalId } } = this.props;
       const { name, email } = editData;
-      const snackBarMessages = {
-        success: 'Trainee Updated Successfully',
-        error: 'Error in Updating the field',
-      };
       const apiData = { data: { id: originalId, name, email } };
       const url = '/trainee';
       const method = 'put';
+      await onSubmit(openSnackBar, { apiData, url, method });
       this.toggleLoader();
-      const responseData = await callApi(apiData, url, method);
-      const { data } = responseData;
-      const status = data ? 'success' : 'error';
-      const snackBarMessage = snackBarMessages[status];
-      this.toggleLoader();
-      if (data) {
-        openSnackBar(snackBarMessage, status);
-        onSubmit(editData);
-        this.formReset();
-      } else {
-        this.toggleButton();
-        openSnackBar(snackBarMessage, status);
-      }
+      this.toggleShowButton();
+      this.formReset();
     }
 
     handleOnClose=() => {
