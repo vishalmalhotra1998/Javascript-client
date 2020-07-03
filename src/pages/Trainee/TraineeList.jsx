@@ -63,17 +63,22 @@ class TraineeList extends React.Component {
       }));
     }
 
-    onSubmitAdd = (values) => {
-      this.toggleDialogBox();
-      this.toggleLoader();
+    onSubmitAdd = async (values, openSnackBar) => {
       const { page, rowsPerPage } = this.state;
-      const apiData = {
+      let apiData = { data: { ...values } };
+      let url = '/trainee';
+      let method = 'post';
+      const responseData = await callApi(apiData, url, method);
+      const { message, data } = responseData;
+      if (data) openSnackBar(message, 'success');
+      apiData = {
         params: { skip: page * rowsPerPage, limit: rowsPerPage },
       };
-      const url = '/trainee';
-      const method = 'get';
+      url = '/trainee';
+      method = 'get';
+      this.toggleDialogBox();
+      this.toggleLoader();
       this.handleTableData(apiData, url, method);
-      console.log(values);
     };
 
     handleSelectChange = (value) => {
@@ -95,12 +100,14 @@ class TraineeList extends React.Component {
       this.setState({ rowData: values });
     }
 
-     onSubmitEdit= async (openSnackBar, editParameters) => {
+     onSubmitEdit= async (editValues, openSnackBar) => {
        const snackBarMessages = {
          success: 'Trainee Updated Successfully',
          error: 'Error in Updating the field',
        };
-       let { apiData, url, method } = editParameters;
+       let apiData = { data: { ...editValues } };
+       let url = '/trainee';
+       let method = 'put';
        const responseData = await callApi(apiData, url, method);
        const { data } = responseData;
        const status = data ? 'success' : 'error';
@@ -120,12 +127,15 @@ class TraineeList extends React.Component {
         this.setState({ rowData: values });
       }
 
-      onSubmitDelete = async (openSnackBar, removeParameters) => {
+      onSubmitDelete = async (removeValues, openSnackBar) => {
         const snackBarMessages = {
           success: 'Trainee Succesfully Deleted',
           error: 'Error While deleted !',
         };
-        let { apiData, url, method } = removeParameters;
+        const { id } = removeValues;
+        let apiData = '';
+        let url = `/trainee/${id}`;
+        let method = 'delete';
         const responseData = await callApi(apiData, url, method);
         const { data } = responseData;
         const status = data ? 'success' : 'error';

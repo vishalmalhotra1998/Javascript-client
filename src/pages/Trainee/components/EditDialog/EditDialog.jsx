@@ -125,12 +125,8 @@ class EditDialog extends React.Component {
     handleOnClick= async (editData, openSnackBar) => {
       this.toggleLoader();
       this.toggleShowButton();
-      const { onSubmit, data: { originalId } } = this.props;
-      const { name, email } = editData;
-      const apiData = { data: { id: originalId, name, email } };
-      const url = '/trainee';
-      const method = 'put';
-      await onSubmit(openSnackBar, { apiData, url, method });
+      const { onSubmit, data: { originalId: id } } = this.props;
+      await onSubmit({ ...editData, id }, openSnackBar);
       this.toggleLoader();
       this.toggleShowButton();
       this.formReset();

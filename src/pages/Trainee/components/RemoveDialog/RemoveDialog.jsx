@@ -27,26 +27,17 @@ class RemoveDialog extends React.Component {
     }));
   }
 
-  handleOnClick = (removeData, openSnackBar) => {
+  handleOnClick = async (removeData, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
     const isAfter = (moment(removeData.createdAt).isAfter(date));
+    const { onSubmit } = this.props;
+    this.toggleLoaderAndButton();
     if (isAfter) {
+      await onSubmit(removeData, openSnackBar);
       this.toggleLoaderAndButton();
-      this.handleCallApiForRemove(removeData, openSnackBar);
     } else {
       openSnackBar('Error While Deleting !', 'error');
     }
-  }
-
-
-  handleCallApiForRemove = async (removeData, openSnackBar) => {
-    const { originalId: id } = removeData;
-    const { onSubmit } = this.props;
-    const apiData = '';
-    const url = `/trainee/${id}`;
-    const method = 'delete';
-    await onSubmit(openSnackBar, { apiData, url, method });
-    this.toggleLoaderAndButton();
   }
 
   render = () => {

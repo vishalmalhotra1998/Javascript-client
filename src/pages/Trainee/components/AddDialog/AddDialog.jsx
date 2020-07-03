@@ -15,7 +15,6 @@ import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import propTypes from 'prop-types';
 import FormSchema from './schema';
-import callApi from '../../../../libs/utils/api';
 import { SnackBarConsumer } from '../../../../contexts';
 
 
@@ -127,15 +126,8 @@ class FormDialog extends React.Component {
 
 handleCallApi= async (value, openSnackBar) => {
   const { onSubmit } = this.props;
-  const apiData = { data: { ...value } };
-  const url = '/trainee';
-  const method = 'post';
   this.toggleLoaderAndShowButton();
-  const responseData = await callApi(apiData, url, method);
-  const { message, data } = responseData;
-  this.toggleLoaderAndShowButton();
-  onSubmit(value);
-  if (data) openSnackBar(message, 'success');
+  await onSubmit(value, openSnackBar);
   this.formReset();
 };
 
