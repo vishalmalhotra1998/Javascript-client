@@ -6,9 +6,8 @@ const apiCall = async (apiData, endPoint, method) => {
     const response = await axios({
       method,
       url: URL,
-      data: {
-        ...apiData,
-      },
+      ...apiData,
+      headers: { Authorization: localStorage.getItem('token') },
     });
     const { data } = response || {};
     return data;

@@ -108,7 +108,7 @@ class SignIn extends React.Component {
     handleOnClick = async (openSnackBar) => {
       this.toggleLoaderAndShowButton();
       const { email, password } = this.state;
-      const apiData = { email, password };
+      const apiData = { data: { email, password } };
       const endPoint = '/user/login';
       const method = 'post';
       const loginData = await callApi(apiData, endPoint, method);

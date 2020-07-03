@@ -11,7 +11,9 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { StyledTableRow, useStyles } from './Style';
+import { withLoaderAndMessage } from '../../../../components';
 
 const TableComponent = (props) => {
   const classes = useStyles();
@@ -19,9 +21,8 @@ const TableComponent = (props) => {
 
   const {
     id, data, column, order, orderBy, onSort, onSelect, actions,
-    count, page, onChangePage, rowsPerPage,
+    count, page, onChangePage, rowsPerPage, loader, dataLength,
   } = props;
-
   const handleSortIcon = (e) => {
     e.target.style.color = 'black';
     setOpen(true);
@@ -62,7 +63,7 @@ const TableComponent = (props) => {
     </TableRow>
   );
 
-  const tableBody = data.map((element) => (
+  const tableBody = dataLength ? data.map((element) => (
     <StyledTableRow
       hover
       className={classes.style}
@@ -99,7 +100,15 @@ const TableComponent = (props) => {
 
     </StyledTableRow>
 
-  ));
+  )) : (
+    (
+      <>
+        <Box paddingLeft={72}>
+          <h2>Oops No more Trainees</h2>
+        </Box>
+      </>
+    )
+  );
 
   const tablePagination = count && (
     <TablePagination
@@ -111,6 +120,12 @@ const TableComponent = (props) => {
       onChangePage={onChangePage}
     />
   );
+
+  const tableWithLoaderAndBody = loader ? (
+    <Box pl={72}>
+      <CircularProgress />
+    </Box>
+  ) : (tableBody);
   return (
     <Box p={2}>
       <TableContainer component={Paper} className={classes.container}>
@@ -119,7 +134,7 @@ const TableComponent = (props) => {
             {tableHeading}
           </TableHead>
           <TableBody>
-            {tableBody}
+            {tableWithLoaderAndBody}
           </TableBody>
         </Table>
       </TableContainer>
@@ -127,7 +142,6 @@ const TableComponent = (props) => {
     </Box>
   );
 };
-
 
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,
@@ -142,6 +156,9 @@ TableComponent.propTypes = {
   page: propTypes.number,
   onChangePage: propTypes.func.isRequired,
   rowsPerPage: propTypes.number,
+  loader: propTypes.bool,
+  dataLength: propTypes.number,
+
 };
 
 TableComponent.defaultProps = {
@@ -151,6 +168,8 @@ TableComponent.defaultProps = {
   orderBy: '',
   page: 0,
   rowsPerPage: 100,
+  loader: true,
+  dataLength: 0,
 };
 
-export default TableComponent;
+export default withLoaderAndMessage(TableComponent);

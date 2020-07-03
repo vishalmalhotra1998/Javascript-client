@@ -12,8 +12,12 @@ import EmailIcon from '@material-ui/icons/Email';
 import Grid from '@material-ui/core/Grid';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import { withStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import propTypes from 'prop-types';
 import FormSchema from './schema';
+import callApi from '../../../../libs/utils/api';
+import { SnackBarConsumer } from '../../../../contexts';
+
 
 const useStyles = {
   root: {
@@ -21,17 +25,23 @@ const useStyles = {
   },
 };
 
+const addDialogStates = {
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  errorMessage: {},
+  touched: {},
+  showButton: false,
+  loader: false,
+
+};
+
 class FormDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      errorMessage: {},
-      touched: {},
-      isValid: false,
+      ...addDialogStates,
     };
   }
 
@@ -62,7 +72,7 @@ class FormDialog extends React.Component {
       )
         .then(() => {
           this.setState({
-            isValid: true,
+            showButton: true,
             errorMessage: {},
           });
         })
@@ -74,7 +84,7 @@ class FormDialog extends React.Component {
           });
           this.setState({
             errorMessage: parsedError,
-            isValid: false,
+            showButton: false,
           });
         });
     };
@@ -102,130 +112,163 @@ class FormDialog extends React.Component {
         return false;
       }
 
-    render = () => {
-      const {
-        classes, open, onClose, onSubmit,
-      } = this.props;
-      const {
-        name, email, password, confirmPassword, errorMessage, isValid,
-      } = this.state;
-      return (
-        <div>
-          <Dialog
-            open={open}
-            onClose={onClose}
-            aria-labelledby="form-dialog-title"
-            maxWidth="xl"
-          >
-            <DialogTitle id="form-dialog-title">
+      toggleLoaderAndShowButton=() => {
+        this.setState((prevState) => ({
+          loader: !prevState.loader,
+          showButton: !prevState.showButton,
+        }));
+      }
+
+      formReset=() => {
+        this.setState({
+          ...addDialogStates,
+        });
+      }
+
+handleCallApi= async (value, openSnackBar) => {
+  const { onSubmit } = this.props;
+  const apiData = { data: { ...value } };
+  const url = '/trainee';
+  const method = 'post';
+  this.toggleLoaderAndShowButton();
+  const responseData = await callApi(apiData, url, method);
+  const { message, data } = responseData;
+  this.toggleLoaderAndShowButton();
+  onSubmit(value);
+  if (data) openSnackBar(message, 'success');
+  this.formReset();
+};
+
+render = () => {
+  const {
+    classes, open, onClose,
+  } = this.props;
+  const {
+    name, email, password, confirmPassword, errorMessage, showButton, loader,
+  } = this.state;
+  return (
+    <div>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby="form-dialog-title"
+        maxWidth="xl"
+      >
+        <DialogTitle id="form-dialog-title">
                         Add Trainee
-            </DialogTitle>
-            <DialogContent>
-              <DialogContentText>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
                             Enter your Trainee Detail
-              </DialogContentText>
-              <div className={classes.root}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Name"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <PersonIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      value={name}
-                      helperText={errorMessage.name}
-                      fullWidth
-                      variant="outlined"
-                      onChange={this.handleFieldChange('name')}
-                      onBlur={() => this.isTouched('name')}
-                      required
-                      error={this.isError('name')}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      label="Email Address"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <EmailIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      value={email}
-                      helperText={errorMessage.email}
-                      fullWidth
-                      variant="outlined"
-                      onChange={this.handleFieldChange('email')}
-                      onBlur={() => this.isTouched('email')}
-                      error={this.isError('email')}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      label="Password"
-                      type="password"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <VisibilityOffIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      value={password}
-                      helperText={errorMessage.password}
-                      fullWidth
-                      variant="outlined"
-                      onChange={this.handleFieldChange('password')}
-                      onBlur={() => this.isTouched('password')}
-                      error={this.isError('password')}
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      label="Confirm Password"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <VisibilityOffIcon />
-                          </InputAdornment>
-                        ),
-                      }}
-                      value={confirmPassword}
-                      type="password"
-                      fullWidth
-                      helperText={errorMessage.confirmPassword}
-                      variant="outlined"
-                      onChange={this.handleFieldChange('confirmPassword')}
-                      onBlur={() => this.isTouched('confirmPassword')}
-                      error={this.isError('confirmPassword')}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onClose} color="primary">
+          </DialogContentText>
+          <div className={classes.root}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  label="Name"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  value={name}
+                  helperText={errorMessage.name}
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.handleFieldChange('name')}
+                  onBlur={() => this.isTouched('name')}
+                  required
+                  error={this.isError('name')}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Email Address"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  value={email}
+                  helperText={errorMessage.email}
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.handleFieldChange('email')}
+                  onBlur={() => this.isTouched('email')}
+                  error={this.isError('email')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Password"
+                  type="password"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VisibilityOffIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  value={password}
+                  helperText={errorMessage.password}
+                  fullWidth
+                  variant="outlined"
+                  onChange={this.handleFieldChange('password')}
+                  onBlur={() => this.isTouched('password')}
+                  error={this.isError('password')}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Confirm Password"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <VisibilityOffIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                  value={confirmPassword}
+                  type="password"
+                  fullWidth
+                  helperText={errorMessage.confirmPassword}
+                  variant="outlined"
+                  onChange={this.handleFieldChange('confirmPassword')}
+                  onBlur={() => this.isTouched('confirmPassword')}
+                  error={this.isError('confirmPassword')}
+                />
+              </Grid>
+            </Grid>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
                             Cancel
-              </Button>
-              <Button
-                disabled={!isValid}
-                onClick={() => {
-                  onSubmit({ name, email, password });
-                }}
-                color="primary"
-              >
+          </Button>
+          <SnackBarConsumer>
+            {(value) => {
+              const { openSnackBar } = value;
+              return (
+                <Button
+                  disabled={!showButton}
+                  onClick={() => this.handleCallApi({ name, email, password }, openSnackBar)}
+                  color="primary"
+                >
+                  <span>{loader ? <CircularProgress size={30} /> : ''}</span>
                             Submit
-              </Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      );
-    };
+                </Button>
+              );
+            }}
+          </SnackBarConsumer>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
 }
 FormDialog.propTypes = {
   open: propTypes.bool.isRequired,
