@@ -7,13 +7,11 @@ import { Link } from 'react-router-dom';
 import * as moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ls from 'local-storage';
 import {
   FormDialog, TableComponent, EditDialog, RemoveDialog,
 } from './components';
 import trainee from './data/trainee';
 import callApi from '../../libs/utils/api';
-import { MyContext } from '../../contexts';
 
 const useStyles = {
 
@@ -26,219 +24,279 @@ class TraineeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      showAddOpen: false,
       order: 'asc',
-      orderBy: 'Date',
+      orderBy: '',
       page: 0,
-      editOpen: false,
-      remOpen: false,
+      showEditOpen: false,
+      showRemoveOpen: false,
       rowData: {},
-      rowsPerPage: 20,
+      rowsPerPage: 10,
       tableData: [],
-      message: '',
-      status: '',
       count: 0,
       loader: true,
-      tableDataLength: 0,
     };
   }
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
 
-  handleClose = () => {
-    this.setState({ open: false, editOpen: false, remOpen: false });
-  };
-
-  onSubmitHandle = (values) => {
-    this.setState({ open: false, editOpen: false });
-    const { page, rowsPerPage } = this.state;
-    this.handleTableData({
-      params: { skip: page * rowsPerPage, limit: rowsPerPage },
-      headers: { Authorization: ls.get('token') },
-    }, '/trainee', 'Get');
-    console.log(values);
-  }
-
-  handleOnSubmitDelete = (values) => {
-    this.setState({ open: false, remOpen: false, loader: true });
-    const { page, rowsPerPage, count } = this.state;
-    if (count - page * rowsPerPage !== 1) {
-      this.handleTableData({
-        params: { skip: page * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get');
-    } else if (page !== 0) {
-      this.setState({ page: page - 1 });
-      this.handleTableData({
-        params: { skip: (page - 1) * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get');
-    } else {
-      this.handleTableData({
-        params: { skip: (page) * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get');
+    toggleDialogBox = () => {
+      this.setState((prevState) => ({
+        showAddOpen: !prevState.showAddOpen,
+      }));
     }
-    console.log(values);
-  }
 
-  handleSort = (value) => {
-    const { orderBy, order } = this.state;
-    const isAsc = orderBy === value && order === 'asc';
-    const data = isAsc ? 'desc' : 'asc';
+    toggleRemoveDialogBox = () => {
+      this.setState((prevState) => ({
+        showRemoveOpen: !prevState.showRemoveOpen,
+      }));
+    }
+
+    toggleEditDialogBox = () => {
+      this.setState((prevState) => ({
+        showEditOpen: !prevState.showEditOpen,
+      }));
+    }
+
+    toggleLoader=() => {
+      this.setState((prevState) => ({
+        loader: !prevState.loader,
+      }));
+    }
+
+    onSubmitAdd = async (values, openSnackBar) => {
+      const { page, rowsPerPage } = this.state;
+      let apiData = { data: { ...values } };
+      let url = '/trainee';
+      let method = 'post';
+      const responseData = await callApi(apiData, url, method);
+      const { message, data } = responseData;
+      if (data) openSnackBar(message, 'success');
+      apiData = {
+        params: { skip: page * rowsPerPage, limit: rowsPerPage },
+      };
+      url = '/trainee';
+      method = 'get';
+      this.toggleDialogBox();
+      this.toggleLoader();
+      this.handleTableData(apiData, url, method);
+    };
+
+    handleSelectChange = (value) => {
+      console.log(value);
+    }
+
+    handleSort = (value) => {
+      const { orderBy, order } = this.state;
+      const isAsc = orderBy === value && order === 'asc';
+      const data = isAsc ? 'desc' : 'asc';
+      this.setState({
+        order: data,
+        orderBy: value,
+      });
+    }
+
+    handleEditDialogOpen = (values) => {
+      this.toggleEditDialogBox();
+      this.setState({ rowData: values });
+    }
+
+     onSubmitEdit= async (editValues, openSnackBar) => {
+       const snackBarMessages = {
+         success: 'Trainee Updated Successfully',
+         error: 'Error in Updating the field',
+       };
+       let apiData = { data: { ...editValues } };
+       let url = '/trainee';
+       let method = 'put';
+       const responseData = await callApi(apiData, url, method);
+       const { data } = responseData;
+       const status = data ? 'success' : 'error';
+       const snackBarMessage = snackBarMessages[status];
+       openSnackBar(snackBarMessage, status);
+       const { page, rowsPerPage } = this.state;
+       apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+       url = '/trainee';
+       method = 'get';
+       this.toggleEditDialogBox();
+       this.toggleLoader();
+       this.handleTableData(apiData, url, method);
+     }
+
+      handleRemoveDialogOpen = (values) => {
+        this.toggleRemoveDialogBox();
+        this.setState({ rowData: values });
+      }
+
+      onSubmitDelete = async (removeValues, openSnackBar) => {
+        const snackBarMessages = {
+          success: 'Trainee Succesfully Deleted',
+          error: 'Error While deleted !',
+        };
+        const { id } = removeValues;
+        let apiData = '';
+        let url = `/trainee/${id}`;
+        let method = 'delete';
+        const responseData = await callApi(apiData, url, method);
+        const { data } = responseData;
+        const status = data ? 'success' : 'error';
+        const snackBarMessage = snackBarMessages[status];
+        openSnackBar(snackBarMessage, status);
+        const { page, rowsPerPage, count } = this.state;
+        const totalRowsInPage = count - (page * rowsPerPage);
+        url = '/trainee';
+        method = 'get';
+        if (totalRowsInPage === 1 && page > 0) {
+          this.setState({ page: page - 1 }, () => {
+            const { page: newPage } = this.state;
+            apiData = { params: { skip: newPage * rowsPerPage, limit: rowsPerPage } };
+            this.handleTableData(apiData, url, method);
+          });
+          this.toggleRemoveDialogBox();
+          this.toggleLoader();
+          return true;
+        }
+        apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+        this.handleTableData(apiData, url, method);
+        this.toggleRemoveDialogBox();
+        this.toggleLoader();
+        return true;
+      }
+
+    handleChangePage = (event, newPage) => {
+      const {
+        rowsPerPage,
+      } = this.state;
+      this.setState({ page: newPage }, () => {
+        const { page } = this.state;
+        const apiData = {
+          params: { skip: page * rowsPerPage, limit: rowsPerPage },
+        };
+        const url = '/trainee';
+        const method = 'get';
+        this.toggleLoader();
+        this.handleTableData(apiData, url, method);
+      });
+    };
+
+  handleTableData = async (data, url, method) => {
+    const responseData = await callApi(data, url, method);
+    const { data: { records = [], count = 0 } } = responseData;
     this.setState({
-      order: data,
-      orderBy: value,
+      tableData: records,
+      count,
     });
+    this.toggleLoader();
   }
 
-  handleSelectChange = (value) => {
-    console.log(value);
-  }
-
-  handleEditDialogOpen = (values) => {
-    this.setState({ editOpen: true, rowData: values });
-  }
-
-  handleRemoveDialogOpen = (values) => {
-    this.setState({ remOpen: true, rowData: values });
-  }
-
-  handleChangePage = (event, newPage) => {
-    const { rowsPerPage, message, status } = this.state;
-    const value = this.context;
-    const { openSnackBar } = value;
-    return status === 'ok'
-      ? (this.setState({ page: newPage, loader: true }),
-      this.handleTableData({
-        params: { skip: newPage * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get'))
-      : (openSnackBar(message, status));
-  }
-
-  handleTableData = (data, url, method) => {
-    callApi(data, url, method).then((response) => {
-      const { records, count } = response.data;
-      this.setState({
-        tableData: records,
-        loader: false,
-        tableDataLength: records.length,
-        count,
-      });
-    });
-  }
-
-  componentDidMount = () => {
-    console.log('---------Component Did Mount-----------');
-    callApi({ params: { skip: 0, limit: 20 }, headers: { Authorization: ls.get('token') } }, '/trainee', 'Get').then((response) => {
-      const { status, message, data } = response;
-      const { records, count } = data;
-      this.setState({
-        tableData: records,
-        tableDataLength: records.length,
-        message,
-        status,
-        count,
-        loader: false,
-      });
-    });
-  }
-
-  render() {
-    const {
-      open, order, orderBy, page, editOpen, rowData, remOpen, rowsPerPage, tableData,
-      count, loader, tableDataLength,
-    } = this.state;
-    const { match: { url }, classes } = this.props;
-    const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-    return (
-      <>
-        <Box p={1} />
-        <div className={classes.button}>
-          <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-            Add Trainee
-          </Button>
-        </div>
-        <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-        <Box p={1} />
-        <TableComponent
-
-          id="id"
-
-          data={tableData}
-
-          column={[{
-            field: 'name',
-            label: 'Name',
-          },
-          {
-            field: 'email',
-            label: 'Email-Address',
-            format: (value) => value && value.toUpperCase(),
-
-          },
-          {
-            field: 'createdAt',
-            label: 'Date',
-            align: 'right',
-            format: getDateFormatted,
-          }]}
-
-          actions={[{
-            icons: <EditIcon />,
-            handler: this.handleEditDialogOpen,
-          },
-          {
-            icons: <DeleteIcon />,
-            handler: this.handleRemoveDialogOpen,
-
-          }]}
-
-          order={order}
-          orderBy={orderBy}
-          onSort={this.handleSort}
-          onSelect={this.handleSelectChange}
-          count={count}
-          page={page}
-          onChangePage={this.handleChangePage}
-          rowsPerPage={rowsPerPage}
-          loader={loader}
-          dataLength={tableDataLength}
-        />
-        <EditDialog
-          open={editOpen}
-          onClose={this.handleClose}
-          onSubmit={this.onSubmitHandle}
-          data={rowData}
-        />
-        <RemoveDialog
-          open={remOpen}
-          onClose={this.handleClose}
-          onSubmit={this.handleOnSubmitDelete}
-          data={rowData}
-        />
-        <Box p={1} />
-        <ul>
-          {trainee.length && trainee.map((data) => (
-            <Fragment key={data.id}>
-              <li>
-                <Link to={`${url}/${data.id}`}>{data.name}</Link>
-              </li>
-
-            </Fragment>
-          ))}
-        </ul>
-      </>
-    );
-  }
+componentDidMount = async () => {
+  const { page, rowsPerPage } = this.state;
+  const apiData = { params: { skip: page, limit: rowsPerPage } };
+  const url = '/trainee';
+  const method = 'get';
+  const responseData = await callApi(apiData, url, method);
+  const { data: { records = [], count = 0 } } = responseData;
+  this.toggleLoader();
+  this.setState({
+    tableData: records,
+    count,
+  });
 }
-export default withStyles(useStyles, { withTheme: true })(TraineeList);
+
+render() {
+  const {
+    showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
+    tableData, loader, count,
+  } = this.state;
+  const { match: { url }, classes } = this.props;
+  const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+  const traineeList = (
+    <>
+      <Box p={1} />
+      <div className={classes.button}>
+        <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                Add Trainee
+        </Button>
+      </div>
+      <FormDialog
+        open={showAddOpen}
+        onClose={this.toggleDialogBox}
+        onSubmit={this.onSubmitAdd}
+      />
+      <Box p={1} />
+      <TableComponent
+        id="_id"
+        data={tableData}
+        column={[{
+          field: 'name',
+          label: 'Name',
+          align: 'center',
+        },
+        {
+          field: 'email',
+          label: 'Email-Address',
+          format: (value) => value && value.toUpperCase(),
+
+        },
+        {
+          field: 'createdAt',
+          label: 'Date',
+          align: 'right',
+          format: getDateFormatted,
+        },
+        ]}
+        actions={[{
+          icons: <EditIcon />,
+          handler: this.handleEditDialogOpen,
+          key: 'editIcon',
+        },
+        {
+          icons: <DeleteIcon />,
+          handler: this.handleRemoveDialogOpen,
+          key: 'removeIcon',
+
+        }]}
+        order={order}
+        orderBy={orderBy}
+        onSort={this.handleSort}
+        onSelect={this.handleSelectChange}
+        count={count}
+        page={page}
+        onChangePage={this.handleChangePage}
+        rowsPerPage={rowsPerPage}
+        loader={loader}
+      />
+      <EditDialog
+        open={showEditOpen}
+        onClose={this.toggleEditDialogBox}
+        onSubmit={this.onSubmitEdit}
+        data={rowData}
+      />
+      <RemoveDialog
+        open={showRemoveOpen}
+        onClose={this.toggleRemoveDialogBox}
+        onSubmit={this.onSubmitDelete}
+        data={rowData}
+      />
+      <Box p={1} />
+      <ul>
+        {trainee.length && trainee.map((data) => (
+          <Fragment key={data.id}>
+            <li>
+              <Link to={`${url}/${data.id}`}>{data.name}</Link>
+            </li>
+
+          </Fragment>
+        ))}
+      </ul>
+    </>
+  );
+  return (traineeList);
+}
+}
 
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
 };
-TraineeList.contextType = MyContext;
+
+export default withStyles(useStyles, { withTheme: true })(TraineeList);

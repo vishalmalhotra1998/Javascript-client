@@ -1,13 +1,13 @@
 import React from 'react';
-import { TextField, Slider } from '../../components/index';
+import { TextField, Slider } from '../../components';
 import { PTextField } from '../../components/TextField/style';
-import { imageArray } from '../../components/Slider/configs/constants';
+import { imageArray } from '../../configs/constants';
 
 const TextEditor = () => (
   <>
-    <Slider altText="Default Banner" banners={imageArray} random={false} />
+    <Slider altText="Default Banner" banners={imageArray} random />
     <PTextField>This is a disable input</PTextField>
-    <TextField value="Disabled Input" disabled="true" />
+    <TextField value="Disabled Input" disabled />
     <p><b>A valid input</b></p>
     <TextField value="Accessible" />
     <p><b>A input with errors</b></p>
