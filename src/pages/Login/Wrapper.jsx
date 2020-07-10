@@ -11,14 +11,15 @@ const Wrapper = (props) => (
     { ({ openSnackBar }) => (
       <Mutation
         mutation={LOGIN_USER}
-        onError={(error) => {
-          openSnackBar(error.message, 'error');
+        onError={() => {
+          openSnackBar('Login Failed', 'error');
         }}
       >
         {(loginUser, { loading, data }) => {
           const { history } = props;
           if (data) {
-            localStorage.setItem('token', data.loginUser);
+            const { loginUser: token } = data;
+            localStorage.setItem('token', token);
             history.push('/trainee');
           }
           return (
