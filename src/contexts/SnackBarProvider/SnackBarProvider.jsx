@@ -21,45 +21,45 @@ class SnackBarProvider extends React.Component {
     };
   }
 
-  handleSnackBar = (message, status) => {
-    this.setState({
-      message,
-      status,
-    });
-    this.toggleButtonSnackbar();
-  }
+    handleSnackBar = (message, status) => {
+      this.setState({
+        message,
+        status,
+      });
+      this.toggleButtonSnackbar();
+    }
 
-  toggleButtonSnackbar = () => {
-    this.setState((prevState) => ({
-      open: !prevState.open,
-    }));
-  }
+    toggleButtonSnackbar = () => {
+      this.setState((prevState) => ({
+        open: !prevState.open,
+      }));
+    }
 
-  render() {
-    const { children } = this.props;
-    const { message, status, open } = this.state;
-    const snackBar = (
-      <div>
-        <Snackbar open={open} autoHideDuration={6000} onClose={this.toggleButtonSnackbar}>
-          <Alert onClose={this.toggleButtonSnackbar} severity={status}>
-            {message}
-          </Alert>
-        </Snackbar>
-      </div>
-    );
-    return (
-      <>
-        <SnackBarContext.Provider
-          value={{
-            openSnackBar: this.handleSnackBar,
-          }}
-        >
-          {children}
-          {snackBar}
-        </SnackBarContext.Provider>
-      </>
-    );
-  }
+    render() {
+      const { children } = this.props;
+      const { message, status, open } = this.state;
+      const snackBar = (
+        <div>
+          <Snackbar open={open} autoHideDuration={6000} onClose={this.toggleButtonSnackbar}>
+            <Alert onClose={this.toggleButtonSnackbar} severity={status}>
+              {message}
+            </Alert>
+          </Snackbar>
+        </div>
+      );
+      return (
+        <>
+          <SnackBarContext.Provider
+            value={{
+              openSnackBar: this.handleSnackBar,
+            }}
+          >
+            {children}
+            {snackBar}
+          </SnackBarContext.Provider>
+        </>
+      );
+    }
 }
 
 SnackBarProvider.propTypes = {
