@@ -12,9 +12,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 import propTypes from 'prop-types';
-import callApi from '../../libs/utils/api';
 import signInSchema from './validateSchema';
-import { SnackBarConsumer } from '../../contexts';
+
 
 const useStyles = (theme) => ({
   paper: {
@@ -36,16 +35,19 @@ const useStyles = (theme) => ({
   },
 });
 
+const loginState = {
+  email: '',
+  password: '',
+  showButton: false,
+  touched: {},
+  errorMessage: {},
+};
+
 class SignIn extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: '',
-      password: '',
-      showButton: false,
-      loader: false,
-      touched: {},
-      errorMessage: {},
+      ...loginState,
     };
   }
 
@@ -98,35 +100,29 @@ class SignIn extends React.Component {
       return false;
     }
 
-    toggleLoaderAndShowButton = () => {
+    toggleShowButton = () => {
       this.setState((prevState) => ({
-        loader: !prevState.loader,
         showButton: !prevState.showButton,
       }));
     }
 
-    handleOnClick = async (openSnackBar) => {
-      this.toggleLoaderAndShowButton();
+    resetLoginState=() => {
+      this.setState(loginState);
+    }
+
+    handleOnClick = async () => {
+      this.toggleShowButton();
       const { email, password } = this.state;
-      const apiData = { data: { email, password } };
-      const endPoint = '/user/login';
-      const method = 'post';
-      const loginData = await callApi(apiData, endPoint, method);
-      const { message, status, data: token } = loginData;
-      const { history } = this.props;
-      this.toggleLoaderAndShowButton();
-      if (token) {
-        localStorage.setItem('token', token);
-        history.push('/trainee');
-      } else {
-        openSnackBar(message, status);
-      }
+      const { loginUser } = this.props;
+      await loginUser({ variables: { email, password } });
+      this.toggleShowButton();
+      this.resetLoginState();
     }
 
     render = () => {
-      const { classes } = this.props;
+      const { classes, loading } = this.props;
       const {
-        showButton, errorMessage, email, password, loader,
+        showButton, errorMessage, email, password,
       } = this.state;
 
       return (
@@ -187,24 +183,18 @@ class SignIn extends React.Component {
                   helperText={errorMessage.password}
                   error={this.isError('password')}
                 />
-                <SnackBarConsumer>
-                  {(value) => {
-                    const { openSnackBar } = value;
-                    return (
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                        disabled={!showButton}
-                        onClick={() => this.handleOnClick(openSnackBar)}
-                      >
-                        <span>{loader ? <CircularProgress size={30} /> : ''}</span>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  disabled={!showButton}
+                  onClick={() => this.handleOnClick()}
+                >
+                  <span>{loading ? <CircularProgress size={30} /> : ''}</span>
                                             Sign In
-                      </Button>
-                    );
-                  }}
-                </SnackBarConsumer>
+                </Button>
               </form>
             </div>
           </Box>
@@ -217,5 +207,10 @@ export default withStyles(useStyles, { withTheme: true })(SignIn);
 
 SignIn.propTypes = {
   classes: propTypes.objectOf(propTypes.string).isRequired,
-  history: propTypes.objectOf(propTypes.any).isRequired,
+  loading: propTypes.bool,
+  loginUser: propTypes.func.isRequired,
+};
+
+SignIn.defaultProps = {
+  loading: false,
 };
