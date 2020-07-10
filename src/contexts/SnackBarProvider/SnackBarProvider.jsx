@@ -3,89 +3,68 @@ import Snackbar from '@material-ui/core/Snackbar';
 import propTypes from 'prop-types';
 import MuiAlert from '@material-ui/lab/Alert';
 
-const MyContext = React.createContext();
+const SnackBarContext = React.createContext();
+
+const snackBarStates = {
+  message: '',
+  status: '',
+  open: false,
+};
+
+const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
 
 class SnackBarProvider extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      message: '',
-      status: '',
-      open: false,
+      ...snackBarStates,
     };
   }
 
-  handleSnackBar = (message, status) => {
-    this.setState({
-      message,
-      status,
-      open: true,
-    });
-  }
-
-  handleCloseSnackBar = () => {
-    this.setState({
-      open: false,
-    });
-  }
-
-  render() {
-    const { children } = this.props;
-    const { message, status, open } = this.state;
-    return (
-      <>
-        <MyContext.Provider
-          value={{
-            openSnackBar: this.handleSnackBar,
-          }}
-        >
-          {children}
-        </MyContext.Provider>
-        <CustomizedSnackbars
-          open={open}
-          message={message}
-          status={status}
-          onClose={this.handleCloseSnackBar}
-        />
-      </>
-    );
-  }
-}
-
-const Alert = (props) => <MuiAlert elevation={6} variant="filled" {...props} />;
-
-const CustomizedSnackbars = (props) => {
-  const {
-    open, message, status, onClose,
-  } = props;
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
+    handleSnackBar = (message, status) => {
+      this.setState({
+        message,
+        status,
+      });
+      this.toggleButtonSnackbar();
     }
-    onClose();
-  };
-  return (
-    <div>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-        {status === 'success' ? (
-          <Alert onClose={handleClose} severity="success">
-            {message}
-          </Alert>
-        )
-          : <Alert onClose={handleClose} severity="error">{message}</Alert>}
-      </Snackbar>
-    </div>
-  );
-};
+
+    toggleButtonSnackbar = () => {
+      this.setState((prevState) => ({
+        open: !prevState.open,
+      }));
+    }
+
+    render() {
+      const { children } = this.props;
+      const { message, status, open } = this.state;
+      const snackBar = (
+        <div>
+          <Snackbar open={open} autoHideDuration={6000} onClose={this.toggleButtonSnackbar}>
+            <Alert onClose={this.toggleButtonSnackbar} severity={status}>
+              {message}
+            </Alert>
+          </Snackbar>
+        </div>
+      );
+      return (
+        <>
+          <SnackBarContext.Provider
+            value={{
+              openSnackBar: this.handleSnackBar,
+            }}
+          >
+            {children}
+            {snackBar}
+          </SnackBarContext.Provider>
+        </>
+      );
+    }
+}
 
 SnackBarProvider.propTypes = {
   children: propTypes.element.isRequired,
 };
-CustomizedSnackbars.propTypes = {
-  open: propTypes.bool.isRequired,
-  onClose: propTypes.func.isRequired,
-  status: propTypes.string.isRequired,
-  message: propTypes.string.isRequired,
-};
 
-export { SnackBarProvider, MyContext };
+const SnackBarConsumer = SnackBarContext.Consumer;
+export { SnackBarProvider, SnackBarConsumer };

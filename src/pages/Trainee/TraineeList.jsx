@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import * as moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ls from 'local-storage';
 import { flowRight as Compose } from 'lodash';
 import { graphql } from '@apollo/react-hoc';
 import {
@@ -16,7 +15,6 @@ import {
 import { GET_TRAINEE } from './query';
 import trainee from './data/trainee';
 import callApi from '../../libs/utils/api';
-import { MyContext } from '../../contexts';
 
 const useStyles = {
 
@@ -29,62 +27,64 @@ class TraineeList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false,
+      showAddOpen: false,
       order: 'asc',
-      orderBy: 'Date',
+      orderBy: '',
       page: 0,
-      editOpen: false,
-      remOpen: false,
+      showEditOpen: false,
+      showRemoveOpen: false,
       rowData: {},
-      rowsPerPage: 20,
-      tableData: [],
-      message: '',
-      status: '',
+      rowsPerPage: 10,
       count: 0,
       loader: true,
-      tableDataLength: 0,
     };
   }
 
-    handleClickOpen = () => {
-      this.setState({ open: true });
-    };
 
-    handleClose = () => {
-      this.setState({ open: false, editOpen: false, remOpen: false });
-    };
-
-    onSubmitHandle = (values) => {
-      this.setState({ open: false, editOpen: false });
-      const { page, rowsPerPage } = this.state;
-      this.handleTableData({
-        params: { skip: page * rowsPerPage, limit: rowsPerPage },
-        headers: { Authorization: ls.get('token') },
-      }, '/trainee', 'Get');
-      console.log(values);
+    toggleDialogBox = () => {
+      this.setState((prevState) => ({
+        showAddOpen: !prevState.showAddOpen,
+      }));
     }
 
-    handleOnSubmitDelete = (values) => {
-      this.setState({ open: false, remOpen: false, loader: true });
-      const { page, rowsPerPage, count } = this.state;
-      if (count - page * rowsPerPage !== 1) {
-        this.handleTableData({
-          params: { skip: page * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
-      } else if (page !== 0) {
-        this.setState({ page: page - 1 });
-        this.handleTableData({
-          params: { skip: (page - 1) * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
-      } else {
-        this.handleTableData({
-          params: { skip: (page) * rowsPerPage, limit: rowsPerPage },
-          headers: { Authorization: ls.get('token') },
-        }, '/trainee', 'Get');
-      }
-      console.log(values);
+    toggleRemoveDialogBox = () => {
+      this.setState((prevState) => ({
+        showRemoveOpen: !prevState.showRemoveOpen,
+      }));
+    }
+
+    toggleEditDialogBox = () => {
+      this.setState((prevState) => ({
+        showEditOpen: !prevState.showEditOpen,
+      }));
+    }
+
+    toggleLoader=() => {
+      this.setState((prevState) => ({
+        loader: !prevState.loader,
+      }));
+    }
+
+    onSubmitAdd = async (values, openSnackBar) => {
+      const { page, rowsPerPage } = this.state;
+      let apiData = { data: { ...values } };
+      let url = '/trainee';
+      let method = 'post';
+      const responseData = await callApi(apiData, url, method);
+      const { message, data } = responseData;
+      if (data) openSnackBar(message, 'success');
+      apiData = {
+        params: { skip: page * rowsPerPage, limit: rowsPerPage },
+      };
+      url = '/trainee';
+      method = 'get';
+      this.toggleDialogBox();
+      this.toggleLoader();
+      this.handleTableData(apiData, url, method);
+    };
+
+    handleSelectChange = (value) => {
+      console.log(value);
     }
 
     handleSort = (value) => {
@@ -97,144 +97,203 @@ class TraineeList extends React.Component {
       });
     }
 
-    handleSelectChange = (value) => {
-      console.log(value);
-    }
-
     handleEditDialogOpen = (values) => {
-      this.setState({ editOpen: true, rowData: values });
+      this.toggleEditDialogBox();
+      this.setState({ rowData: values });
     }
 
-    handleRemoveDialogOpen = (values) => {
-      this.setState({ remOpen: true, rowData: values });
-    }
+     onSubmitEdit= async (editValues, openSnackBar) => {
+       const snackBarMessages = {
+         success: 'Trainee Updated Successfully',
+         error: 'Error in Updating the field',
+       };
+       let apiData = { data: { ...editValues } };
+       let url = '/trainee';
+       let method = 'put';
+       const responseData = await callApi(apiData, url, method);
+       const { data } = responseData;
+       const status = data ? 'success' : 'error';
+       const snackBarMessage = snackBarMessages[status];
+       openSnackBar(snackBarMessage, status);
+       const { page, rowsPerPage } = this.state;
+       apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+       url = '/trainee';
+       method = 'get';
+       this.toggleEditDialogBox();
+       this.toggleLoader();
+       this.handleTableData(apiData, url, method);
+     }
 
-    handleChangePage = (refetch) => (event, newPage) => {
-      const { rowsPerPage } = this.state;
-      refetch({ skip: newPage * rowsPerPage, limit: rowsPerPage });
-      this.setState({ page: newPage });
-    }
+      handleRemoveDialogOpen = (values) => {
+        this.toggleRemoveDialogBox();
+        this.setState({ rowData: values });
+      }
 
-    handleTableData = (data, url, method) => {
-      callApi(data, url, method).then((response) => {
-        const { records, count } = response.data;
-        this.setState({
-          tableData: records,
-          loader: false,
-          tableDataLength: records.length,
-          count,
-        });
-      });
-    }
+      onSubmitDelete = async (removeValues, openSnackBar) => {
+        const snackBarMessages = {
+          success: 'Trainee Succesfully Deleted',
+          error: 'Error While deleted !',
+        };
+        const { id } = removeValues;
+        let apiData = '';
+        let url = `/trainee/${id}`;
+        let method = 'delete';
+        const responseData = await callApi(apiData, url, method);
+        const { data } = responseData;
+        const status = data ? 'success' : 'error';
+        const snackBarMessage = snackBarMessages[status];
+        openSnackBar(snackBarMessage, status);
+        const { page, rowsPerPage, count } = this.state;
+        const totalRowsInPage = count - (page * rowsPerPage);
+        url = '/trainee';
+        method = 'get';
+        if (totalRowsInPage === 1 && page > 0) {
+          this.setState({ page: page - 1 }, () => {
+            const { page: newPage } = this.state;
+            apiData = { params: { skip: newPage * rowsPerPage, limit: rowsPerPage } };
+            this.handleTableData(apiData, url, method);
+          });
+          this.toggleRemoveDialogBox();
+          this.toggleLoader();
+          return true;
+        }
+        apiData = { params: { skip: page * rowsPerPage, limit: rowsPerPage } };
+        this.handleTableData(apiData, url, method);
+        this.toggleRemoveDialogBox();
+        this.toggleLoader();
+        return true;
+      }
 
-    componentDidMount = () => {
-      console.log('---------Component Did Mount-----------');
-    }
-
-    render() {
+    handleChangePage =(refetch) => (event, newPage) => {
       const {
-        open, order, orderBy, page, editOpen, rowData, remOpen, rowsPerPage,
+        rowsPerPage,
       } = this.state;
-      const {
-        data: {
-          getAllTrainee: {
-            records = [],
-            count = 0,
-          } = {},
-          loading,
-          refetch,
-        },
-      } = this.props;
-      const { match: { url }, classes } = this.props;
-      const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-      return (
-        <>
-          <Box p={1} />
-          <div className={classes.button}>
-            <Button variant="outlined" color="primary" onClick={this.handleClickOpen}>
-                        Add Trainee
-            </Button>
-          </div>
-          <FormDialog open={open} onClose={this.handleClose} onSubmit={this.onSubmitHandle} />
-          <Box p={1} />
-          <TableComponent
+      this.setState({ page: newPage }, () => {
+        const { page } = this.state;
+        refetch({ skip: page * rowsPerPage, limit: rowsPerPage });
+      });
+    };
 
-            id="id"
+  handleTableData = async (data, url, method) => {
+    const responseData = await callApi(data, url, method);
+    const { data: { records = [], count = 0 } } = responseData;
+    this.setState({
+      tableData: records,
+      count,
+    });
+    this.toggleLoader();
+  }
 
-            data={records}
-
-            column={[{
-              field: 'name',
-              label: 'Name',
-            },
-            {
-              field: 'email',
-              label: 'Email-Address',
-              format: (value) => value && value.toUpperCase(),
-
-            },
-            {
-              field: 'createdAt',
-              label: 'Date',
-              align: 'right',
-              format: getDateFormatted,
-            }]}
-
-            actions={[{
-              icons: <EditIcon />,
-              handler: this.handleEditDialogOpen,
-            },
-            {
-              icons: <DeleteIcon />,
-              handler: this.handleRemoveDialogOpen,
-
-            }]}
-
-            order={order}
-            orderBy={orderBy}
-            onSort={this.handleSort}
-            onSelect={this.handleSelectChange}
-            count={count}
-            page={page}
-            onChangePage={this.handleChangePage(refetch)}
-            rowsPerPage={rowsPerPage}
-            loader={loading}
-            dataLength={records.length}
-          />
-          <EditDialog
-            open={editOpen}
-            onClose={this.handleClose}
-            onSubmit={this.onSubmitHandle}
-            data={rowData}
-          />
-          <RemoveDialog
-            open={remOpen}
-            onClose={this.handleClose}
-            onSubmit={this.handleOnSubmitDelete}
-            data={rowData}
-          />
-          <Box p={1} />
-          <ul>
-            {trainee.length && trainee.map((traineeData) => (
-              <Fragment key={traineeData.id}>
-                <li>
-                  <Link to={`${url}/${traineeData.id}`}>{traineeData.name}</Link>
-                </li>
-              </Fragment>
-            ))}
-          </ul>
-        </>
-      );
-    }
+componentDidMount = async () => {
+  console.log('---------Component did mount------------');
 }
 
+render() {
+  const {
+    showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
+  } = this.state;
+  const {
+    data: {
+      getAllTrainee: {
+        records = [],
+        count = 0,
+      } = {},
+      loading,
+      refetch,
+    },
+    match: { url }, classes,
+  } = this.props;
+  const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+  const traineeList = (
+    <>
+      <Box p={1} />
+      <div className={classes.button}>
+        <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                Add Trainee
+        </Button>
+      </div>
+      <FormDialog
+        open={showAddOpen}
+        onClose={this.toggleDialogBox}
+        onSubmit={this.onSubmitAdd}
+      />
+      <Box p={1} />
+      <TableComponent
+        id="_id"
+        data={records}
+        column={[{
+          field: 'name',
+          label: 'Name',
+          align: 'center',
+        },
+        {
+          field: 'email',
+          label: 'Email-Address',
+          format: (value) => value && value.toUpperCase(),
+
+        },
+        {
+          field: 'createdAt',
+          label: 'Date',
+          align: 'right',
+          format: getDateFormatted,
+        },
+        ]}
+        actions={[{
+          icons: <EditIcon />,
+          handler: this.handleEditDialogOpen,
+          key: 'editIcon',
+        },
+        {
+          icons: <DeleteIcon />,
+          handler: this.handleRemoveDialogOpen,
+          key: 'removeIcon',
+
+        }]}
+        order={order}
+        orderBy={orderBy}
+        onSort={this.handleSort}
+        onSelect={this.handleSelectChange}
+        count={count}
+        page={page}
+        onChangePage={this.handleChangePage(refetch)}
+        rowsPerPage={rowsPerPage}
+        loader={loading}
+      />
+      <EditDialog
+        open={showEditOpen}
+        onClose={this.toggleEditDialogBox}
+        onSubmit={this.onSubmitEdit}
+        data={rowData}
+      />
+      <RemoveDialog
+        open={showRemoveOpen}
+        onClose={this.toggleRemoveDialogBox}
+        onSubmit={this.onSubmitDelete}
+        data={rowData}
+      />
+      <Box p={1} />
+      <ul>
+        {trainee.length && trainee.map((data) => (
+          <Fragment key={data.id}>
+            <li>
+              <Link to={`${url}/${data.id}`}>{data.name}</Link>
+            </li>
+
+          </Fragment>
+        ))}
+      </ul>
+    </>
+  );
+  return (traineeList);
+}
+}
 
 TraineeList.propTypes = {
   match: propTypes.objectOf(propTypes.any).isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
   data: propTypes.objectOf(propTypes.any).isRequired,
 };
-TraineeList.contextType = MyContext;
 
 export default Compose(withStyles(useStyles, { withTheme: true }),
   graphql(GET_TRAINEE, {

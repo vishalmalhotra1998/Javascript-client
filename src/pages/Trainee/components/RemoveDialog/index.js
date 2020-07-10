@@ -1,3 +1,1 @@
-import RemoveDialog from './RemoveDialog';
-
-export default RemoveDialog;
+export { default as RemoveDialog } from './RemoveDialog';

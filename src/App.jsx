@@ -3,10 +3,11 @@ import {
   BrowserRouter as Router, Route, Redirect, Switch,
 } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/react-components';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import {
-  TextEditor, ChildrenDemo, TraineeRoutes, Wrapper, InputDemo, NoMatch,
+  TextEditor, ChildrenDemo, TraineeDetails, TraineeList, SignIn, InputDemo, NoMatch,
 } from './pages';
-import { AuthLayoutRoute, PrivateLayoutRoute } from './routes';
+import { AuthRoute, PrivateRoute } from './routes';
 import { SnackBarProvider } from './contexts';
 import client from './libs/apollo-client';
 
@@ -16,17 +17,20 @@ function App() {
     <SnackBarProvider>
       <ApolloProvider client={client}>
         <Router>
-          <Switch>
-            <Route exact path="/">
-              <Redirect to="/login" />
-            </Route>
-            <AuthLayoutRoute exact path="/login" component={Wrapper} />
-            <PrivateLayoutRoute path="/Trainee" component={TraineeRoutes} />
-            <PrivateLayoutRoute exact path="/TextFieldDemo" component={TextEditor} />
-            <PrivateLayoutRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
-            <PrivateLayoutRoute exact path="/InputDemo" component={InputDemo} />
-            <PrivateLayoutRoute component={NoMatch} />
-          </Switch>
+          <CssBaseline>
+            <Switch>
+              <Route exact path="/">
+                <Redirect to="/login" />
+              </Route>
+              <AuthRoute exact path="/login" component={SignIn} />
+              <PrivateRoute exact path="/trainee" component={TraineeList} />
+              <PrivateRoute exact path="/trainee/:id" component={TraineeDetails} />
+              <PrivateRoute exact path="/TextFieldDemo" component={TextEditor} />
+              <PrivateRoute exact path="/ChildrenDemo" component={ChildrenDemo} />
+              <PrivateRoute exact path="/InputDemo" component={InputDemo} />
+              <PrivateRoute component={NoMatch} />
+            </Switch>
+          </CssBaseline>
         </Router>
       </ApolloProvider>
     </SnackBarProvider>

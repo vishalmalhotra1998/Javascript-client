@@ -1,10 +1,8 @@
-import * as yup from 'yup';
-
 export const PUBLIC_IMAGE_FOLDER = '/images/';
 export const DEFAULT_BANNER_IMAGE = 'banner/default.png';
 export const imageArray = ['cloud.png', 'dns-server.png', 'full-stack-web-development.jpg', 'js.jpg', 'load-balancer.png'];
 
-export const Options = [
+export const options = [
   {
     label: 'Cricket',
     value: 'cricket',
@@ -46,29 +44,4 @@ export const radioFootballOptions = [
 ];
 
 export const CRICKET = 'cricket';
-export const Default = 'Select';
-
-export const ValidateSchema = yup.object().shape({
-  text: yup
-    .string()
-    .min(3)
-    .required('Name is a required Field')
-    .label('Name'),
-  SelectField: yup
-    .string()
-    .required()
-    .label('SelectField'),
-  cricket: yup
-    .string()
-    .when('SelectField', {
-      is: 'cricket',
-      then: yup.string().required('What do you do  ?'),
-    }),
-  football: yup
-    .string()
-    .when('SelectField', {
-      is: 'football',
-      then: yup.string().required('What do you do ?'),
-    }),
-
-});
+export const defaultValue = 'Select';
