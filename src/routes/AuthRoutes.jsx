@@ -1,11 +1,10 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { Route, Redirect } from 'react-router-dom';
-import ls from 'local-storage';
 import { AuthLayout } from '../layouts';
 
-const AuthLayoutRoute = ({ component: Component, ...rest }) => (
-  !ls.get('token') ? (
+const AuthRoute = ({ component: Component, ...rest }) => (
+  !localStorage.getItem('token') ? (
     <Route
       {...rest}
       render={(matchProps) => (
@@ -16,10 +15,9 @@ const AuthLayoutRoute = ({ component: Component, ...rest }) => (
     />
   ) : <Redirect to="/trainee" />
 );
-export default AuthLayoutRoute;
 
-AuthLayoutRoute.propTypes = {
-
+AuthRoute.propTypes = {
   component: propTypes.elementType.isRequired,
-
 };
+
+export default AuthRoute;

@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   TextField, SelectField, RadioField, Button,
-} from '../../components/index';
+} from '../../components';
 import {
-  Options, radioCricketOptions, radioFootballOptions, CRICKET, Default, ValidateSchema,
-} from '../../components/Slider/configs/constants';
-
+  options, radioCricketOptions, radioFootballOptions, CRICKET, defaultValue,
+} from '../../configs/constants';
+import { ValidateSchema } from '../../configs/ValidateSchema';
 import { PSelectField } from '../../components/SelectField/Style';
 import { PRadioField } from '../../components/RadioField/Style';
 import { PTextField } from '../../components/TextField/style';
@@ -26,91 +26,67 @@ class InputDemo extends React.Component {
     };
   }
 
-    handleNameChange = (values) => {
-      this.setState({ name: values.target.value }, () => {
+  handleNameChange = (event) => {
+    this.setState({ name: event.target.value }, () => {
+      console.log(this.state);
+      this.hasError();
+    });
+  }
+
+  handleSportChange = (event) => {
+    if (event.target.value === defaultValue) {
+      this.setState({ sport: '', cricket: '', football: '' }, () => {
+        console.log(this.state);
+        this.hasError();
+      });
+    } else {
+      this.setState({ sport: event.target.value, cricket: '', football: '' }, () => {
         console.log(this.state);
         this.hasError();
       });
     }
+  }
 
-    handleSportChange = (values) => {
-      if (values.target.value === Default) {
-        this.setState({ sport: '' }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-      } else {
-        this.setState({ sport: values.target.value }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-        this.setState({ cricket: '', football: '' }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-      }
-    }
+  handleRadioChange = (event) => {
+    const { sport } = this.state;
+    this.setState({ [sport]: event.target.value }, () => {
+      console.log(this.state);
+      this.hasError();
+    });
+  }
 
-    handleRadioChange = (values) => {
-      const { sport } = this.state;
-      this.setState({ cricket: '', football: '' }, () => {
-        console.log(this.state);
-        this.hasError();
+  checkForRadioOptions = () => {
+    const { sport } = this.state;
+    return sport === CRICKET ? radioCricketOptions : radioFootballOptions;
+  }
+
+  hasError = () => {
+    const {
+      name, sport, cricket, football, touched,
+    } = this.state;
+    const parsedError = {};
+    ValidateSchema.validate({
+      name,
+      sport,
+      cricket,
+      football,
+    }, { abortEarly: false }).then(() => {
+      this.setState({
+        errorMessage: parsedError,
+        isValid: true,
       });
-      if (sport === CRICKET) {
-        this.setState({ cricket: values.target.value }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-        this.setState({ football: '' }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-      } else {
-        this.setState({ football: values.target.value }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-
-        this.setState({ cricket: '' }, () => {
-          console.log(this.state);
-          this.hasError();
-        });
-      }
-    }
-
-    checkForRadioOptions = () => {
-      const { sport } = this.state;
-      return sport === CRICKET ? radioCricketOptions : radioFootballOptions;
-    }
-
-    hasError = () => {
-      const {
-        name, sport, cricket, football, touched,
-      } = this.state;
-      const errorStateHandler = {};
-      ValidateSchema.validate({
-        text: name,
-        SelectField: sport,
-        cricket,
-        football,
-      }, { abortEarly: false }).then(() => {
-        this.setState({
-          errorMessage: errorStateHandler,
-          isValid: true,
-        });
-      }).catch((error) => {
-        error.inner.forEach((element) => {
-          if (touched[element.path]) {
-            errorStateHandler[element.path] = element.message;
-          }
-        });
-        this.setState({
-          errorMessage: errorStateHandler,
-          isValid: false,
-        });
+    }).catch((error) => {
+      error.inner.forEach((element) => {
+        if (touched[element.path]) {
+          parsedError[element.path] = element.message;
+        }
       });
-    }
+      this.setState({
+        errorMessage: parsedError,
+        isValid: false,
+      });
+    });
+  }
 
 isTouched = (value) => {
   const { touched } = this.state;
@@ -123,46 +99,54 @@ isTouched = (value) => {
 }
 
 render() {
-  const { sport, errorMessage, isValid } = this.state;
+  const {
+    sport, name, cricket, football, errorMessage, isValid,
+  } = this.state;
   return (
     <>
       <PTextField>Name</PTextField>
-      <br />
-      <TextField error={errorMessage.text} onChange={this.handleNameChange} onBlur={() => this.isTouched('text')} />
-      <br />
+      <TextField
+        value={name}
+        onChange={this.handleNameChange}
+        error={errorMessage.name}
+        onBlur={() => this.isTouched('name')}
+      />
       <PSelectField>Select the game you play ?</PSelectField>
-      {Options.length && (
+      {options.length && (
         <SelectField
-          error={errorMessage.SelectField}
-          defaultText={Default}
-          Options={Options}
+          error={errorMessage.sport}
+          options={options}
+          value={sport}
           onChange={this.handleSportChange}
-          onBlur={() => this.isTouched('SelectField')}
+          onBlur={() => this.isTouched('sport')}
         />
       )}
-      <br />
-      {sport && Options.length
-                && (
-                  <>
-                    <PRadioField> What you do ?</PRadioField>
-                    <RadioField
-                      error={errorMessage[sport]}
-                      Options={
-                        this.checkForRadioOptions()
-                      }
-                      onChange={this.handleRadioChange}
-                      onBlur={() => this.isTouched(sport)}
-                    />
-                  </>
-                )}
-      <ButtonDiv>
-        <Button value="cancel" color="default" />
-        <Button
-          value="submit"
-          disabled={!isValid}
-          color="default"
-        />
-      </ButtonDiv>
+      { sport && options.length
+        && (
+          <>
+            <PRadioField> What you do ?</PRadioField>
+            <RadioField
+              error={errorMessage[sport]}
+              options={
+                this.checkForRadioOptions()
+              }
+              onChange={this.handleRadioChange}
+              value={cricket || football || ''}
+              onBlur={() => this.isTouched(sport)}
+            />
+          </>
+        )}
+      <div>
+        <ButtonDiv>
+          <Button value="cancel" color="default" onClick={() => { console.log('Clicked Cancel'); }} />
+          <Button
+            value="submit"
+            disabled={!isValid}
+            color="primary"
+            onClick={() => { console.log('Clicked Submit'); }}
+          />
+        </ButtonDiv>
+      </div>
     </>
   );
 }

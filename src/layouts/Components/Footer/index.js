@@ -1,3 +1,1 @@
-import Copyright from './Footer';
-
-export default Copyright;
+export { default as Footer } from './Footer';

@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import propTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,60 +9,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Box from '@material-ui/core/Box';
+import { StyledTableRow, useStyles } from './Style';
 import { withLoaderAndMessage } from '../../../../components';
-
-const StyledTableCell = withStyles((theme) => ({
-  head: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  body: {
-    fontSize: 14,
-  },
-}))(TableCell);
-
-const StyledTableRow = withStyles((theme) => ({
-  root: {
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-}))(TableRow);
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 650,
-    border: 'solid',
-    borderWidth: 'thin',
-    borderColor: 'lightGrey',
-  },
-  color: {
-    color: 'grey',
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
-  },
-  button: {
-    padding: 0,
-    border: 'none',
-    background: 'none',
-  },
-}));
 
 const TableComponent = (props) => {
   const classes = useStyles();
@@ -71,46 +21,8 @@ const TableComponent = (props) => {
 
   const {
     id, data, column, order, orderBy, onSort, onSelect, actions,
-    count, page, onChangePage, rowsPerPage, dataLength, loader,
+    count, page, onChangePage, rowsPerPage, loader, dataLength,
   } = props;
-
-  const tableBody = dataLength ? data.map((element) => (
-    <StyledTableRow hover onClick={() => onSelect(element)} key={element[id]}>
-      {column.map(({ field, align, format }) => (
-
-        <StyledTableCell align={align}>
-          {format ? format(element[field]) : element[field]}
-        </StyledTableCell>
-
-      ))}
-      {
-        <StyledTableCell>
-
-          {
-            actions.map((
-              { icons, handler },
-            ) => (
-              <div>
-                <Button
-                  className={classes.background}
-                  onClick={() => { handler(element); }}
-                >
-                  {icons}
-                </Button>
-              </div>
-            ))
-          }
-
-        </StyledTableCell>
-      }
-    </StyledTableRow>
-
-  )) : (
-    <Box paddingLeft={72}>
-      <h2>Oops No more Trainees</h2>
-    </Box>
-  );
-
   const handleSortIcon = (e) => {
     e.target.style.color = 'black';
     setOpen(true);
@@ -119,70 +31,122 @@ const TableComponent = (props) => {
     e.target.style.color = 'grey';
   };
 
+  const tableHeading = (
+    <TableRow key={id}>
+      {column.map((col) => (
+        <TableCell
+          key={col.label}
+          align={col.align}
+          className={classes.color}
+        >
+          <TableSortLabel
+            onMouseEnter={handleSortIcon}
+            onMouseLeave={handleColorChange}
+            onBlur={handleColorChange}
+            active={orderBy === col.field}
+            direction={orderBy === col.field ? order : 'asc'}
+            onClick={() => onSort(col.field)}
+            hideSortIcon={open}
+          >
+            <>
+              {col.label}
+              {orderBy === col.field ? (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              ) : null}
+            </>
+          </TableSortLabel>
+        </TableCell>
+      ))}
+      <TableCell />
+    </TableRow>
+  );
+
+  const tableBody = dataLength ? data.map((element) => (
+    <StyledTableRow
+      hover
+      className={classes.style}
+      onClick={() => onSelect(element)}
+      key={element[id]}
+    >
+      {column.map(({ field, align, format }) => (
+
+        <TableCell key={field} align={align}>
+          {format ? format(element[field]) : element[field]}
+        </TableCell>
+
+      ))}
+      {
+        <TableCell>
+          <div className={classes.buttonSetup}>
+            {
+              actions.map((
+                { icons, handler, key },
+              ) => (
+                <div key={key}>
+                  <Button
+                    className={classes.background}
+                    onClick={() => { handler(element); }}
+                  >
+                    {icons}
+                  </Button>
+                </div>
+              ))
+            }
+          </div>
+        </TableCell>
+      }
+
+    </StyledTableRow>
+
+  )) : (
+    (
+      <>
+        <Box paddingLeft={72}>
+          <h2>Oops No more Trainees</h2>
+        </Box>
+      </>
+    )
+  );
+
+  const tablePagination = count && (
+    <TablePagination
+      component="div"
+      count={count}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      rowsPerPageOptions={[]}
+      onChangePage={onChangePage}
+    />
+  );
+
+  const tableWithLoaderAndBody = loader ? (
+    <Box pl={72}>
+      <CircularProgress />
+    </Box>
+  ) : (tableBody);
   return (
-    <>
+    <Box p={2}>
       <TableContainer component={Paper} className={classes.container}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
-            <TableRow key={id}>
-              {column.length && column.map((col) => (
-                <TableCell
-                  align={col.align}
-                  className={classes.color}
-                >
-                  <TableSortLabel
-                    onMouseEnter={handleSortIcon}
-                    onMouseLeave={handleColorChange}
-                    onBlur={handleColorChange}
-                    active={orderBy === col.field}
-                    direction={orderBy === col.field ? order : 'asc'}
-                    onClick={() => onSort(col.field)}
-                    hideSortIcon={open}
-                  >
-                    <>
-                      {col.label}
-                      {orderBy === col.field ? (
-                        <span className={classes.visuallyHidden}>
-                          {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                        </span>
-                      ) : null}
-                    </>
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-              <TableCell />
-
-            </TableRow>
+            {tableHeading}
           </TableHead>
           <TableBody>
-            {
-              loader ? (
-                <Box paddingLeft={72}>
-                  <CircularProgress />
-                </Box>
-              ) : (tableBody)
-            }
+            {tableWithLoaderAndBody}
           </TableBody>
         </Table>
       </TableContainer>
-      {count ? (
-        <TablePagination
-          component="div"
-          count={count}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[]}
-          onChangePage={onChangePage}
-        />
-      ) : ''}
-    </>
+      {tablePagination}
+    </Box>
   );
 };
 
 TableComponent.propTypes = {
   id: propTypes.string.isRequired,
-  data: propTypes.arrayOf(propTypes.object).isRequired,
-  column: propTypes.arrayOf(propTypes.object).isRequired,
+  data: propTypes.arrayOf(propTypes.object),
+  column: propTypes.arrayOf(propTypes.object),
   actions: propTypes.arrayOf(propTypes.object).isRequired,
   order: propTypes.oneOf(['asc', 'desc']),
   orderBy: propTypes.string,
@@ -192,15 +156,20 @@ TableComponent.propTypes = {
   page: propTypes.number,
   onChangePage: propTypes.func.isRequired,
   rowsPerPage: propTypes.number,
-  dataLength: propTypes.number.isRequired,
-  loader: propTypes.bool.isRequired,
+  loader: propTypes.bool,
+  dataLength: propTypes.number,
+
 };
 
 TableComponent.defaultProps = {
+  data: [],
+  column: [],
   order: 'asc',
   orderBy: '',
   page: 0,
   rowsPerPage: 100,
+  loader: true,
+  dataLength: 0,
 };
 
 export default withLoaderAndMessage(TableComponent);
