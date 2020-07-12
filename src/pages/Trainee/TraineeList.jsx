@@ -184,109 +184,106 @@ class TraineeList extends React.Component {
     this.toggleLoader();
   }
 
-componentDidMount = async () => {
-  console.log('---------Component did mount------------');
-}
 
-render() {
-  const {
-    showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
-  } = this.state;
-  const {
-    data: {
-      getAllTrainee: {
-        records = [],
-        count = 0,
-      } = {},
-      loading,
-      refetch,
-    },
-    match: { url }, classes,
-  } = this.props;
-  const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
-  const traineeList = (
-    <>
-      <Box p={1} />
-      <div className={classes.button}>
-        <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+  render() {
+    const {
+      showAddOpen, order, orderBy, page, rowData, rowsPerPage, showEditOpen, showRemoveOpen,
+    } = this.state;
+    const {
+      data: {
+        getAllTrainee: {
+          records = [],
+          count = 0,
+        } = {},
+        loading,
+        refetch,
+      },
+      match: { url }, classes,
+    } = this.props;
+    const getDateFormatted = (date) => moment(date).format('dddd,MMMM Do YYYY, h:mm:ss a');
+    const traineeList = (
+      <>
+        <Box p={1} />
+        <div className={classes.button}>
+          <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
                 Add Trainee
-        </Button>
-      </div>
-      <FormDialog
-        open={showAddOpen}
-        onClose={this.toggleDialogBox}
-        onSubmit={this.onSubmitAdd}
-      />
-      <Box p={1} />
-      <TableComponent
-        id="_id"
-        data={records}
-        column={[{
-          field: 'name',
-          label: 'Name',
-          align: 'center',
-        },
-        {
-          field: 'email',
-          label: 'Email-Address',
-          format: (value) => value && value.toUpperCase(),
+          </Button>
+        </div>
+        <FormDialog
+          open={showAddOpen}
+          onClose={this.toggleDialogBox}
+          onSubmit={this.onSubmitAdd}
+        />
+        <Box p={1} />
+        <TableComponent
+          id="originalId"
+          data={records}
+          column={[{
+            field: 'name',
+            label: 'Name',
+            align: 'center',
+          },
+          {
+            field: 'email',
+            label: 'Email-Address',
+            format: (value) => value && value.toUpperCase(),
 
-        },
-        {
-          field: 'createdAt',
-          label: 'Date',
-          align: 'right',
-          format: getDateFormatted,
-        },
-        ]}
-        actions={[{
-          icons: <EditIcon />,
-          handler: this.handleEditDialogOpen,
-          key: 'editIcon',
-        },
-        {
-          icons: <DeleteIcon />,
-          handler: this.handleRemoveDialogOpen,
-          key: 'removeIcon',
+          },
+          {
+            field: 'createdAt',
+            label: 'Date',
+            align: 'right',
+            format: getDateFormatted,
+          },
+          ]}
+          actions={[{
+            icons: <EditIcon />,
+            handler: this.handleEditDialogOpen,
+            key: 'editIcon',
+          },
+          {
+            icons: <DeleteIcon />,
+            handler: this.handleRemoveDialogOpen,
+            key: 'removeIcon',
 
-        }]}
-        order={order}
-        orderBy={orderBy}
-        onSort={this.handleSort}
-        onSelect={this.handleSelectChange}
-        count={count}
-        page={page}
-        onChangePage={this.handleChangePage(refetch)}
-        rowsPerPage={rowsPerPage}
-        loader={loading}
-      />
-      <EditDialog
-        open={showEditOpen}
-        onClose={this.toggleEditDialogBox}
-        onSubmit={this.onSubmitEdit}
-        data={rowData}
-      />
-      <RemoveDialog
-        open={showRemoveOpen}
-        onClose={this.toggleRemoveDialogBox}
-        onSubmit={this.onSubmitDelete}
-        data={rowData}
-      />
-      <Box p={1} />
-      <ul>
-        {trainee.length && trainee.map((data) => (
-          <Fragment key={data.id}>
-            <li>
-              <Link to={`${url}/${data.id}`}>{data.name}</Link>
-            </li>
+          }]}
+          order={order}
+          orderBy={orderBy}
+          onSort={this.handleSort}
+          onSelect={this.handleSelectChange}
+          count={count}
+          page={page}
+          onChangePage={this.handleChangePage(refetch)}
+          rowsPerPage={rowsPerPage}
+          loader={loading}
+        />
+        <EditDialog
+          open={showEditOpen}
+          onClose={this.toggleEditDialogBox}
+          onSubmit={this.onSubmitEdit}
+          data={rowData}
+        />
+        <RemoveDialog
+          open={showRemoveOpen}
+          onClose={this.toggleRemoveDialogBox}
+          onSubmit={this.onSubmitDelete}
+          data={rowData}
+        />
+        <Box p={1} />
+        <ul>
+          {trainee.length && trainee.map((data) => (
+            <Fragment key={data.id}>
+              <li>
+                <Link to={`${url}/${data.id}`}>{data.name}</Link>
+              </li>
 
-          </Fragment>
-        ))}
-      </ul>
-    </>
-  );
-  return (traineeList);
-}
+            </Fragment>
+          ))}
+        </ul>
+      </>
+    );
+    return (traineeList);
+  }
 }
 
 TraineeList.propTypes = {
@@ -297,5 +294,5 @@ TraineeList.propTypes = {
 
 export default Compose(withStyles(useStyles, { withTheme: true }),
   graphql(GET_TRAINEE, {
-    options: { variables: { skip: 0, limit: 20 } },
+    options: { variables: { skip: 0, limit: 10 } },
   }))(TraineeList);
