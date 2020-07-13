@@ -6,10 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
-import * as moment from 'moment';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { SnackBarConsumer } from '../../../../contexts';
-
 
 class RemoveDialog extends React.Component {
   constructor(props) {
@@ -25,17 +22,11 @@ class RemoveDialog extends React.Component {
     }));
   }
 
-  handleOnClick = (removeData, openSnackBar) => {
-    const date = '2019-02-14T18:15:11.778Z';
-    const isAfter = (moment(removeData.createdAt).isAfter(date));
+  handleOnClick = (removeData) => {
     const { onSubmit } = this.props;
     this.toggleButton();
-    if (isAfter) {
-      onSubmit(removeData);
-      this.toggleButton();
-    } else {
-      openSnackBar('Error While Deleting !', 'error');
-    }
+    onSubmit(removeData);
+    this.toggleButton();
   }
 
   render = () => {
@@ -54,19 +45,10 @@ class RemoveDialog extends React.Component {
             <Button onClick={onClose} variant="contained">
               Cancel
             </Button>
-            <SnackBarConsumer>
-              {(value) => {
-                const { openSnackBar } = value;
-                return (
-                  <>
-                    <Button disabled={!showButton} color="primary" variant="contained" onClick={() => this.handleOnClick(data, openSnackBar)}>
-                      <span>{loading ? <CircularProgress size={20} /> : ''}</span>
+            <Button disabled={!showButton} color="primary" variant="contained" onClick={() => this.handleOnClick(data)}>
+              <span>{loading ? <CircularProgress size={20} /> : ''}</span>
                     Delete
-                    </Button>
-                  </>
-                );
-              }}
-            </SnackBarConsumer>
+            </Button>
           </DialogActions>
         </DialogContent>
       </Dialog>
