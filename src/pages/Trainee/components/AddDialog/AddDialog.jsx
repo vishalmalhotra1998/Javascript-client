@@ -15,7 +15,6 @@ import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import propTypes from 'prop-types';
 import FormSchema from './schema';
-import { SnackBarConsumer } from '../../../../contexts';
 
 
 const useStyles = {
@@ -32,8 +31,6 @@ const addDialogStates = {
   errorMessage: {},
   touched: {},
   showButton: false,
-  loader: false,
-
 };
 
 class FormDialog extends React.Component {
@@ -111,9 +108,8 @@ class FormDialog extends React.Component {
         return false;
       }
 
-      toggleLoaderAndShowButton=() => {
+      toggleShowButton=() => {
         this.setState((prevState) => ({
-          loader: !prevState.loader,
           showButton: !prevState.showButton,
         }));
       }
@@ -124,19 +120,19 @@ class FormDialog extends React.Component {
         });
       }
 
-handleCallApi= async (value, openSnackBar) => {
+handleOnClick= (value) => {
   const { onSubmit } = this.props;
-  this.toggleLoaderAndShowButton();
-  await onSubmit(value, openSnackBar);
+  this.toggleShowButton();
+  onSubmit(value);
   this.formReset();
 };
 
 render = () => {
   const {
-    classes, open, onClose,
+    classes, open, onClose, loading,
   } = this.props;
   const {
-    name, email, password, confirmPassword, errorMessage, showButton, loader,
+    name, email, password, confirmPassword, errorMessage, showButton,
   } = this.state;
   return (
     <div>
@@ -241,21 +237,14 @@ render = () => {
           <Button onClick={onClose} color="primary">
                             Cancel
           </Button>
-          <SnackBarConsumer>
-            {(value) => {
-              const { openSnackBar } = value;
-              return (
-                <Button
-                  disabled={!showButton}
-                  onClick={() => this.handleCallApi({ name, email, password }, openSnackBar)}
-                  color="primary"
-                >
-                  <span>{loader ? <CircularProgress size={30} /> : ''}</span>
+          <Button
+            disabled={!showButton}
+            onClick={() => this.handleOnClick({ name, email, password })}
+            color="primary"
+          >
+            <span>{loading ? <CircularProgress size={20} /> : ''}</span>
                             Submit
-                </Button>
-              );
-            }}
-          </SnackBarConsumer>
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
@@ -267,5 +256,9 @@ FormDialog.propTypes = {
   onClose: propTypes.func.isRequired,
   onSubmit: propTypes.func.isRequired,
   classes: propTypes.objectOf(propTypes.any).isRequired,
+  loading: propTypes.bool,
+};
+FormDialog.defaultProps = {
+  loading: false,
 };
 export default withStyles(useStyles, { withTheme: true })(FormDialog);

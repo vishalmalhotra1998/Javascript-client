@@ -123,7 +123,7 @@ const TableComponent = (props) => {
 
   const tableWithLoaderAndBody = loader ? (
     <Box pl={72}>
-      <CircularProgress />
+      <CircularProgress size={20} />
     </Box>
   ) : (tableBody);
   return (
