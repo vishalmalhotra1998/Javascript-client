@@ -120,7 +120,7 @@ class FormDialog extends React.Component {
         });
       }
 
-handleCallApi= (value) => {
+handleOnClick= (value) => {
   const { onSubmit } = this.props;
   this.toggleShowButton();
   onSubmit(value);
@@ -239,7 +239,7 @@ render = () => {
           </Button>
           <Button
             disabled={!showButton}
-            onClick={() => this.handleCallApi({ name, email, password })}
+            onClick={() => this.handleOnClick({ name, email, password })}
             color="primary"
           >
             <span>{loading ? <CircularProgress size={20} /> : ''}</span>
