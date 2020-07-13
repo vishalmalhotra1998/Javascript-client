@@ -15,7 +15,6 @@ import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import propTypes from 'prop-types';
 import FormSchema from './schema';
-import { SnackBarConsumer } from '../../../../contexts';
 
 
 const useStyles = {
@@ -109,9 +108,8 @@ class FormDialog extends React.Component {
         return false;
       }
 
-      toggleLoaderAndShowButton=() => {
+      toggleShowButton=() => {
         this.setState((prevState) => ({
-          loader: !prevState.loader,
           showButton: !prevState.showButton,
         }));
       }
@@ -122,10 +120,10 @@ class FormDialog extends React.Component {
         });
       }
 
-handleCallApi= async (value, openSnackBar) => {
+handleCallApi= (value) => {
   const { onSubmit } = this.props;
-  this.toggleLoaderAndShowButton();
-  await onSubmit(value, openSnackBar);
+  this.toggleShowButton();
+  onSubmit(value);
   this.formReset();
 };
 
@@ -239,21 +237,14 @@ render = () => {
           <Button onClick={onClose} color="primary">
                             Cancel
           </Button>
-          <SnackBarConsumer>
-            {(value) => {
-              const { openSnackBar } = value;
-              return (
-                <Button
-                  disabled={!showButton}
-                  onClick={() => this.handleCallApi({ name, email, password }, openSnackBar)}
-                  color="primary"
-                >
-                  <span>{loading ? <CircularProgress size={20} /> : ''}</span>
+          <Button
+            disabled={!showButton}
+            onClick={() => this.handleCallApi({ name, email, password })}
+            color="primary"
+          >
+            <span>{loading ? <CircularProgress size={20} /> : ''}</span>
                             Submit
-                </Button>
-              );
-            }}
-          </SnackBarConsumer>
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

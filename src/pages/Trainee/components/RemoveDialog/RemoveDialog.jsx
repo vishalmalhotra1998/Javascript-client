@@ -25,13 +25,13 @@ class RemoveDialog extends React.Component {
     }));
   }
 
-  handleOnClick = async (removeData, openSnackBar) => {
+  handleOnClick = (removeData, openSnackBar) => {
     const date = '2019-02-14T18:15:11.778Z';
     const isAfter = (moment(removeData.createdAt).isAfter(date));
     const { onSubmit } = this.props;
     this.toggleButton();
     if (isAfter) {
-      await onSubmit(removeData, openSnackBar);
+      onSubmit(removeData);
       this.toggleButton();
     } else {
       openSnackBar('Error While Deleting !', 'error');
@@ -43,7 +43,6 @@ class RemoveDialog extends React.Component {
       onClose, open, data, loading,
     } = this.props;
     const { showButton } = this.state;
-    console.log(open);
     return (
       <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="lg" fullWidth>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
