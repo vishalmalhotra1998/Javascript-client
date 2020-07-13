@@ -104,7 +104,7 @@ class TraineeList extends React.Component {
   onSubmitDelete = (deleteTrainee, openSnackBar) => async (removeValues) => {
     const snackBarMessages = {
       success: 'Trainee Deleted Successfully',
-      error: 'Error While Deleting !',
+      error: 'Error While Deleting!',
     };
     const { page, rowsPerPage } = this.state;
     const {
