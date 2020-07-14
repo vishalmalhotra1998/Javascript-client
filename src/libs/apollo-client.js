@@ -1,11 +1,10 @@
-import { InMemoryCache } from 'apollo-boost';
+import { InMemoryCache } from 'apollo-cache-inmemory';
 import ApolloClient from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import { split } from 'apollo-link';
 import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from 'apollo-link-ws';
-import ls from 'local-storage';
 
 const httpLink = new HttpLink({
   uri: process.env.REACT_APP_APOLLO_GRAPHQL_URL,
@@ -31,7 +30,7 @@ const link = split(
 );
 
 const setAuthorizationLink = setContext((_, { headers }) => {
-  const token = ls.get('token');
+  const token = localStorage.getItem('token');
   return {
     headers: {
       ...headers,
@@ -39,11 +38,10 @@ const setAuthorizationLink = setContext((_, { headers }) => {
     },
   };
 });
-const cache = new InMemoryCache();
 
 const client = new ApolloClient({
   link: setAuthorizationLink.concat(link),
-  cache,
+  cache: new InMemoryCache(),
 });
 
 export default client;

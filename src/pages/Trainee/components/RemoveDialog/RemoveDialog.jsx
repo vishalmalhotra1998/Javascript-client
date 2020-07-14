@@ -8,55 +8,46 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-
 class RemoveDialog extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loader: false,
+      showButton: true,
     };
   }
 
-  toggleLoader = () => {
+  toggleButton=() => {
     this.setState((prevState) => ({
-      loader: !prevState.loader,
+      showButton: !prevState.showButton,
     }));
   }
 
-  handleLoader = async (data) => {
+  handleOnClick = (removeData) => {
     const { onSubmit } = this.props;
-    await onSubmit(data);
-    this.toggleLoader();
+    this.toggleButton();
+    onSubmit(removeData);
+    this.toggleButton();
   }
 
   render = () => {
     const {
-      onClose, open, data,
+      onClose, open, data, loading,
     } = this.props;
-    const { loader } = this.state;
+    const { showButton } = this.state;
     return (
-      <Dialog onClose={() => onClose()} aria-labelledby="simple-dialog-title" open={open}>
+      <Dialog onClose={onClose} aria-labelledby="simple-dialog-title" open={open} maxWidth="lg" fullWidth>
         <DialogTitle id="simple-dialog-title">Remove Trainee</DialogTitle>
-        <div>
-          <DialogContentText>
-            Do you really want to delete trainee ?
-          </DialogContentText>
-        </div>
+        <DialogContentText>
+           Do you really want to delete trainee ?
+        </DialogContentText>
         <DialogContent>
           <DialogActions>
-            <Button onClick={() => onClose()} variant="contained">
+            <Button onClick={onClose} variant="contained">
               Cancel
             </Button>
-            <Button
-              disabled={loader}
-              color="primary"
-              variant="contained"
-              onClick={() => { this.handleLoader(data); this.toggleLoader(); }}
-            >
-              <span>
-                {loader ? <CircularProgress size={20} /> : ''}
-              </span>
-              Delete
+            <Button disabled={!showButton} color="primary" variant="contained" onClick={() => this.handleOnClick(data)}>
+              <span>{loading ? <CircularProgress size={20} /> : ''}</span>
+                    Delete
             </Button>
           </DialogActions>
         </DialogContent>
@@ -70,6 +61,11 @@ RemoveDialog.propTypes = {
   open: propTypes.bool.isRequired,
   onSubmit: propTypes.func.isRequired,
   data: propTypes.objectOf(propTypes.string).isRequired,
+  loading: propTypes.bool,
+};
+
+RemoveDialog.defaultProps = {
+  loading: false,
 };
 
 export default RemoveDialog;

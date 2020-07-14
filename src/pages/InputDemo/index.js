@@ -1,3 +1,1 @@
-import InputDemo from './InputDemo';
-
-export default InputDemo;
+export { default as InputDemo } from './InputDemo';

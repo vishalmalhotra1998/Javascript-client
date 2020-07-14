@@ -7,8 +7,9 @@ const apiCall = async (apiData, endPoint, method) => {
       method,
       url: URL,
       ...apiData,
+      headers: { Authorization: localStorage.getItem('token') },
     });
-    const { data } = response;
+    const { data } = response || {};
     return data;
   } catch (error) {
     return ({ message: error.message, status: 'error' });
