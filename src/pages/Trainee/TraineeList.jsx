@@ -146,21 +146,16 @@ class TraineeList extends React.Component {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData) return prev;
           const { getAllTrainee: { records } } = prev;
-          const { data: { traineeUpdated } } = subscriptionData;
-          const updateRecords = [...records].map((record) => {
-            if (record.originalId === traineeUpdated.originalId) {
-              return {
-                ...record,
-                ...traineeUpdated,
-              };
-            }
-            return record;
-          });
+          const { data: { traineeUpdated } = {} } = subscriptionData || {};
+          const findRecord = (record) => record.originalId === traineeUpdated.originalId;
+          const updatedRecordIndex = records.findIndex(findRecord);
+          const updatedRecord = { ...records[updatedRecordIndex], ...traineeUpdated };
+          records.splice(updatedRecordIndex, 1, updatedRecord);
           return {
             getAllTrainee: {
               ...prev.getAllTrainee,
-              count: prev.getAllTrainee.count - 1,
-              records: updateRecords,
+              count: prev.getAllTrainee.count,
+              records,
             },
           };
         },
@@ -171,7 +166,7 @@ class TraineeList extends React.Component {
         updateQuery: (prev, { subscriptionData }) => {
           if (!subscriptionData) return prev;
           const { getAllTrainee: { records } } = prev;
-          const { data: { traineeDeleted } } = subscriptionData;
+          const { data: { traineeDeleted } = {} } = subscriptionData || {};
           const delRecords = [...records].filter((record) => record.originalId !== traineeDeleted);
           return {
             getAllTrainee: {
