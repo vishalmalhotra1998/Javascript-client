@@ -167,7 +167,7 @@ class TraineeList extends React.Component {
           if (!subscriptionData) return prev;
           const { getAllTrainee: { records } } = prev;
           const { data: { traineeDeleted } = {} } = subscriptionData || {};
-          const delRecords = [...records].filter((record) => record.originalId !== traineeDeleted);
+          const delRecords = records.filter((record) => record.originalId !== traineeDeleted);
           return {
             getAllTrainee: {
               ...prev.getAllTrainee,
