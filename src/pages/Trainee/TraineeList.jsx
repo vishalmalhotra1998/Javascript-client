@@ -10,11 +10,12 @@ import { graphql } from '@apollo/react-hoc';
 import { Mutation } from 'react-apollo';
 import { tableColumns } from './data/tableData';
 import { CREATE_TRAINEE, UPDATE_TRAINEE, DELETE_TRAINEE } from './mutation';
+import { TRAINEE_UPDATED, TRAINEE_DELETED } from './subscriptions';
 import {
   FormDialog, TableComponent, EditDialog, RemoveDialog,
 } from './components';
 import { GET_TRAINEE } from './query';
-import { SnackBarConsumer } from '../../contexts';
+import { withSnackBarConsumer } from '../../components';
 
 const useStyles = {
 
@@ -138,6 +139,45 @@ class TraineeList extends React.Component {
       });
     };
 
+    componentDidMount = () => {
+      const { data: { subscribeToMore } } = this.props;
+      subscribeToMore({
+        document: TRAINEE_UPDATED,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData) return prev;
+          const { getAllTrainee: { records } } = prev;
+          const { data: { traineeUpdated } = {} } = subscriptionData || {};
+          const findRecord = (record) => record.originalId === traineeUpdated.originalId;
+          const updatedRecordIndex = records.findIndex(findRecord);
+          const updatedRecord = { ...records[updatedRecordIndex], ...traineeUpdated };
+          records.splice(updatedRecordIndex, 1, updatedRecord);
+          return {
+            getAllTrainee: {
+              ...prev.getAllTrainee,
+              count: prev.getAllTrainee.count,
+              records,
+            },
+          };
+        },
+      });
+
+      subscribeToMore({
+        document: TRAINEE_DELETED,
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData) return prev;
+          const { getAllTrainee: { records } } = prev;
+          const { data: { traineeDeleted } = {} } = subscriptionData || {};
+          const delRecords = records.filter((record) => record.originalId !== traineeDeleted);
+          return {
+            getAllTrainee: {
+              ...prev.getAllTrainee,
+              count: prev.getAllTrainee.count - 1,
+              records: delRecords,
+            },
+          };
+        },
+      });
+    }
 
     render = () => {
       const {
@@ -154,105 +194,97 @@ class TraineeList extends React.Component {
           refetch,
         },
         classes,
+        openSnackBar,
       } = this.props;
       const variables = { skip: page * rowsPerPage, limit: rowsPerPage };
       const traineeList = (
         <>
-          <SnackBarConsumer>
-            {({ openSnackBar }) => (
-              <>
+          <>
+            <Mutation
+              mutation={CREATE_TRAINEE}
+              refetchQueries={[{ query: GET_TRAINEE, variables }]}
+              onError={() => { }}
+            >
+              {(createTrainee, { loading: createLoader }) => (
                 <>
-                  <Mutation
-                    mutation={CREATE_TRAINEE}
-                    refetchQueries={[{ query: GET_TRAINEE, variables }]}
-                    onError={() => { }}
-                  >
-                    {(createTrainee, { loading: createLoader }) => (
-                      <>
-                        <Box p={1} />
-                        <div className={classes.button}>
-                          <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
+                  <Box p={1} />
+                  <div className={classes.button}>
+                    <Button variant="outlined" color="primary" onClick={this.toggleDialogBox}>
                                                 Add Trainee
-                          </Button>
-                        </div>
-                        <FormDialog
-                          open={createDailogOpen}
-                          onClose={this.toggleDialogBox}
-                          onSubmit={this.onSubmitAdd(createTrainee, openSnackBar)}
-                          loading={createLoader}
-                        />
-                        <Box p={1} />
-                        <TableComponent
-                          id="originalId"
-                          data={records}
-                          column={tableColumns}
-                          actions={[{
-                            icons: <EditIcon />,
-                            handler: this.handleEditDialogOpen,
-                            key: 'editIcon',
-                          },
-                          {
-                            icons: <DeleteIcon />,
-                            handler: this.handleRemoveDialogOpen,
-                            key: 'removeIcon',
-
-                          }]}
-                          order={order}
-                          orderBy={orderBy}
-                          onSort={this.handleSort}
-                          onSelect={this.handleSelectChange}
-                          count={count}
-                          page={page}
-                          onChangePage={this.handleChangePage(refetch)}
-                          rowsPerPage={rowsPerPage}
-                          loader={loading}
-                        />
-                      </>
-                    )}
-                  </Mutation>
-                </>
-                <>
-                  <Mutation
-                    mutation={UPDATE_TRAINEE}
-                    refetchQueries={() => [{ query: GET_TRAINEE, variables }]}
-                    onError={() => { }}
-                  >
+                    </Button>
+                  </div>
+                  <FormDialog
+                    open={createDailogOpen}
+                    onClose={this.toggleDialogBox}
+                    onSubmit={this.onSubmitAdd(createTrainee, openSnackBar)}
+                    loading={createLoader}
+                  />
+                  <Box p={1} />
+                  <TableComponent
+                    id="originalId"
+                    data={records}
+                    column={tableColumns}
+                    actions={[{
+                      icons: <EditIcon />,
+                      handler: this.handleEditDialogOpen,
+                      key: 'editIcon',
+                    },
                     {
-                      (updateTrainee, { loading: updateLoader }) => (
-                        <EditDialog
-                          open={editDailogOpen}
-                          onClose={this.toggleEditDialogBox}
-                          onSubmit={this.onSubmitEdit(updateTrainee, openSnackBar)}
-                          data={rowData}
-                          loading={updateLoader}
-                        />
-                      )
-                    }
-                  </Mutation>
-                </>
-                <>
-                  <Mutation
-                    mutation={DELETE_TRAINEE}
-                    refetchQueries={[{ query: GET_TRAINEE, variables }]}
-                    onError={() => { }}
-                  >
-                    {(deleteTrainee, { loading: removeLoader }) => (
-                      <>
-                        <RemoveDialog
-                          open={removeDialogOpen}
-                          onClose={this.toggleRemoveDialogBox}
-                          onSubmit={this.onSubmitDelete(deleteTrainee, openSnackBar)}
-                          data={rowData}
-                          loading={removeLoader}
-                        />
-                      </>
-                    )}
-                  </Mutation>
-                </>
-              </>
-            )}
+                      icons: <DeleteIcon />,
+                      handler: this.handleRemoveDialogOpen,
+                      key: 'removeIcon',
 
-          </SnackBarConsumer>
+                    }]}
+                    order={order}
+                    orderBy={orderBy}
+                    onSort={this.handleSort}
+                    onSelect={this.handleSelectChange}
+                    count={count}
+                    page={page}
+                    onChangePage={this.handleChangePage(refetch)}
+                    rowsPerPage={rowsPerPage}
+                    loader={loading}
+                  />
+                </>
+              )}
+            </Mutation>
+          </>
+          <>
+            <Mutation
+              mutation={UPDATE_TRAINEE}
+              onError={() => { }}
+            >
+              {
+                (updateTrainee, { loading: updateLoader }) => (
+                  <EditDialog
+                    open={editDailogOpen}
+                    onClose={this.toggleEditDialogBox}
+                    onSubmit={this.onSubmitEdit(updateTrainee, openSnackBar)}
+                    data={rowData}
+                    loading={updateLoader}
+                  />
+                )
+              }
+            </Mutation>
+          </>
+          <>
+            <Mutation
+              mutation={DELETE_TRAINEE}
+              onError={() => { }}
+            >
+              {(deleteTrainee, { loading: removeLoader }) => (
+                <>
+                  <RemoveDialog
+                    open={removeDialogOpen}
+                    onClose={this.toggleRemoveDialogBox}
+                    onSubmit={this.onSubmitDelete(deleteTrainee, openSnackBar)}
+                    data={rowData}
+                    loading={removeLoader}
+                  />
+                </>
+              )}
+            </Mutation>
+          </>
         </>
       );
       return (traineeList);
@@ -262,9 +294,11 @@ class TraineeList extends React.Component {
 TraineeList.propTypes = {
   classes: propTypes.objectOf(propTypes.any).isRequired,
   data: propTypes.objectOf(propTypes.any).isRequired,
+  openSnackBar: propTypes.func.isRequired,
 };
 
 export default Compose(withStyles(useStyles, { withTheme: true }),
+  withSnackBarConsumer,
   graphql(GET_TRAINEE, {
     options: { variables: { skip: 0, limit: 10 } },
   }))(TraineeList);

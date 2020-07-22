@@ -4,4 +4,4 @@ export { RadioField } from './RadioField';
 export { SelectField } from './SelectField';
 export { Button } from './Button';
 export { Math } from './math';
-export { withLoaderAndMessage } from './HOC';
+export { withLoaderAndMessage, withSnackBarConsumer } from './HOC';
