@@ -75,6 +75,15 @@ class TraineeList extends React.Component {
     // handleSelectChange = (value) => {
     //   console.log(value);
     // }
+    handleSort = (value) => {
+      const { orderBy, order } = this.state;
+      const isAsc = orderBy === value && order === 'asc';
+      const data = isAsc ? 'desc' : 'asc';
+      this.setState({
+        order: data,
+        orderBy: value,
+      });
+    }
 
     handleEditDialogOpen = (values) => {
       this.toggleEditDialogBox();
